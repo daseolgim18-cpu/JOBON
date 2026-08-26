@@ -221,13 +221,15 @@ JOBON은 이러한 정보를 한 곳에 모아 관리하고,
 ### Backend
 
 - Java 21
-- Spring Boot
+- Spring Boot 4.0.8
 - Spring MVC
+- Spring Security 
 - MyBatis
 
 ### Frontend
 
 - JSP
+- JSTL
 - HTML5
 - CSS3
 - JavaScript
@@ -267,7 +269,8 @@ MyBatis Mapper XML
 Oracle Database
 ```
 
-기능별 패키지를 분리하여 각 도메인의 Controller, Service, DAO, DTO, VO를 관리합니다.
+기능별 패키지를 분리하여 각 도메인의 Controller, Service, ServiceImpl, DAO, VO를 관리합니다.
+MyBatis SQL은 resources/mapper 경로의 Mapper XML 파일에서 관리합니다.
 
 ---
 
@@ -289,24 +292,88 @@ jobon/
 │   │   │   │
 │   │   │   ├── common/
 │   │   │   │   ├── config/
+│   │   │   │   │   └── SecurityConfig.java
 │   │   │   │   ├── exception/
 │   │   │   │   └── util/
 │   │   │   │
-│   │   │   ├── controller/
-│   │   │   │   └── MainController.java
+│   │   │   ├── main/
+│   │   │   │   └── controller/
+│   │   │   │       └── MainController.java
 │   │   │   │
 │   │   │   ├── member/
+│   │   │   │   ├── controller/
+│   │   │   │   ├── service/
+│   │   │   │   │   ├── MemberService.java
+│   │   │   │   │   └── MemberServiceImpl.java
+│   │   │   │   ├── dao/
+│   │   │   │   └── vo/
+│   │   │   │
 │   │   │   ├── social/
+│   │   │   │   ├── controller/
+│   │   │   │   ├── service/
+│   │   │   │   ├── dao/
+│   │   │   │   └── vo/
+│   │   │   │
 │   │   │   ├── dashboard/
+│   │   │   │   ├── controller/
+│   │   │   │   ├── service/
+│   │   │   │   ├── dao/
+│   │   │   │   └── vo/
+│   │   │   │
 │   │   │   ├── company/
+│   │   │   │   ├── controller/
+│   │   │   │   ├── service/
+│   │   │   │   ├── dao/
+│   │   │   │   └── vo/
+│   │   │   │
 │   │   │   ├── job/
+│   │   │   │   ├── controller/
+│   │   │   │   ├── service/
+│   │   │   │   ├── dao/
+│   │   │   │   └── vo/
+│   │   │   │
 │   │   │   ├── apply/
+│   │   │   │   ├── controller/
+│   │   │   │   ├── service/
+│   │   │   │   ├── dao/
+│   │   │   │   └── vo/
+│   │   │   │
 │   │   │   ├── todo/
+│   │   │   │   ├── controller/
+│   │   │   │   ├── service/
+│   │   │   │   ├── dao/
+│   │   │   │   └── vo/
+│   │   │   │
 │   │   │   ├── learning/
+│   │   │   │   ├── controller/
+│   │   │   │   ├── service/
+│   │   │   │   ├── dao/
+│   │   │   │   └── vo/
+│   │   │   │
 │   │   │   ├── project/
+│   │   │   │   ├── controller/
+│   │   │   │   ├── service/
+│   │   │   │   ├── dao/
+│   │   │   │   └── vo/
+│   │   │   │
 │   │   │   ├── ai/
+│   │   │   │   ├── controller/
+│   │   │   │   ├── service/
+│   │   │   │   ├── dao/
+│   │   │   │   ├── client/
+│   │   │   │   └── vo/
+│   │   │   │
 │   │   │   ├── activity/
+│   │   │   │   ├── controller/
+│   │   │   │   ├── service/
+│   │   │   │   ├── dao/
+│   │   │   │   └── vo/
+│   │   │   │
 │   │   │   └── savedsearch/
+│   │   │       ├── controller/
+│   │   │       ├── service/
+│   │   │       ├── dao/
+│   │   │       └── vo/
 │   │   │
 │   │   ├── resources/
 │   │   │   │
@@ -314,17 +381,29 @@ jobon/
 │   │   │   │
 │   │   │   ├── mapper/
 │   │   │   │   ├── member/
+│   │   │   │   │   └── MemberMapper.xml
 │   │   │   │   ├── social/
+│   │   │   │   │   └── SocialMapper.xml
 │   │   │   │   ├── dashboard/
+│   │   │   │   │   └── DashboardMapper.xml
 │   │   │   │   ├── company/
+│   │   │   │   │   └── CompanyMapper.xml
 │   │   │   │   ├── job/
+│   │   │   │   │   └── JobMapper.xml
 │   │   │   │   ├── apply/
+│   │   │   │   │   └── ApplyMapper.xml
 │   │   │   │   ├── todo/
+│   │   │   │   │   └── TodoMapper.xml
 │   │   │   │   ├── learning/
+│   │   │   │   │   └── LearningMapper.xml
 │   │   │   │   ├── project/
+│   │   │   │   │   └── ProjectMapper.xml
 │   │   │   │   ├── ai/
+│   │   │   │   │   └── AiMapper.xml
 │   │   │   │   ├── activity/
+│   │   │   │   │   └── ActivityMapper.xml
 │   │   │   │   └── savedsearch/
+│   │   │   │       └── SavedSearchMapper.xml
 │   │   │   │
 │   │   │   └── static/
 │   │   │       ├── css/
@@ -335,6 +414,8 @@ jobon/
 │   │       └── WEB-INF/
 │   │           └── views/
 │   │               ├── common/
+│   │               │   ├── header.jsp
+│   │               │   └── footer.jsp
 │   │               ├── member/
 │   │               ├── dashboard/
 │   │               ├── company/
@@ -351,6 +432,7 @@ jobon/
 │       └── java/com/jobon/
 │           └── JobonApplicationTests.java
 │
+├── target/
 ├── .gitattributes
 ├── .gitignore
 ├── README.md
@@ -669,12 +751,18 @@ mvn spring-boot:run
 현재 JOBON은 설계 및 기본 프로젝트 환경 구성을 완료하고 기능별 구현을 진행하고 있습니다.
 
 - [x] 프로젝트 주제 선정
-- [x] 요구사항 정의
-- [x] 메뉴 구조 설계
+- [x] 요구사항 정의서 작성
+- [x] 메뉴 구조도 설계
 - [x] 스토리보드 작성
-- [x] ERD 설계
-- [x] API 명세 설계
+- [x] ERD 설계서 작성
+- [x] API 명세 설계 작성
 - [x] Spring Boot 프로젝트 생성
+- [x] JSP / JSTL 기본 환경 구성
+- [x] Oracle DB 연결 설정
+- [x] MyBatis 기본 설정
+- [x] WAR 빌드 확인
+- [x] JSP 화면 연결 테스트
+- [x] Spring Security 기본 설정
 - [x] Git / GitHub Repository 구성
 - [ ] 회원 및 인증 구현
 - [ ] 기업 관리 구현
