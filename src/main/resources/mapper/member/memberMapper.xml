@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+=========================================================
+파일 설명
+=========================================================
+JOBON_MEMBER용 MyBatis Mapper XML입니다.
+회원 중복확인, 회원가입 INSERT, 로그인/회원조회, 마지막 로그인 시각 갱신 SQL을 정의합니다.
+-->
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jobon.member.dao.MemberDAO">
+    <resultMap id="memberMap" type="com.jobon.member.vo.MemberVO">
+        <id property="memberId" column="MEMBER_ID"/>
+        <result property="loginId" column="LOGIN_ID"/>
+        <result property="email" column="EMAIL"/>
+        <result property="passwordHash" column="PASSWORD_HASH"/>
+        <result property="name" column="NAME"/>
+        <result property="nickname" column="NICKNAME"/>
+        <result property="phone" column="PHONE"/>
+        <result property="interestJob" column="INTEREST_JOB"/>
+        <result property="careerType" column="CAREER_TYPE"/>
+        <result property="educationLevel" column="EDUCATION_LEVEL"/>
+        <result property="schoolName" column="SCHOOL_NAME"/>
+        <result property="majorName" column="MAJOR_NAME"/>
+        <result property="preferredLocation" column="PREFERRED_LOCATION"/>
+        <result property="introduction" column="INTRODUCTION"/>
+        <result property="profileImageUrl" column="PROFILE_IMAGE_URL"/>
+        <result property="termsAgreedYn" column="TERMS_AGREED_YN"/>
+        <result property="privacyAgreedYn" column="PRIVACY_AGREED_YN"/>
+        <result property="status" column="STATUS"/>
+        <result property="lastLoginAt" column="LAST_LOGIN_AT"/>
+        <result property="createdAt" column="CREATED_AT"/>
+        <result property="updatedAt" column="UPDATED_AT"/>
+    </resultMap>
+
+    <select id="countByLoginId" resultType="int">SELECT COUNT(*) FROM JOBON_MEMBER WHERE LOGIN_ID = #{loginId}</select>
+    <select id="countByEmail" resultType="int">SELECT COUNT(*) FROM JOBON_MEMBER WHERE LOWER(EMAIL) = LOWER(#{email})</select>
+    <select id="selectByLoginId" resultMap="memberMap">SELECT * FROM JOBON_MEMBER WHERE LOGIN_ID = #{loginId}</select>
+    <select id="selectByEmail" resultMap="memberMap">SELECT * FROM JOBON_MEMBER WHERE LOWER(EMAIL) = LOWER(#{email})</select>
+    <select id="selectByMemberId" resultMap="memberMap">SELECT * FROM JOBON_MEMBER WHERE MEMBER_ID = #{memberId}</select>
+
+    <insert id="insertMember" parameterType="com.jobon.member.vo.MemberVO">
+
+        <!-- 회원 PK를 Oracle Sequence로 먼저 생성 -->
+        <selectKey keyProperty="memberId" resultType="long" order="BEFORE"> SELECT JOBON_MEMBER_SEQ.NEXTVAL FROM DUAL </selectKey>
+
+         INSERT INTO JOBON_MEMBER (
+            MEMBER_ID, LOGIN_ID, EMAIL, PASSWORD_HASH, NAME, NICKNAME, PHONE,
+            INTEREST_JOB, CAREER_TYPE, EDUCATION_LEVEL, SCHOOL_NAME, MAJOR_NAME,
+            PREFERRED_LOCATION, INTRODUCTION, PROFILE_IMAGE_URL,
+            TERMS_AGREED_YN, PRIVACY_AGREED_YN, STATUS, CREATED_AT, UPDATED_AT
+        )
+        VALUES (
+            #{memberId},#{loginId, jdbcType=VARCHAR},#{email, jdbcType=VARCHAR},#{passwordHash, jdbcType=VARCHAR},#{name, jdbcType=VARCHAR},#{nickname, jdbcType=VARCHAR},
+            #{phone, jdbcType=VARCHAR},#{interestJob, jdbcType=VARCHAR},#{careerType, jdbcType=VARCHAR},#{educationLevel, jdbcType=VARCHAR},#{schoolName, jdbcType=VARCHAR},
+            #{majorName, jdbcType=VARCHAR},#{preferredLocation, jdbcType=VARCHAR},#{introduction, jdbcType=VARCHAR},#{profileImageUrl, jdbcType=VARCHAR},#{termsAgreedYn, jdbcType=CHAR},
+            #{privacyAgreedYn, jdbcType=CHAR},#{status, jdbcType=VARCHAR},SYSTIMESTAMP,SYSTIMESTAMP
+        )
+
+    </insert>
+
+    <update id="updateLastLoginAt">UPDATE JOBON_MEMBER SET LAST_LOGIN_AT = SYSTIMESTAMP, UPDATED_AT = SYSTIMESTAMP WHERE MEMBER_ID = #{memberId}</update>
+</mapper>
