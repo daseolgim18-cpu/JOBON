@@ -148,15 +148,8 @@ public class CommonViewController {
         return "ai/experience-recommend";
     }
 
-    @GetMapping({ "/mypage", "/mypage/profile" })
-    public String mypage() {
-        return "mypage/profile";
-    }
-
-    @GetMapping("/mypage/profile/edit")
-    public String profileEdit() {
-        return "mypage/profile-edit";
-    }
+    // [수정] /mypage, /mypage/profile, /mypage/profile/edit 매핑은
+    // DB 회원 조회/수정 처리를 위해 MypageController로 이동했습니다.
 
     @GetMapping("/mypage/password")
     public String password() {

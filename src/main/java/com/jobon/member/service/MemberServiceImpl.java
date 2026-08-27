@@ -1,6 +1,5 @@
 package com.jobon.member.service;
 
-
 /**
  * =========================================================
  * 파일 설명
@@ -38,12 +37,24 @@ public class MemberServiceImpl implements MemberService {
         return email != null && !email.isBlank() && memberDAO.countByEmail(email.trim().toLowerCase()) == 0;
     }
 
+    // [수정] 현재 로그인 회원을 제외하고 같은 닉네임이 존재하지 않을 때 true를 반환한다.
+    @Override
+    public boolean isNicknameAvailable(String nickname, Long memberId) {
+        return nickname != null
+                && !nickname.isBlank()
+                && memberId != null
+                && memberDAO.countByNicknameExcludingMember(nickname.trim(), memberId) == 0;
+    }
+
     @Override
     @Transactional
     public MemberVO join(JoinRequest request) {
-        if (!request.isPasswordMatched()) throw new IllegalArgumentException("비밀번호와 비밀번호 확인이 일치하지 않습니다.");
-        if (!isLoginIdAvailable(request.getLoginId())) throw new IllegalArgumentException("이미 사용 중인 아이디입니다.");
-        if (!isEmailAvailable(request.getEmail())) throw new IllegalArgumentException("이미 사용 중인 이메일입니다.");
+        if (!request.isPasswordMatched())
+            throw new IllegalArgumentException("비밀번호와 비밀번호 확인이 일치하지 않습니다.");
+        if (!isLoginIdAvailable(request.getLoginId()))
+            throw new IllegalArgumentException("이미 사용 중인 아이디입니다.");
+        if (!isEmailAvailable(request.getEmail()))
+            throw new IllegalArgumentException("이미 사용 중인 이메일입니다.");
 
         MemberVO member = new MemberVO();
         member.setLoginId(request.getLoginId().trim());
@@ -70,7 +81,8 @@ public class MemberServiceImpl implements MemberService {
     // 일반 로그인 처리: 회원 존재/상태를 확인하고 BCrypt matches()로 비밀번호를 검증한다.
     public MemberVO login(String loginId, String rawPassword) {
         MemberVO member = memberDAO.selectByLoginId(loginId == null ? null : loginId.trim());
-        if (member == null || member.getPasswordHash() == null || !passwordEncoder.matches(rawPassword, member.getPasswordHash())) {
+        if (member == null || member.getPasswordHash() == null
+                || !passwordEncoder.matches(rawPassword, member.getPasswordHash())) {
             throw new IllegalArgumentException("아이디 또는 비밀번호가 올바르지 않습니다.");
         }
         if (!"ACTIVE".equalsIgnoreCase(member.getStatus())) {
@@ -80,31 +92,92 @@ public class MemberServiceImpl implements MemberService {
         return memberDAO.selectByMemberId(member.getMemberId());
     }
 
-    @Override public MemberVO findById(Long memberId) { return memberDAO.selectByMemberId(memberId); }
-    @Override public MemberVO findByEmail(String email) { return email == null ? null : memberDAO.selectByEmail(email.trim().toLowerCase()); }
+    @Override
+    public MemberVO findById(Long memberId) {
+        return memberDAO.selectByMemberId(memberId);
+    }
+
+    @Override
+    public MemberVO findByEmail(String email) {
+        return email == null ? null : memberDAO.selectByEmail(email.trim().toLowerCase());
+    }
+
+    @Override
+    @Transactional
+    // [수정] 마이페이지 프로필 수정값을 정리한 뒤 DB를 갱신하고 최신 회원 정보를 다시 조회한다.
+    public MemberVO updateProfile(MemberVO member) {
+        if (member == null || member.getMemberId() == null) {
+            throw new IllegalArgumentException("회원 정보가 올바르지 않습니다.");
+        }
+
+        String nickname = blankToNull(member.getNickname());
+        if (nickname == null) {
+            throw new IllegalArgumentException("닉네임을 입력해주세요.");
+        }
+        if (nickname.length() > 50) {
+            throw new IllegalArgumentException("닉네임은 50자 이하로 입력해주세요.");
+        }
+
+        // [수정] 화면의 중복 확인 여부와 관계없이 저장 직전에 서버에서도 닉네임 중복을 다시 검사한다.
+        if (!isNicknameAvailable(nickname, member.getMemberId())) {
+            throw new IllegalArgumentException("이미 사용 중인 닉네임입니다.");
+        }
+
+        String introduction = blankToNull(member.getIntroduction());
+        if (introduction != null && introduction.length() > 300) {
+            throw new IllegalArgumentException("한 줄 소개는 300자 이하로 입력해주세요.");
+        }
+
+        String interestJob = blankToNull(member.getInterestJob());
+        String preferredLocation = blankToNull(member.getPreferredLocation());
+        if (interestJob != null && interestJob.length() > 100) {
+            throw new IllegalArgumentException("관심 직무는 100자 이하로 입력해주세요.");
+        }
+        if (preferredLocation != null && preferredLocation.length() > 100) {
+            throw new IllegalArgumentException("희망 근무지는 100자 이하로 입력해주세요.");
+        }
+
+        member.setNickname(nickname);
+        member.setIntroduction(introduction);
+        member.setInterestJob(interestJob);
+        member.setPreferredLocation(preferredLocation);
+        member.setProfileImageUrl(blankToNull(member.getProfileImageUrl()));
+
+        int updated = memberDAO.updateProfile(member);
+        if (updated != 1) {
+            throw new IllegalStateException("프로필을 수정하지 못했습니다.");
+        }
+        return memberDAO.selectByMemberId(member.getMemberId());
+    }
 
     @Override
     @Transactional
     // SNS 최초 로그인 사용자에게 대응되는 JOBON_MEMBER 계정을 생성한다.
-    public MemberVO createSocialMember(String provider, String providerUserId, String email, String name, String nickname, String profileImageUrl) {
+    public MemberVO createSocialMember(String provider, String providerUserId, String email, String name,
+            String nickname, String profileImageUrl) {
         MemberVO member = new MemberVO();
         String safeProvider = provider.toLowerCase();
         String baseLoginId = safeProvider + "_" + providerUserId.replaceAll("[^a-zA-Z0-9]", "");
-        if (baseLoginId.length() > 45) baseLoginId = baseLoginId.substring(0, 45);
+        if (baseLoginId.length() > 45)
+            baseLoginId = baseLoginId.substring(0, 45);
         String loginId = baseLoginId;
         int suffix = 1;
-        while (memberDAO.countByLoginId(loginId) > 0) loginId = baseLoginId + "_" + suffix++;
+        while (memberDAO.countByLoginId(loginId) > 0)
+            loginId = baseLoginId + "_" + suffix++;
 
         String resolvedEmail = blankToNull(email);
         if (resolvedEmail != null) {
             MemberVO byEmail = memberDAO.selectByEmail(resolvedEmail.toLowerCase());
-            if (byEmail != null) return byEmail;
+            if (byEmail != null)
+                return byEmail;
         }
 
         String resolvedName = blankToNull(name);
-        if (resolvedName == null) resolvedName = provider + " 회원";
+        if (resolvedName == null)
+            resolvedName = provider + " 회원";
         String resolvedNickname = blankToNull(nickname);
-        if (resolvedNickname == null) resolvedNickname = resolvedName;
+        if (resolvedNickname == null)
+            resolvedNickname = resolvedName;
 
         member.setLoginId(loginId);
         member.setEmail(resolvedEmail == null ? loginId + "@social.jobon.local" : resolvedEmail.toLowerCase());
@@ -119,8 +192,16 @@ public class MemberServiceImpl implements MemberService {
         return member;
     }
 
-    @Override public void touchLastLogin(Long memberId) { memberDAO.updateLastLoginAt(memberId); }
+    @Override
+    public void touchLastLogin(Long memberId) {
+        memberDAO.updateLastLoginAt(memberId);
+    }
 
-    private String normalizePhone(String phone) { return phone == null ? null : phone.replaceAll("[^0-9]", ""); }
-    private String blankToNull(String value) { return value == null || value.isBlank() ? null : value.trim(); }
+    private String normalizePhone(String phone) {
+        return phone == null ? null : phone.replaceAll("[^0-9]", "");
+    }
+
+    private String blankToNull(String value) {
+        return value == null || value.isBlank() ? null : value.trim();
+    }
 }

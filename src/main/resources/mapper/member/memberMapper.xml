@@ -34,6 +34,8 @@ JOBON_MEMBER용 MyBatis Mapper XML입니다.
 
     <select id="countByLoginId" resultType="int">SELECT COUNT(*) FROM JOBON_MEMBER WHERE LOGIN_ID = #{loginId}</select>
     <select id="countByEmail" resultType="int">SELECT COUNT(*) FROM JOBON_MEMBER WHERE LOWER(EMAIL) = LOWER(#{email})</select>
+    <!-- [수정] 프로필 수정 시 자기 자신을 제외한 닉네임 중복 여부를 확인합니다. -->
+    <select id="countByNicknameExcludingMember" resultType="int">SELECT COUNT(*) FROM JOBON_MEMBER WHERE NICKNAME = #{nickname} AND MEMBER_ID != #{memberId}</select>
     <select id="selectByLoginId" resultMap="memberMap">SELECT * FROM JOBON_MEMBER WHERE LOGIN_ID = #{loginId}</select>
     <select id="selectByEmail" resultMap="memberMap">SELECT * FROM JOBON_MEMBER WHERE LOWER(EMAIL) = LOWER(#{email})</select>
     <select id="selectByMemberId" resultMap="memberMap">SELECT * FROM JOBON_MEMBER WHERE MEMBER_ID = #{memberId}</select>
@@ -57,6 +59,21 @@ JOBON_MEMBER용 MyBatis Mapper XML입니다.
         )
 
     </insert>
+
+    <!--
+        [수정] 마이페이지 프로필 수정 SQL
+        PROFILE_IMAGE_URL은 새 이미지를 선택했을 때만 전달되므로 null이면 기존 값을 유지합니다.
+    -->
+    <update id="updateProfile" parameterType="com.jobon.member.vo.MemberVO">
+        UPDATE JOBON_MEMBER
+        SET NICKNAME = #{nickname, jdbcType=VARCHAR},
+            INTRODUCTION = #{introduction, jdbcType=VARCHAR},
+            INTEREST_JOB = #{interestJob, jdbcType=VARCHAR},
+            PREFERRED_LOCATION = #{preferredLocation, jdbcType=VARCHAR},
+            PROFILE_IMAGE_URL = NVL(#{profileImageUrl, jdbcType=VARCHAR}, PROFILE_IMAGE_URL),
+            UPDATED_AT = SYSTIMESTAMP
+        WHERE MEMBER_ID = #{memberId}
+    </update>
 
     <update id="updateLastLoginAt">UPDATE JOBON_MEMBER SET LAST_LOGIN_AT = SYSTIMESTAMP, UPDATED_AT = SYSTIMESTAMP WHERE MEMBER_ID = #{memberId}</update>
 </mapper>
