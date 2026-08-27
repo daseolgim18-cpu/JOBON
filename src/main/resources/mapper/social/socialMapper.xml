@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+=========================================================
+파일 설명
+=========================================================
+SOCIAL_ACCOUNT용 MyBatis Mapper XML입니다.
+SNS 연동 계정 조회/등록 및 마지막 로그인 시각 갱신 SQL을 정의합니다.
+-->
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jobon.social.dao.SocialAccountDAO">
+    <resultMap id="socialMap" type="com.jobon.social.vo.SocialAccountVO">
+        <id property="socialAccountId" column="SOCIAL_ACCOUNT_ID"/>
+        <result property="memberId" column="MEMBER_ID"/>
+        <result property="provider" column="PROVIDER"/>
+        <result property="providerUserId" column="PROVIDER_USER_ID"/>
+        <result property="email" column="EMAIL"/>
+        <result property="linkedAt" column="LINKED_AT"/>
+        <result property="lastLoginAt" column="LAST_LOGIN_AT"/>
+    </resultMap>
+    <select id="selectByProvider" resultMap="socialMap">
+        SELECT * FROM SOCIAL_ACCOUNT WHERE PROVIDER = #{provider} AND PROVIDER_USER_ID = #{providerUserId}
+    </select>
+    <insert id="insertSocialAccount" parameterType="com.jobon.social.vo.SocialAccountVO">
+        <selectKey keyProperty="socialAccountId" resultType="long" order="BEFORE">SELECT SOCIAL_ACCOUNT_SEQ.NEXTVAL FROM DUAL</selectKey>
+        INSERT INTO SOCIAL_ACCOUNT (SOCIAL_ACCOUNT_ID, MEMBER_ID, PROVIDER, PROVIDER_USER_ID, EMAIL, LINKED_AT, LAST_LOGIN_AT)
+        VALUES (#{socialAccountId}, #{memberId}, #{provider, jdbcType=VARCHAR}, #{providerUserId, jdbcType=VARCHAR}, #{email, jdbcType=VARCHAR}, SYSTIMESTAMP, SYSTIMESTAMP)
+    </insert>
+    <update id="updateLastLoginAt">UPDATE SOCIAL_ACCOUNT SET LAST_LOGIN_AT = SYSTIMESTAMP WHERE SOCIAL_ACCOUNT_ID = #{socialAccountId}</update>
+</mapper>
