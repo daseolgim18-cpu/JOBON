@@ -1,4 +1,4 @@
-package com.jobon.controller;
+package com.jobon.main;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -11,8 +11,4 @@ public class MainController {
         return "main";
     }
 
-    @GetMapping("/login")
-    public String login() {
-        return "member/login";
-    }
 }
