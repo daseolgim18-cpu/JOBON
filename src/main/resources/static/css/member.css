@@ -1,0 +1,143 @@
+/*
+=========================================================
+파일 설명
+=========================================================
+로그인/회원가입 화면 전용 CSS입니다.
+공통 레이아웃은 유지하면서 회원 폼, 입력 오류, SNS 로그인 버튼 등의 표시를 담당합니다.
+*/
+
+.auth-card--join {
+  max-width: 560px;
+}
+.join-steps {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  margin: 0 0 24px;
+}
+.join-steps span {
+  padding: 7px 11px;
+  border-radius: 20px;
+  background: #f2f4f5;
+  color: #899096;
+  font-size: 12px;
+  font-weight: 700;
+}
+.join-steps span.is-active {
+  background: #eaf9f0;
+  color: #13a65a;
+}
+.inline-check {
+  display: flex;
+  gap: 8px;
+}
+.inline-check .form-control {
+  flex: 1;
+}
+.inline-check .jobon-btn {
+  width: auto;
+  white-space: nowrap;
+  padding: 0 14px;
+}
+.field-help {
+  display: block;
+  min-height: 18px;
+  margin-top: 5px;
+  font-size: 11px;
+}
+.field-help.is-ok {
+  color: #159957;
+}
+.field-help.is-error,
+.member-message--error {
+  color: #d93025;
+}
+.member-message {
+  padding: 10px 12px;
+  border-radius: 8px;
+  margin-bottom: 12px;
+  background: #fff2f0;
+  font-size: 12px;
+}
+.agree-row {
+  display: flex;
+  gap: 7px;
+  align-items: center;
+  font-size: 12px;
+}
+.auth-center {
+  justify-content: center;
+  margin-top: 14px;
+}
+.member-link {
+  color: var(--jobon-green-dark);
+  font-weight: 800;
+}
+.social-divider {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 18px 0 10px;
+  color: #9aa1a7;
+  font-size: 11px;
+}
+.social-divider:before,
+.social-divider:after {
+  content: "";
+  height: 1px;
+  background: #eceff1;
+  flex: 1;
+}
+.social-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+}
+.social-btn--naver {
+  border-color: #03c75a;
+  color: #03a94f;
+}
+.social-btn--kakao {
+  border-color: #f4d900;
+  color: #4b3b00;
+}
+.join-actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+.join-complete {
+  text-align: center;
+}
+.join-complete .jobon-btn {
+  display: block;
+  margin-top: 10px;
+}
+.complete-icon {
+  width: 58px;
+  height: 58px;
+  margin: 0 auto 16px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  background: #eaf9f0;
+  color: #11a75b;
+  font-size: 30px;
+  font-weight: 800;
+}
+@media (max-width: 640px) {
+  .inline-check {
+    align-items: stretch;
+  }
+  .inline-check .jobon-btn {
+    padding: 0 10px;
+  }
+  .join-steps {
+    gap: 4px;
+  }
+  .join-steps span {
+    font-size: 10px;
+    padding: 6px 8px;
+  }
+}
