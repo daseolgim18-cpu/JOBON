@@ -156,10 +156,8 @@ public class CommonViewController {
         return "mypage/password";
     }
 
-    @GetMapping("/mypage/accounts")
-    public String accounts() {
-        return "mypage/accounts";
-    }
+    // [수정] /mypage/accounts 매핑은 SNS 연동 상태 DB 조회가 필요하므로
+    // MypageAccountsController로 이동했습니다.
 
     @GetMapping("/mypage/activity")
     public String activity() {
