@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- [추가] ERD 기준 실제 CRUD/연계 SQL을 정의합니다. -->
+<mapper namespace="com.jobon.learning.dao.LearningRecordDAO">
+    <resultMap id="m" type="com.jobon.learning.vo.LearningRecordVO">
+        <id property="learningId" column="LEARNING_ID"/>
+        <result property="memberId" column="MEMBER_ID"/>
+        <result property="recordType" column="RECORD_TYPE"/>
+        <result property="subject" column="SUBJECT"/>
+        <result property="learningDate" column="LEARNING_DATE"/>
+        <result property="content" column="CONTENT"/>
+        <result property="difficulty" column="DIFFICULTY"/>
+        <result property="reflection" column="REFLECTION"/>
+        <result property="createdAt" column="CREATED_AT"/>
+        <result property="updatedAt" column="UPDATED_AT"/>
+    </resultMap>
+
+    <select id="selectList" resultMap="m">
+        /* id="selectList" */
+        SELECT  *
+        FROM    LEARNING_RECORD
+        WHERE   MEMBER_ID = #{memberId}
+        ORDER BY LEARNING_DATE DESC NULLS LAST
+               ,CREATED_AT DESC
+    </select>
+
+    <select id="selectOne" resultMap="m">
+        /* id="selectOne" */
+        SELECT  *
+        FROM    LEARNING_RECORD
+        WHERE   MEMBER_ID = #{memberId}
+        AND     LEARNING_ID = #{learningId}
+    </select>
+
+    <insert id="insert">
+        /* id="insert" */
+        <selectKey keyProperty="learningId" resultType="long" order="BEFORE">
+            SELECT  LEARNING_RECORD_SEQ.NEXTVAL
+            FROM    DUAL
+        </selectKey>
+        INSERT INTO LEARNING_RECORD (
+            LEARNING_ID
+           ,MEMBER_ID
+           ,RECORD_TYPE
+           ,SUBJECT
+           ,LEARNING_DATE
+           ,CONTENT
+           ,DIFFICULTY
+           ,REFLECTION
+           ,CREATED_AT
+           ,UPDATED_AT
+        ) VALUES (
+            #{learningId}
+           ,#{memberId}
+           ,#{recordType}
+           ,#{subject}
+           ,#{learningDate,jdbcType=DATE}
+           ,#{content,jdbcType=CLOB}
+           ,#{difficulty,jdbcType=CLOB}
+           ,#{reflection,jdbcType=CLOB}
+           ,SYSTIMESTAMP
+           ,SYSTIMESTAMP
+        )
+    </insert>
+
+    <update id="update">
+        /* id="update" */
+        UPDATE  LEARNING_RECORD
+        SET     RECORD_TYPE   = #{recordType}
+               ,SUBJECT       = #{subject}
+               ,LEARNING_DATE = #{learningDate,jdbcType=DATE}
+               ,CONTENT       = #{content,jdbcType=CLOB}
+               ,DIFFICULTY    = #{difficulty,jdbcType=CLOB}
+               ,REFLECTION    = #{reflection,jdbcType=CLOB}
+               ,UPDATED_AT    = SYSTIMESTAMP
+        WHERE   MEMBER_ID = #{memberId}
+        AND     LEARNING_ID = #{learningId}
+    </update>
+
+    <delete id="delete">
+        /* id="delete" */
+        DELETE
+        FROM    LEARNING_RECORD
+        WHERE   MEMBER_ID = #{memberId}
+        AND     LEARNING_ID = #{learningId}
+    </delete>
+
+    <update id="mergeTech">
+        /* id="mergeTech" */
+        MERGE
+        INTO    TECH_STACK T
+        USING   (   SELECT  #{techName} TECH_NAME
+                    FROM    DUAL
+                ) S
+        ON  (LOWER(T.TECH_NAME) = LOWER(S.TECH_NAME)) WHEN NOT MATCHED THEN
+        INSERT   (
+            TECH_ID
+           ,TECH_NAME
+           ,CATEGORY
+           ,CREATED_AT
+        ) VALUES (
+            TECH_STACK_SEQ.NEXTVAL
+           ,S.TECH_NAME
+           ,'ETC'
+           ,SYSTIMESTAMP
+        )
+    </update>
+
+    <select id="selectTechId" resultType="long">
+        /* id="selectTechId" */
+        SELECT  TECH_ID
+        FROM    TECH_STACK
+        WHERE   LOWER(TECH_NAME) = LOWER(#{techName})
+    </select>
+
+    <insert id="insertLearningTech">
+        /* id="insertLearningTech" */
+        INSERT INTO LEARNING_TECH (
+            LEARNING_ID
+           ,TECH_ID
+        ) VALUES (
+            #{learningId}
+           ,#{techId}
+        )
+    </insert>
+
+    <delete id="deleteLearningTech">
+        /* id="deleteLearningTech" */
+        DELETE
+        FROM    LEARNING_TECH
+        WHERE   LEARNING_ID = #{learningId}
+    </delete>
+    
+    <select id="selectTechNames" resultType="string">
+        /* id="selectTechNames" */
+        SELECT  T.TECH_NAME
+        FROM    LEARNING_TECH L
+        JOIN    TECH_STACK T
+            ON  T.TECH_ID = L.TECH_ID
+        WHERE   L.LEARNING_ID = #{learningId}
+        ORDER BY T.TECH_NAME
+    </select></mapper>

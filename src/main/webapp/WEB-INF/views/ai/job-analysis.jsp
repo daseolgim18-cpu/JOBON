@@ -1,20 +1,87 @@
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ taglib prefix="c" uri="jakarta.tags.core" %>
+<%@ taglib prefix="fmt" uri="jakarta.tags.fmt" %>
 <c:set var="ctx" value="${pageContext.request.contextPath}" />
-<!DOCTYPE html>
+<!-- [수정] 스토리보드/ERD 기준 실제 DB 연동 CRUD 및 화면 동작을 적용했습니다. -->
+<!doctype html>
 <html lang="ko">
-<head>
-<meta charset="UTF-8"/>
-<meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>AI 채용공고 분석 | JOBON</title>
-<link rel="stylesheet" href="${ctx}/css/common.css"/>
 
-</head>
-<body>
-<c:set var="activeMenu" value="ai" scope="request"/>
-<jsp:include page="/WEB-INF/views/common/header.jsp"/>
-<main class="jobon-page"><div class="jobon-container">
-<section class="page-heading"><div><h1>AI 채용공고 분석</h1><p>채용공고의 주요 업무, 자격요건, 우대사항과 요구 역량을 확인하세요.</p></div></section><div class="card card--padded"><div class="form-actions" style="margin-top:0;padding-top:0;border-top:0"><a class="jobon-btn jobon-btn--ghost" href="${ctx}/ai/analysis">수정</a></div><dl class="detail-list"><div><dt>채용공고</dt><dd>네이버 - 백엔드 개발자</dd></div><div><dt>분석 상태</dt><dd>완료</dd></div><div><dt>주요 업무</dt><dd>서버 API 설계 및 개발, 서비스 운영</dd></div><div><dt>자격 요건</dt><dd>Java/Spring 기반 개발 경험</dd></div><div><dt>우대 사항</dt><dd>대용량 트래픽 처리 경험</dd></div><div><dt>요구 역량</dt><dd>문제 해결 · 협업 · 백엔드 설계</dd></div><div><dt>요구 기술</dt><dd>Java · Spring · SQL · Git</dd></div></dl><div class="form-actions"><button class="jobon-btn jobon-btn--ghost">다시 분석</button><a class="jobon-btn jobon-btn--primary" href="${ctx}/ai/analysis">목록으로</a></div></div>
-</div></main>
-<jsp:include page="/WEB-INF/views/common/footer.jsp"/>
-</body></html>
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title>AI 채용공고 분석 | JOBON</title>
+        <link rel="stylesheet" href="${ctx}/css/common.css">
+        <link rel="stylesheet" href="${ctx}/css/domain.css">
+    </head>
+
+    <body>
+    <c:set var="activeMenu" value="ai" scope="request" />
+    <jsp:include page="/WEB-INF/views/common/header.jsp" />
+    <main class="jobon-page">
+        <div class="jobon-container">
+            <section class="page-heading">
+                <div>
+                    <h1>AI 채용공고 분석</h1>
+                    <p>${analysis.companyName} · ${analysis.jobTitle}</p>
+                </div>
+                <div class="action-row">
+                    <form method="post" action="${ctx}/ai/analysis/${analysis.analysisId}/rerun"><button
+                            class="jobon-btn jobon-btn--ghost">다시 분석</button></form><a
+                        class="jobon-btn jobon-btn--primary"
+                        href="${ctx}/ai/experience-recommend?analysisId=${analysis.analysisId}">경험 TOP3</a>
+                </div>
+            </section>
+            <div class="readiness"><strong>${analysis.readinessScore}%</strong><span>지원 준비도</span></div>
+            <div class="analysis-grid">
+                <article class="card card--padded">
+                    <h3>요약</h3>
+                    <p class="preline">${analysis.summary}</p>
+                </article>
+                <article class="card card--padded">
+                    <h3>주요 업무</h3>
+                    <p class="preline">${analysis.mainTasks}</p>
+                </article>
+                <article class="card card--padded">
+                    <h3>자격요건</h3>
+                    <p class="preline">${analysis.qualifications}</p>
+                </article>
+                <article class="card card--padded">
+                    <h3>우대사항</h3>
+                    <p class="preline">${analysis.preferences}</p>
+                </article>
+            </div>
+            <section class="card card--padded mt20">
+                <h3>필수·우대 기술 / 보유 역량 비교</h3>
+                <div class="skill-matrix">
+                    <c:forEach var="t" items="${analysis.techs}">
+                        <div class="skill-row"><span>${t.techName}</span><span
+                                class="badge">${t.requirementType}</span><span
+                                class="match match--${t.matchStatus}">${t.matchStatus eq
+                                'OWNED'?'보유':t.matchStatus eq 'PARTIAL'?'부분일치':'부족'}</span></div>
+                    </c:forEach>
+                </div>
+                <h4>부족 기술 학습 방향</h4>
+                <ul>
+                    <c:forEach var="t" items="${analysis.techs}">
+                        <c:if test="${t.matchStatus eq 'MISSING'}">
+                            <li><strong>${t.techName}</strong> — 공식 문서/기초 실습 → 작은 프로젝트 적용 → 성장 기록에 학습 근거 저장
+                            </li>
+                        </c:if>
+                    </c:forEach>
+                </ul>
+            </section>
+            <section class="card card--padded mt20">
+                <h3>예상 면접 질문</h3>
+                <ol>
+                    <c:forEach var="q" items="${analysis.interviewQuestions}">
+                        <li>${q}</li>
+                    </c:forEach>
+                </ol>
+            </section>
+        </div>
+    </main>
+    <jsp:include page="/WEB-INF/views/common/footer.jsp" />
+    <script src="${ctx}/js/jobon-crud.js"></script>
+    </body>
+
+</html>

@@ -1,0 +1,312 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- [추가] ERD 기준 실제 CRUD/연계 SQL을 정의합니다. -->
+<mapper namespace="com.jobon.ai.dao.AiAnalysisDAO">
+    <resultMap id="a" type="com.jobon.ai.vo.AiAnalysisVO">
+        <id property="analysisId" column="ANALYSIS_ID" />
+        <result property="memberId" column="MEMBER_ID" />
+        <result property="jobId" column="JOB_ID" />
+        <result property="jobTitle" column="JOB_TITLE" />
+        <result property="companyName" column="COMPANY_NAME" />
+        <result property="status" column="STATUS" />
+        <result property="summary" column="SUMMARY" />
+        <result property="mainTasks" column="MAIN_TASKS" />
+        <result property="qualifications" column="QUALIFICATIONS" />
+        <result property="preferences" column="PREFERENCES" />
+        <result property="requiredCompetencies" column="REQUIRED_COMPETENCIES" />
+        <result property="rawResponse" column="RAW_RESPONSE" />
+        <result property="errorMessage" column="ERROR_MESSAGE" />
+        <result property="modelName" column="MODEL_NAME" />
+        <result property="requestedAt" column="REQUESTED_AT" />
+        <result property="completedAt" column="COMPLETED_AT" />
+    </resultMap>
+    <sql id="base">SELECT A.*,J.TITLE JOB_TITLE,C.COMPANY_NAME FROM AI_ANALYSIS A JOIN JOB_POSTING J
+        ON J.JOB_ID=A.JOB_ID LEFT JOIN COMPANY C ON C.COMPANY_ID=J.COMPANY_ID WHERE
+        A.MEMBER_ID=#{memberId}</sql>
+    <!-- id="selectList" -->
+    <select id="selectList" resultMap="a">
+        /* id="selectList" */
+        <include refid="base" />
+        ORDER BY A.REQUESTED_AT DESC
+    </select>
+    <!-- id="selectOne"
+    [INPUT]
+        analysisId : 
+    -->
+    <select id="selectOne" resultMap="a">
+        /* id="selectOne" */
+        <include refid="base" />
+         AND A.ANALYSIS_ID = #{analysisId}
+    </select>
+    <!-- id="selectLatestByJob"
+    [INPUT]
+        jobId : 
+    -->
+    <select id="selectLatestByJob" resultMap="a">
+        /* id="selectLatestByJob" */
+        <include refid="base" />
+         AND A.JOB_ID = #{jobId} AND A.STATUS = 'COMPLETED'
+        ORDER BY A.REQUESTED_AT DESC
+        FETCH   FIRST 1 ROW ONLY
+    </select>
+    <!-- id="insertAnalysis"
+    [INPUT]
+        analysisId              : 
+        memberId                : 
+        jobId                   : 
+        status                  : 
+    [OUTPUT]
+        AI_ANALYSIS_SEQ.NEXTVAL : 
+    -->
+    <insert id="insertAnalysis">
+        /* id="insertAnalysis" */
+        <selectKey keyProperty="analysisId" resultType="long" order="BEFORE">
+            SELECT  AI_ANALYSIS_SEQ.NEXTVAL
+            FROM    DUAL
+        </selectKey>
+        INSERT INTO AI_ANALYSIS (
+            ANALYSIS_ID
+           ,MEMBER_ID
+           ,JOB_ID
+           ,STATUS
+           ,REQUESTED_AT
+        ) VALUES (
+            #{analysisId}
+           ,#{memberId}
+           ,#{jobId}
+           ,#{status}
+           ,SYSTIMESTAMP
+        )
+    </insert>
+    <!-- id="completeAnalysis"
+    [INPUT]
+        status               : 
+        summary              : 
+        mainTasks            : 
+        qualifications       : 
+        preferences          : 
+        requiredCompetencies : 
+        rawResponse          : 
+        errorMessage         : 
+        modelName            : 
+        analysisId           : 
+    -->
+    <update id="completeAnalysis">
+        /* id="completeAnalysis" */
+        UPDATE  AI_ANALYSIS
+        SET     STATUS                = #{status}
+               ,SUMMARY               = #{summary,jdbcType=CLOB}
+               ,MAIN_TASKS            = #{mainTasks,jdbcType=CLOB}
+               ,QUALIFICATIONS        = #{qualifications,jdbcType=CLOB}
+               ,PREFERENCES           = #{preferences,jdbcType=CLOB}
+               ,REQUIRED_COMPETENCIES = #{requiredCompetencies,jdbcType=CLOB}
+               ,RAW_RESPONSE          = #{rawResponse,jdbcType=CLOB}
+               ,ERROR_MESSAGE         = #{errorMessage,jdbcType=VARCHAR}
+               ,MODEL_NAME            = #{modelName,jdbcType=VARCHAR}
+               ,COMPLETED_AT          = SYSTIMESTAMP
+        WHERE   ANALYSIS_ID = #{analysisId}
+    </update>
+    <!-- id="failAnalysis"
+    [INPUT]
+        errorMessage : 
+        analysisId   : 
+    -->
+    <update id="failAnalysis">
+        /* id="failAnalysis" */
+        UPDATE  AI_ANALYSIS
+        SET     STATUS        = 'FAILED'
+               ,ERROR_MESSAGE = #{errorMessage,jdbcType=VARCHAR}
+               ,COMPLETED_AT  = SYSTIMESTAMP
+        WHERE   ANALYSIS_ID = #{analysisId}
+    </update>
+    <!-- id="deleteTechs"
+    [INPUT]
+        analysisId : 
+    -->
+    <delete id="deleteTechs">
+        /* id="deleteTechs" */
+        DELETE
+        FROM    AI_JOB_TECH
+        WHERE   ANALYSIS_ID = #{analysisId}
+    </delete>
+    <!-- id="insertTech"
+    [INPUT]
+        aiJobTechId             : 
+        analysisId              : 
+        techName                : 
+        requirementType         : 
+        matchStatus             : 
+    [OUTPUT]
+        AI_JOB_TECH_SEQ.NEXTVAL : 
+    -->
+    <insert id="insertTech">
+        /* id="insertTech" */
+        <selectKey keyProperty="aiJobTechId" resultType="long" order="BEFORE">
+            SELECT  AI_JOB_TECH_SEQ.NEXTVAL
+            FROM    DUAL
+        </selectKey>
+        INSERT INTO AI_JOB_TECH (
+            AI_JOB_TECH_ID
+           ,ANALYSIS_ID
+           ,TECH_NAME
+           ,REQUIREMENT_TYPE
+           ,MATCH_STATUS
+        ) VALUES (
+            #{aiJobTechId}
+           ,#{analysisId}
+           ,#{techName}
+           ,#{requirementType}
+           ,#{matchStatus}
+        )
+    </insert>
+    <!-- id="selectTechs"
+    [INPUT]
+        analysisId      : 
+    [OUTPUT]
+        aiJobTechId     : 
+        analysisId      : 
+        techName        : 
+        requirementType : 
+        matchStatus     : 
+    -->
+    <select id="selectTechs" resultType="com.jobon.ai.vo.AiJobTechVO">
+        /* id="selectTechs" */
+        SELECT  AI_JOB_TECH_ID aiJobTechId
+               ,ANALYSIS_ID analysisId
+               ,TECH_NAME techName
+               ,REQUIREMENT_TYPE requirementType
+               ,MATCH_STATUS matchStatus
+        FROM    AI_JOB_TECH
+        WHERE   ANALYSIS_ID = #{analysisId}
+        ORDER BY REQUIREMENT_TYPE
+               ,TECH_NAME
+    </select>
+    <!-- id="deleteRecommendations"
+    [INPUT]
+        analysisId : 
+    -->
+    <delete id="deleteRecommendations">
+        /* id="deleteRecommendations" */
+        DELETE
+        FROM    AI_EXPERIENCE_RECOMMEND
+        WHERE   ANALYSIS_ID = #{analysisId}
+    </delete>
+    <!-- id="insertRecommendation"
+    [INPUT]
+        recommendId                         : 
+        analysisId                          : 
+        projectId                           : 
+        rankNo                              : 
+        reason                              : 
+        sourceDetail                        : 
+        savedYn                             : 
+    [OUTPUT]
+        AI_EXPERIENCE_RECOMMEND_SEQ.NEXTVAL : 
+    -->
+    <insert id="insertRecommendation">
+        /* id="insertRecommendation" */
+        <selectKey keyProperty="recommendId" resultType="long"
+                    order="BEFORE">
+        SELECT  AI_EXPERIENCE_RECOMMEND_SEQ.NEXTVAL
+        FROM    DUAL
+        </selectKey>
+        INSERT INTO AI_EXPERIENCE_RECOMMEND (
+            RECOMMEND_ID
+           ,ANALYSIS_ID
+           ,PROJECT_ID
+           ,RANK_NO
+           ,REASON
+           ,SOURCE_DETAIL
+           ,SAVED_YN
+           ,CREATED_AT
+        ) VALUES (
+            #{recommendId}
+           ,#{analysisId}
+           ,#{projectId,jdbcType=NUMERIC}
+           ,#{rankNo}
+           ,#{reason,jdbcType=CLOB}
+           ,#{sourceDetail,jdbcType=CLOB}
+           ,#{savedYn}
+           ,SYSTIMESTAMP
+        )
+    </insert>
+    <!-- id="selectRecommendations"
+    [INPUT]
+        analysisId   : 
+    [OUTPUT]
+        recommendId  : 
+        analysisId   : 
+        projectId    : 
+        projectName  : 
+        rankNo       : 
+        reason       : 
+        sourceDetail : 
+        savedYn      : 
+        createdAt    : 
+    -->
+    <select id="selectRecommendations" resultType="com.jobon.ai.vo.AiExperienceRecommendVO">
+        /* id="selectRecommendations" */
+        SELECT  R.RECOMMEND_ID recommendId
+               ,R.ANALYSIS_ID analysisId
+               ,R.PROJECT_ID projectId
+               ,P.PROJECT_NAME projectName
+               ,R.RANK_NO rankNo
+               ,R.REASON reason
+               ,R.SOURCE_DETAIL sourceDetail
+               ,R.SAVED_YN savedYn
+               ,R.CREATED_AT createdAt
+        FROM    AI_EXPERIENCE_RECOMMEND R
+        LEFT JOIN PROJECT_EXPERIENCE P
+            ON  P.PROJECT_ID = R.PROJECT_ID
+        WHERE   R.ANALYSIS_ID = #{analysisId}
+        ORDER BY R.RANK_NO
+    </select>
+    <!-- id="updateRecommendationSaved"
+    [INPUT]
+        savedYn     : 
+        recommendId : 
+    -->
+    <update id="updateRecommendationSaved">
+        /* id="updateRecommendationSaved" */
+        UPDATE  AI_EXPERIENCE_RECOMMEND
+        SET     SAVED_YN = #{savedYn}
+        WHERE   RECOMMEND_ID = #{recommendId}
+    </update>
+    <!-- id="selectMemberTechs"
+    [INPUT]
+        memberId    : 
+    [OUTPUT]
+        T.TECH_NAME : 
+    -->
+    <select id="selectMemberTechs" resultType="string">
+        /* id="selectMemberTechs" */
+        SELECT  DISTINCT T.TECH_NAME
+        FROM    TECH_STACK T
+        WHERE   T.TECH_ID IN (   SELECT  PT.TECH_ID
+                                 FROM    PROJECT_TECH PT
+                                 JOIN    PROJECT_EXPERIENCE P
+                                     ON  P.PROJECT_ID = PT.PROJECT_ID
+                                 WHERE   P.MEMBER_ID = #{memberId}
+                                 UNION
+                                 SELECT  LT.TECH_ID
+                                 FROM    LEARNING_TECH LT
+                                 JOIN    LEARNING_RECORD L
+                                     ON  L.LEARNING_ID = LT.LEARNING_ID
+                                 WHERE   L.MEMBER_ID = #{memberId}
+                             )
+    </select>
+    <!-- id="selectProjectTechs"
+    [INPUT]
+        projectId   : 
+    [OUTPUT]
+        T.TECH_NAME : 
+    -->
+    <select id="selectProjectTechs" resultType="string">
+        /* id="selectProjectTechs" */
+        SELECT  T.TECH_NAME
+        FROM    PROJECT_TECH P
+        JOIN    TECH_STACK T
+            ON  T.TECH_ID = P.TECH_ID
+        WHERE   P.PROJECT_ID = #{projectId}
+    </select>
+</mapper>

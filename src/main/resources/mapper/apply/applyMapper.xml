@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- [추가] ERD 기준 실제 CRUD/연계 SQL을 정의합니다. -->
+<mapper namespace="com.jobon.apply.dao.ApplicationDAO">
+
+    <resultMap id="m" type="com.jobon.apply.vo.ApplicationVO">
+        <id property="applicationId" column="APPLICATION_ID"/>
+        <result property="memberId" column="MEMBER_ID"/>
+        <result property="jobId" column="JOB_ID"/>
+        <result property="companyName" column="COMPANY_NAME"/>
+        <result property="jobTitle" column="JOB_TITLE"/>
+        <result property="status" column="STATUS"/>
+        <result property="appliedDate" column="APPLIED_DATE"/>
+        <result property="nextScheduleAt" column="NEXT_SCHEDULE_AT"/>
+        <result property="memo" column="MEMO"/>
+        <result property="createdAt" column="CREATED_AT"/>
+        <result property="updatedAt" column="UPDATED_AT"/>
+    </resultMap>
+    
+    <sql id="b">
+        SELECT  A.*
+               ,J.TITLE AS JOB_TITLE
+               ,C.COMPANY_NAME
+        FROM    APPLICATION A
+        JOIN    JOB_POSTING J ON J.JOB_ID = A.JOB_ID
+        LEFT JOIN COMPANY C  ON C.COMPANY_ID = J.COMPANY_ID
+        WHERE   A.MEMBER_ID = #{memberId}
+    </sql>
+    
+    <select id="selectList" resultMap="m">
+        <include refid="b"/>
+        <if test="keyword != null and keyword != ''">
+            AND LOWER(C.COMPANY_NAME) LIKE '%' || LOWER(#{keyword}) || '%'
+        </if>
+        <if test="status != null and status != ''">
+            AND A.STATUS = #{status}
+        </if>
+        <choose>
+            <when test="sort == 'schedule'">
+                ORDER BY A.NEXT_SCHEDULE_AT ASC NULLS LAST
+            </when>
+            <otherwise>
+                ORDER BY A.UPDATED_AT DESC
+            </otherwise>
+        </choose>
+    </select>
+
+    <select id="selectOne" resultMap="m">
+        <include refid="b"/>
+           AND A.APPLICATION_ID = #{applicationId}
+    </select>
+
+    <insert id="insert">
+        <selectKey keyProperty="applicationId" resultType="long" order="BEFORE">
+            SELECT  APPLICATION_SEQ.NEXTVAL
+            FROM    DUAL
+        </selectKey>
+        INSERT INTO APPLICATION (
+             APPLICATION_ID
+            ,MEMBER_ID
+            ,JOB_ID
+            ,STATUS
+            ,APPLIED_DATE
+            ,NEXT_SCHEDULE_AT
+            ,MEMO
+            ,CREATED_AT
+            ,UPDATED_AT
+        ) VALUES (
+             #{applicationId}
+            ,#{memberId}
+            ,#{jobId}
+            ,#{status}
+            ,#{appliedDate,jdbcType=DATE}
+            ,#{nextScheduleAt,jdbcType=TIMESTAMP}
+            ,#{memo,jdbcType=CLOB}
+            ,SYSTIMESTAMP
+            ,SYSTIMESTAMP
+        )
+    </insert>
+
+    <update id="update">
+        UPDATE  APPLICATION
+        SET     JOB_ID           = #{jobId}
+               ,STATUS           = #{status}
+               ,APPLIED_DATE     = #{appliedDate,jdbcType=DATE}
+               ,NEXT_SCHEDULE_AT = #{nextScheduleAt,jdbcType=TIMESTAMP}
+               ,MEMO             = #{memo,jdbcType=CLOB}
+               ,UPDATED_AT       = SYSTIMESTAMP
+        WHERE   MEMBER_ID        = #{memberId}
+        AND     APPLICATION_ID   = #{applicationId}
+    </update>
+
+    <delete id="delete">
+        DELETE
+        FROM    APPLICATION
+        WHERE   MEMBER_ID      = #{memberId}
+        AND     APPLICATION_ID = #{applicationId}
+    </delete>
+
+</mapper>

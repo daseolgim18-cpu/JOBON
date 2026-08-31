@@ -1,6 +1,5 @@
 package com.jobon.member.controller;
 
-
 /**
  * =========================================================
  * 파일 설명
@@ -15,9 +14,29 @@ import jakarta.servlet.http.HttpSession;
 
 @Controller
 public class MemberController {
-    @GetMapping("/login") public String login() { return "member/login"; }
-    @GetMapping({"/join", "/member/join"}) public String join() { return "member/join"; }
-    @GetMapping("/member/join/complete") public String joinComplete() { return "member/join-complete"; }
-    @GetMapping("/member/find-password") public String findPassword() { return "member/find-password"; }
-    @GetMapping("/logout") public String logout(HttpSession session) { session.invalidate(); return "redirect:/main"; }
+    @GetMapping("/login")
+    public String login() {
+        return "member/login";
+    }
+
+    @GetMapping({ "/join", "/member/join" })
+    public String join() {
+        return "member/join";
+    }
+
+    @GetMapping("/member/join/complete")
+    public String joinComplete() {
+        return "member/join-complete";
+    }
+
+    @GetMapping("/member/find-password")
+    public String findPassword() {
+        return "member/find-password";
+    }
+
+    @GetMapping("/logout")
+    public String logout(HttpSession session) {
+        session.invalidate();
+        return "redirect:/main";
+    }
 }

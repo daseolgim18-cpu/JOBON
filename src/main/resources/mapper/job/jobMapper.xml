@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- [추가] ERD 기준 실제 CRUD/연계 SQL을 정의합니다. -->
+<mapper namespace="com.jobon.job.dao.JobPostingDAO">
+
+    <resultMap id="m" type="com.jobon.job.vo.JobPostingVO">
+        <id property="jobId" column="JOB_ID"/>
+        <result property="memberId" column="MEMBER_ID"/>
+        <result property="companyId" column="COMPANY_ID"/>
+        <result property="companyName" column="COMPANY_NAME"/>
+        <result property="title" column="TITLE"/>
+        <result property="jobRole" column="JOB_ROLE"/>
+        <result property="sourceUrl" column="SOURCE_URL"/>
+        <result property="postedDate" column="POSTED_DATE"/>
+        <result property="deadline" column="DEADLINE"/>
+        <result property="employmentType" column="EMPLOYMENT_TYPE"/>
+        <result property="region" column="REGION"/>
+        <result property="originalText" column="ORIGINAL_TEXT"/>
+        <result property="memo" column="MEMO"/>
+        <result property="createdAt" column="CREATED_AT"/>
+        <result property="updatedAt" column="UPDATED_AT"/>
+    </resultMap>
+
+    <sql id="base">
+        SELECT  J.*
+               ,C.COMPANY_NAME 
+        FROM    JOB_POSTING J 
+        LEFT JOIN COMPANY C ON C.COMPANY_ID = J.COMPANY_ID 
+        WHERE   J.MEMBER_ID = #{memberId}
+    </sql>
+
+    <select id="selectList" resultMap="m">
+        <include refid="base"/>
+        <if test="keyword != null and keyword != ''">
+            AND (LOWER(J.TITLE) LIKE '%' || LOWER(#{keyword}) || '%' OR LOWER(C.COMPANY_NAME) LIKE '%' || LOWER(#{keyword}) || '%')
+        </if>
+        <if test="jobRole != null and jobRole != ''">
+            AND LOWER(J.JOB_ROLE) LIKE '%' || LOWER(#{jobRole}) || '%'
+        </if>
+        <choose>
+            <when test="sort == 'deadline'">
+                ORDER BY J.DEADLINE ASC NULLS LAST
+            </when>
+            <otherwise>
+                ORDER BY J.CREATED_AT DESC
+            </otherwise>
+        </choose>
+    </select>
+
+    <select id="selectOne" resultMap="m">
+        /* id="selectOne" */
+        <include refid="base"/>
+           AND J.JOB_ID = #{jobId}
+    </select>
+   
+    <insert id="insert">
+        /* id="insert" */
+        <selectKey keyProperty="jobId" resultType="long" order="BEFORE">
+            SELECT  JOB_POSTING_SEQ.NEXTVAL
+            FROM    DUAL
+        </selectKey>
+        INSERT INTO JOB_POSTING (
+             JOB_ID
+            ,MEMBER_ID
+            ,COMPANY_ID
+            ,TITLE
+            ,JOB_ROLE
+            ,SOURCE_URL
+            ,POSTED_DATE
+            ,DEADLINE
+            ,EMPLOYMENT_TYPE
+            ,REGION
+            ,ORIGINAL_TEXT
+            ,MEMO
+            ,CREATED_AT
+            ,UPDATED_AT
+        ) VALUES (
+             #{jobId}
+            ,#{memberId}
+            ,#{companyId,jdbcType=NUMERIC}
+            ,#{title}
+            ,#{jobRole}
+            ,#{sourceUrl,jdbcType=VARCHAR}
+            ,#{postedDate,jdbcType=DATE}
+            ,#{deadline,jdbcType=DATE}
+            ,#{employmentType,jdbcType=VARCHAR}
+            ,#{region,jdbcType=VARCHAR}
+            ,#{originalText,jdbcType=CLOB}
+            ,#{memo,jdbcType=CLOB}
+            ,SYSTIMESTAMP
+            ,SYSTIMESTAMP
+        )
+    </insert>
+    
+    <update id="update">
+        /* id="update" */
+        UPDATE  JOB_POSTING
+        SET     COMPANY_ID      = #{companyId,jdbcType=NUMERIC}
+               ,TITLE           = #{title}
+               ,JOB_ROLE        = #{jobRole}
+               ,SOURCE_URL      = #{sourceUrl,jdbcType=VARCHAR}
+               ,POSTED_DATE     = #{postedDate,jdbcType=DATE}
+               ,DEADLINE        = #{deadline,jdbcType=DATE}
+               ,EMPLOYMENT_TYPE = #{employmentType,jdbcType=VARCHAR}
+               ,REGION          = #{region,jdbcType=VARCHAR}
+               ,ORIGINAL_TEXT   = #{originalText,jdbcType=CLOB}
+               ,MEMO             = #{memo,jdbcType=CLOB}
+               ,UPDATED_AT      = SYSTIMESTAMP
+        WHERE   MEMBER_ID = #{memberId}
+        AND     JOB_ID = #{jobId}
+    </update>
+    
+    <delete id="delete">
+        /* id="delete" */
+        DELETE
+        FROM    JOB_POSTING
+        WHERE   MEMBER_ID = #{memberId}
+        AND     JOB_ID = #{jobId}
+    </delete>
+
+</mapper>

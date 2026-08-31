@@ -1,0 +1,313 @@
+/* =========================================================
+   [추가] JOBON 도메인 CRUD/AI 화면 공통 스타일
+   기존 common.css의 색상/버튼/카드 디자인을 그대로 활용하고 필요한 레이아웃만 확장합니다.
+========================================================= */
+
+/* 1. Form & Controls */
+.select-sm {
+  max-width: 190px;
+}
+
+.action-row,
+.quick-actions,
+.chip-row {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.action-row form,
+.quick-actions form,
+.table-actions form {
+  margin: 0;
+}
+
+.quick-actions {
+  margin-top: 20px;
+  justify-content: flex-end;
+}
+
+/* 2. Alerts & Messages */
+.alert {
+  padding: 12px 15px;
+  border-radius: 10px;
+  margin-bottom: 18px;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.alert--success {
+  background: #effcf6;
+  color: #087e49;
+}
+
+.alert--danger {
+  background: #fff0f0;
+  color: #c53030;
+}
+
+.empty-cell {
+  text-align: center;
+  color: var(--jobon-muted);
+  padding: 40px !important;
+}
+
+/* 3. Typography & Utility Helpers */
+.preline {
+  white-space: pre-line;
+  word-break: break-word;
+}
+
+.tall {
+  min-height: 260px !important;
+}
+
+.mt20 {
+  margin-top: 20px;
+}
+
+.strike {
+  text-decoration: line-through;
+  color: var(--jobon-muted);
+}
+
+/* 4. Chips, Tags & Buttons */
+.chip {
+  padding: 7px 12px;
+  border: 1px solid var(--jobon-line);
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.chip-row {
+  margin-bottom: 16px;
+}
+
+.check-btn {
+  width: 28px;
+  height: 28px;
+  border: 1px solid var(--jobon-line);
+  border-radius: 50%;
+  background: white;
+}
+
+.check-btn.done {
+  background: var(--jobon-green);
+  color: white;
+}
+
+.tag-cloud {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin: 10px 0 24px;
+}
+
+.skill-tag {
+  background: var(--jobon-green-soft);
+  color: var(--jobon-green-dark);
+  padding: 6px 10px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.remove-row {
+  border: 0;
+  background: #fff0f0;
+  color: var(--jobon-red);
+  border-radius: 8px;
+  padding: 10px;
+}
+
+/* 5. Nested Structures & Sections */
+.nested-section {
+  margin-top: 30px;
+  padding-top: 24px;
+  border-top: 1px solid var(--jobon-line);
+}
+
+.nested-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.nested-row,
+.trouble-row {
+  display: grid;
+  grid-template-columns: 1fr 2fr auto;
+  gap: 10px;
+  margin-top: 12px;
+  align-items: start;
+}
+
+.trouble-row {
+  grid-template-columns: 1fr 1fr 1fr 1fr 1fr auto;
+}
+
+/* 6. Story & Detail Components */
+.story-card {
+  border: 1px solid var(--jobon-line);
+  border-radius: 12px;
+  padding: 18px;
+  margin: 12px 0;
+}
+
+.mini-detail {
+  display: grid;
+  grid-template-columns: 70px 1fr;
+  gap: 7px 14px;
+}
+
+.mini-detail dt {
+  font-weight: 800;
+  color: var(--jobon-muted);
+}
+
+.mini-detail dd {
+  margin: 0;
+  white-space: pre-line;
+}
+
+/* 7. AI Analysis & Skill Matrix */
+.ai-request {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 12px;
+  align-items: end;
+}
+
+.analysis-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 18px;
+}
+
+.readiness {
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+  margin-bottom: 18px;
+}
+
+.readiness strong {
+  font-size: 38px;
+  color: var(--jobon-green-dark);
+}
+
+.skill-matrix {
+  display: grid;
+  gap: 8px;
+  margin: 15px 0;
+}
+
+.skill-row {
+  display: grid;
+  grid-template-columns: 1fr 120px 120px;
+  gap: 10px;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--jobon-line);
+}
+
+.match {
+  font-weight: 900;
+}
+
+.match--OWNED {
+  color: var(--jobon-green-dark);
+}
+
+.match--PARTIAL {
+  color: var(--jobon-orange);
+}
+
+.match--MISSING {
+  color: var(--jobon-red);
+}
+
+/* 8. Recommendation & Metrics */
+.recommend-list {
+  display: grid;
+  gap: 14px;
+}
+
+.recommend-card {
+  display: grid;
+  grid-template-columns: 50px 1fr auto;
+  gap: 18px;
+  align-items: center;
+}
+
+.rank {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  background: var(--jobon-green);
+  color: white;
+  font-size: 19px;
+  font-weight: 900;
+}
+
+.metric-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 14px;
+}
+
+.metric {
+  padding: 22px;
+  text-align: center;
+}
+
+.metric strong {
+  display: block;
+  font-size: 30px;
+  color: var(--jobon-black);
+}
+
+.metric span {
+  font-size: 12px;
+  color: var(--jobon-muted);
+}
+
+/* 9. Responsive Layouts (Media Queries) */
+@media (max-width: 900px) {
+  .analysis-grid,
+  .metric-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .nested-row,
+  .trouble-row {
+    grid-template-columns: 1fr;
+  }
+
+  .skill-row {
+    grid-template-columns: 1fr auto auto;
+  }
+
+  .recommend-card {
+    grid-template-columns: 42px 1fr;
+  }
+
+  .recommend-card form {
+    grid-column: 2;
+  }
+}
+
+@media (max-width: 560px) {
+  .analysis-grid,
+  .metric-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .ai-request {
+    grid-template-columns: 1fr;
+  }
+}

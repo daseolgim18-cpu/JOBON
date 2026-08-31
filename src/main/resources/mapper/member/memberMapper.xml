@@ -1,79 +1,138 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!--
-=========================================================
-파일 설명
-=========================================================
-JOBON_MEMBER용 MyBatis Mapper XML입니다.
-회원 중복확인, 회원가입 INSERT, 로그인/회원조회, 마지막 로그인 시각 갱신 SQL을 정의합니다.
--->
-<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.jobon.member.dao.MemberDAO">
+    <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+    <mapper namespace="com.jobon.member.dao.MemberDAO">
     <resultMap id="memberMap" type="com.jobon.member.vo.MemberVO">
-        <id property="memberId" column="MEMBER_ID"/>
-        <result property="loginId" column="LOGIN_ID"/>
-        <result property="email" column="EMAIL"/>
-        <result property="passwordHash" column="PASSWORD_HASH"/>
-        <result property="name" column="NAME"/>
-        <result property="nickname" column="NICKNAME"/>
-        <result property="phone" column="PHONE"/>
-        <result property="interestJob" column="INTEREST_JOB"/>
-        <result property="careerType" column="CAREER_TYPE"/>
-        <result property="educationLevel" column="EDUCATION_LEVEL"/>
-        <result property="schoolName" column="SCHOOL_NAME"/>
-        <result property="majorName" column="MAJOR_NAME"/>
-        <result property="preferredLocation" column="PREFERRED_LOCATION"/>
-        <result property="introduction" column="INTRODUCTION"/>
-        <result property="profileImageUrl" column="PROFILE_IMAGE_URL"/>
-        <result property="termsAgreedYn" column="TERMS_AGREED_YN"/>
-        <result property="privacyAgreedYn" column="PRIVACY_AGREED_YN"/>
-        <result property="status" column="STATUS"/>
-        <result property="lastLoginAt" column="LAST_LOGIN_AT"/>
-        <result property="createdAt" column="CREATED_AT"/>
-        <result property="updatedAt" column="UPDATED_AT"/>
+    <id property="memberId" column="MEMBER_ID"/>
+    <result property="loginId" column="LOGIN_ID"/>
+    <result property="email" column="EMAIL"/>
+    <result property="passwordHash" column="PASSWORD_HASH"/>
+    <result property="name" column="NAME"/>
+    <result property="nickname" column="NICKNAME"/>
+    <result property="phone" column="PHONE"/>
+    <result property="interestJob" column="INTEREST_JOB"/>
+    <result property="careerType" column="CAREER_TYPE"/>
+    <result property="educationLevel" column="EDUCATION_LEVEL"/>
+    <result property="schoolName" column="SCHOOL_NAME"/>
+    <result property="majorName" column="MAJOR_NAME"/>
+    <result property="preferredLocation" column="PREFERRED_LOCATION"/>
+    <result property="introduction" column="INTRODUCTION"/>
+    <result property="profileImageUrl" column="PROFILE_IMAGE_URL"/>
+    <result property="termsAgreedYn" column="TERMS_AGREED_YN"/>
+    <result property="privacyAgreedYn" column="PRIVACY_AGREED_YN"/>
+    <result property="status" column="STATUS"/>
+    <result property="lastLoginAt" column="LAST_LOGIN_AT"/>
+    <result property="createdAt" column="CREATED_AT"/>
+    <result property="updatedAt" column="UPDATED_AT"/>
     </resultMap>
-
     <select id="countByLoginId" resultType="int">SELECT COUNT(*) FROM JOBON_MEMBER WHERE LOGIN_ID = #{loginId}</select>
     <select id="countByEmail" resultType="int">SELECT COUNT(*) FROM JOBON_MEMBER WHERE LOWER(EMAIL) = LOWER(#{email})</select>
-    <!-- [수정] 프로필 수정 시 자기 자신을 제외한 닉네임 중복 여부를 확인합니다. -->
-    <select id="countByNicknameExcludingMember" resultType="int">SELECT COUNT(*) FROM JOBON_MEMBER WHERE NICKNAME = #{nickname} AND MEMBER_ID != #{memberId}</select>
-    <select id="selectByLoginId" resultMap="memberMap">SELECT * FROM JOBON_MEMBER WHERE LOGIN_ID = #{loginId}</select>
-    <select id="selectByEmail" resultMap="memberMap">SELECT * FROM JOBON_MEMBER WHERE LOWER(EMAIL) = LOWER(#{email})</select>
-    <select id="selectByMemberId" resultMap="memberMap">SELECT * FROM JOBON_MEMBER WHERE MEMBER_ID = #{memberId}</select>
+    <!-- id="countByNicknameExcludingMember"
+    설명 : =========================================================
+    파일 설명
+    =========================================================
+    JOBON_MEMBER용 MyBatis Mapper XML입니다.
+    회원 중복확인, 회원가입 INSERT, 로그인/회원조회, 마지막 로그인 시각 갱신 SQL을 정의합니다.
+    [수정] 프로필 수정 시 자기 자신을 제외한 닉네임 중복 여부를 확인합니다.
+    -->
+    <select id="countByNicknameExcludingMember" resultType="int">
+        /* id="countByNicknameExcludingMember" */
+        SELECT  COUNT(*)
+        FROM    JOBON_MEMBER
+        WHERE   NICKNAME = #{nickname}
+        AND     MEMBER_ID != #{memberId}
+    </select>
+    
+    <select id="selectByLoginId" resultMap="memberMap">
+        /* id="selectByLoginId" */
+        SELECT  *
+        FROM    JOBON_MEMBER
+        WHERE   LOGIN_ID = #{loginId}
+    </select>
 
+    <select id="selectByEmail" resultMap="memberMap">
+        /* id="selectByEmail" */
+        SELECT  *
+        FROM    JOBON_MEMBER
+        WHERE   LOWER(EMAIL) = LOWER(#{email})
+    </select>
+    
+    <select id="selectByMemberId" resultMap="memberMap">
+        /* id="selectByMemberId" */
+        SELECT  *
+        FROM    JOBON_MEMBER
+        WHERE   MEMBER_ID = #{memberId}
+    </select>
+
+    
     <insert id="insertMember" parameterType="com.jobon.member.vo.MemberVO">
-
+        /* id="insertMember" */
         <!-- 회원 PK를 Oracle Sequence로 먼저 생성 -->
-        <selectKey keyProperty="memberId" resultType="long" order="BEFORE"> SELECT JOBON_MEMBER_SEQ.NEXTVAL FROM DUAL </selectKey>
-
-         INSERT INTO JOBON_MEMBER (
-            MEMBER_ID, LOGIN_ID, EMAIL, PASSWORD_HASH, NAME, NICKNAME, PHONE,
-            INTEREST_JOB, CAREER_TYPE, EDUCATION_LEVEL, SCHOOL_NAME, MAJOR_NAME,
-            PREFERRED_LOCATION, INTRODUCTION, PROFILE_IMAGE_URL,
-            TERMS_AGREED_YN, PRIVACY_AGREED_YN, STATUS, CREATED_AT, UPDATED_AT
+        <selectKey keyProperty="memberId" resultType="long" order="BEFORE">
+            SELECT  JOBON_MEMBER_SEQ.NEXTVAL
+            FROM    DUAL
+        </selectKey>
+        INSERT INTO JOBON_MEMBER (
+            MEMBER_ID
+           ,LOGIN_ID
+           ,EMAIL
+           ,PASSWORD_HASH
+           ,NAME
+           ,NICKNAME
+           ,PHONE
+           ,INTEREST_JOB
+           ,CAREER_TYPE
+           ,EDUCATION_LEVEL
+           ,SCHOOL_NAME
+           ,MAJOR_NAME
+           ,PREFERRED_LOCATION
+           ,INTRODUCTION
+           ,PROFILE_IMAGE_URL
+           ,TERMS_AGREED_YN
+           ,PRIVACY_AGREED_YN
+           ,STATUS
+           ,CREATED_AT
+           ,UPDATED_AT
+        ) VALUES (
+            #{memberId}
+           ,#{loginId, jdbcType=VARCHAR}
+           ,#{email, jdbcType=VARCHAR}
+           ,#{passwordHash, jdbcType=VARCHAR}
+           ,#{name, jdbcType=VARCHAR}
+           ,#{nickname, jdbcType=VARCHAR}
+           ,#{phone, jdbcType=VARCHAR}
+           ,#{interestJob, jdbcType=VARCHAR}
+           ,#{careerType, jdbcType=VARCHAR}
+           ,#{educationLevel, jdbcType=VARCHAR}
+           ,#{schoolName, jdbcType=VARCHAR}
+           ,#{majorName, jdbcType=VARCHAR}
+           ,#{preferredLocation, jdbcType=VARCHAR}
+           ,#{introduction, jdbcType=VARCHAR}
+           ,#{profileImageUrl, jdbcType=VARCHAR}
+           ,#{termsAgreedYn, jdbcType=CHAR}
+           ,#{privacyAgreedYn, jdbcType=CHAR}
+           ,#{status, jdbcType=VARCHAR}
+           ,SYSTIMESTAMP
+           ,SYSTIMESTAMP
         )
-        VALUES (
-            #{memberId},#{loginId, jdbcType=VARCHAR},#{email, jdbcType=VARCHAR},#{passwordHash, jdbcType=VARCHAR},#{name, jdbcType=VARCHAR},#{nickname, jdbcType=VARCHAR},
-            #{phone, jdbcType=VARCHAR},#{interestJob, jdbcType=VARCHAR},#{careerType, jdbcType=VARCHAR},#{educationLevel, jdbcType=VARCHAR},#{schoolName, jdbcType=VARCHAR},
-            #{majorName, jdbcType=VARCHAR},#{preferredLocation, jdbcType=VARCHAR},#{introduction, jdbcType=VARCHAR},#{profileImageUrl, jdbcType=VARCHAR},#{termsAgreedYn, jdbcType=CHAR},
-            #{privacyAgreedYn, jdbcType=CHAR},#{status, jdbcType=VARCHAR},SYSTIMESTAMP,SYSTIMESTAMP
-        )
-
     </insert>
 
-    <!--
-        [수정] 마이페이지 프로필 수정 SQL
-        PROFILE_IMAGE_URL은 새 이미지를 선택했을 때만 전달되므로 null이면 기존 값을 유지합니다.
-    -->
     <update id="updateProfile" parameterType="com.jobon.member.vo.MemberVO">
-        UPDATE JOBON_MEMBER
-        SET NICKNAME = #{nickname, jdbcType=VARCHAR},
-            INTRODUCTION = #{introduction, jdbcType=VARCHAR},
-            INTEREST_JOB = #{interestJob, jdbcType=VARCHAR},
-            PREFERRED_LOCATION = #{preferredLocation, jdbcType=VARCHAR},
-            PROFILE_IMAGE_URL = NVL(#{profileImageUrl, jdbcType=VARCHAR}, PROFILE_IMAGE_URL),
-            UPDATED_AT = SYSTIMESTAMP
-        WHERE MEMBER_ID = #{memberId}
+        /* id="updateProfile" */
+        UPDATE  JOBON_MEMBER
+        SET     NICKNAME           = #{nickname, jdbcType=VARCHAR}
+               ,INTRODUCTION       = #{introduction, jdbcType=VARCHAR}
+               ,INTEREST_JOB       = #{interestJob, jdbcType=VARCHAR}
+               ,PREFERRED_LOCATION = #{preferredLocation, jdbcType=VARCHAR}
+               ,PROFILE_IMAGE_URL  = NVL(#{profileImageUrl, jdbcType=VARCHAR}, PROFILE_IMAGE_URL)
+               ,UPDATED_AT         = SYSTIMESTAMP
+        WHERE   MEMBER_ID = #{memberId}
     </update>
 
-    <update id="updateLastLoginAt">UPDATE JOBON_MEMBER SET LAST_LOGIN_AT = SYSTIMESTAMP, UPDATED_AT = SYSTIMESTAMP WHERE MEMBER_ID = #{memberId}</update>
+    <update id="updateLastLoginAt">
+        /* id="updateLastLoginAt" */
+        UPDATE  JOBON_MEMBER
+        SET     LAST_LOGIN_AT = SYSTIMESTAMP
+               ,UPDATED_AT    = SYSTIMESTAMP
+        WHERE   MEMBER_ID = #{memberId}
+    </update>
 </mapper>

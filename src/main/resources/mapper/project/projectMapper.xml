@@ -1,0 +1,236 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- [추가] ERD 기준 실제 CRUD/연계 SQL을 정의합니다. -->
+<mapper namespace="com.jobon.project.dao.ProjectExperienceDAO">
+    <resultMap id="m" type="com.jobon.project.vo.ProjectExperienceVO">
+        <id property="projectId" column="PROJECT_ID"/>
+        <result property="memberId" column="MEMBER_ID"/>
+        <result property="projectName" column="PROJECT_NAME"/>
+        <result property="organization" column="ORGANIZATION"/>
+        <result property="roleName" column="ROLE_NAME"/>
+        <result property="startDate" column="START_DATE"/>
+        <result property="endDate" column="END_DATE"/>
+        <result property="description" column="DESCRIPTION"/>
+        <result property="projectUrl" column="PROJECT_URL"/>
+        <result property="createdAt" column="CREATED_AT"/>
+        <result property="updatedAt" column="UPDATED_AT"/>
+    </resultMap>
+
+    <select id="selectList" resultMap="m">
+        /* id="selectList" */
+        SELECT  *
+        FROM    PROJECT_EXPERIENCE
+        WHERE   MEMBER_ID = #{memberId}
+        ORDER BY START_DATE DESC NULLS LAST
+               ,CREATED_AT DESC
+    </select>
+
+    <select id="selectOne" resultMap="m">
+        /* id="selectOne" */
+        SELECT  *
+        FROM    PROJECT_EXPERIENCE
+        WHERE   MEMBER_ID = #{memberId}
+        AND     PROJECT_ID = #{projectId}
+    </select>
+
+    <insert id="insert">
+        /* id="insert" */
+        <selectKey keyProperty="projectId" resultType="long" order="BEFORE">
+            SELECT  PROJECT_EXPERIENCE_SEQ.NEXTVAL
+            FROM    DUAL
+        </selectKey>
+        INSERT INTO PROJECT_EXPERIENCE (
+            PROJECT_ID
+           ,MEMBER_ID
+           ,PROJECT_NAME
+           ,ORGANIZATION
+           ,ROLE_NAME
+           ,START_DATE
+           ,END_DATE
+           ,DESCRIPTION
+           ,PROJECT_URL
+           ,CREATED_AT
+           ,UPDATED_AT
+        ) VALUES (
+            #{projectId}
+           ,#{memberId}
+           ,#{projectName}
+           ,#{organization,jdbcType=VARCHAR}
+           ,#{roleName,jdbcType=VARCHAR}
+           ,#{startDate,jdbcType=DATE}
+           ,#{endDate,jdbcType=DATE}
+           ,#{description,jdbcType=CLOB}
+           ,#{projectUrl,jdbcType=VARCHAR}
+           ,SYSTIMESTAMP
+           ,SYSTIMESTAMP
+        )
+    </insert>
+
+    <update id="update">
+        /* id="update" */
+        UPDATE  PROJECT_EXPERIENCE
+        SET     PROJECT_NAME = #{projectName}
+               ,ORGANIZATION = #{organization,jdbcType=VARCHAR}
+               ,ROLE_NAME    = #{roleName,jdbcType=VARCHAR}
+               ,START_DATE   = #{startDate,jdbcType=DATE}
+               ,END_DATE     = #{endDate,jdbcType=DATE}
+               ,DESCRIPTION  = #{description,jdbcType=CLOB}
+               ,PROJECT_URL  = #{projectUrl,jdbcType=VARCHAR}
+               ,UPDATED_AT   = SYSTIMESTAMP
+        WHERE   MEMBER_ID = #{memberId}
+        AND     PROJECT_ID = #{projectId}
+    </update>
+
+    <delete id="delete">
+        /* id="delete" */
+        DELETE
+        FROM    PROJECT_EXPERIENCE
+        WHERE   MEMBER_ID = #{memberId}
+        AND     PROJECT_ID = #{projectId}
+    </delete>
+
+    <update id="mergeTech">
+        /* id="mergeTech" */
+        MERGE
+        INTO    TECH_STACK T
+        USING   (   SELECT  #{techName} TECH_NAME
+                    FROM    DUAL
+                ) S
+        ON  (LOWER(T.TECH_NAME) = LOWER(S.TECH_NAME)) WHEN NOT MATCHED THEN
+        INSERT   (
+            TECH_ID
+           ,TECH_NAME
+           ,CATEGORY
+           ,CREATED_AT
+        ) VALUES (
+            TECH_STACK_SEQ.NEXTVAL
+           ,S.TECH_NAME
+           ,'ETC'
+           ,SYSTIMESTAMP
+        )
+    </update>
+
+    <select id="selectTechId" resultType="long">
+        /* id="selectTechId" */
+        SELECT  TECH_ID
+        FROM    TECH_STACK
+        WHERE   LOWER(TECH_NAME) = LOWER(#{techName})
+    </select>
+
+    <insert id="insertProjectTech">
+        /* id="insertProjectTech" */
+        INSERT INTO PROJECT_TECH (
+            PROJECT_ID
+           ,TECH_ID
+        ) VALUES (
+            #{projectId}
+           ,#{techId}
+        )
+    </insert>
+
+    <delete id="deleteProjectTech">
+        /* id="deleteProjectTech" */
+        DELETE
+        FROM    PROJECT_TECH
+        WHERE   PROJECT_ID = #{projectId}
+    </delete>
+
+    <select id="selectTechNames" resultType="string">
+        /* id="selectTechNames" */
+        SELECT  T.TECH_NAME
+        FROM    PROJECT_TECH P
+        JOIN    TECH_STACK T
+            ON  T.TECH_ID = P.TECH_ID
+        WHERE   P.PROJECT_ID = #{projectId}
+        ORDER BY T.TECH_NAME
+    </select>
+
+    <insert id="insertFeature">
+        /* id="insertFeature" */
+        <selectKey keyProperty="featureId" resultType="long" order="BEFORE">
+            SELECT  PROJECT_FEATURE_SEQ.NEXTVAL
+            FROM    DUAL
+        </selectKey>
+        INSERT INTO PROJECT_FEATURE (
+            FEATURE_ID
+           ,PROJECT_ID
+           ,FEATURE_NAME
+           ,DETAIL
+           ,SORT_ORDER
+        ) VALUES (
+            #{featureId}
+           ,#{projectId}
+           ,#{featureName}
+           ,#{detail,jdbcType=CLOB}
+           ,#{sortOrder}
+        )
+    </insert>
+
+    <delete id="deleteFeatures">
+        /* id="deleteFeatures" */
+        DELETE
+        FROM    PROJECT_FEATURE
+        WHERE   PROJECT_ID = #{projectId}
+    </delete>
+
+    <select id="selectFeatures" resultType="com.jobon.project.vo.ProjectFeatureVO">
+        /* id="selectFeatures" */
+        SELECT  FEATURE_ID featureId
+               ,PROJECT_ID projectId
+               ,FEATURE_NAME featureName
+               ,DETAIL detail
+               ,SORT_ORDER sortOrder
+        FROM    PROJECT_FEATURE
+        WHERE   PROJECT_ID = #{projectId}
+        ORDER BY SORT_ORDER
+    </select>
+
+    <insert id="insertTrouble">
+        /* id="insertTrouble" */
+        <selectKey keyProperty="troubleId" resultType="long" order="BEFORE">
+            SELECT  PROJECT_TROUBLE_SEQ.NEXTVAL
+            FROM    DUAL
+        </selectKey>
+        INSERT INTO PROJECT_TROUBLE (
+            TROUBLE_ID
+           ,PROJECT_ID
+           ,TITLE
+           ,PROBLEM
+           ,CAUSE
+           ,SOLUTION
+           ,RESULT
+           ,CREATED_AT
+        ) VALUES (
+            #{troubleId}
+           ,#{projectId}
+           ,#{title}
+           ,#{problem,jdbcType=CLOB}
+           ,#{cause,jdbcType=CLOB}
+           ,#{solution,jdbcType=CLOB}
+           ,#{result,jdbcType=CLOB}
+           ,SYSTIMESTAMP
+        )
+    </insert>
+
+    <delete id="deleteTroubles">
+        /* id="deleteTroubles" */
+        DELETE
+        FROM    PROJECT_TROUBLE
+        WHERE   PROJECT_ID = #{projectId}
+    </delete>
+
+    <select id="selectTroubles" resultType="com.jobon.project.vo.ProjectTroubleVO">
+        /* id="selectTroubles" */
+        SELECT  TROUBLE_ID troubleId
+               ,PROJECT_ID projectId
+               ,TITLE title
+               ,PROBLEM problem
+               ,CAUSE cause
+               ,SOLUTION solution
+               ,RESULT result
+               ,CREATED_AT createdAt
+        FROM    PROJECT_TROUBLE
+        WHERE   PROJECT_ID = #{projectId}
+        ORDER BY TROUBLE_ID
+    </select>
+</mapper>

@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- [추가] ERD 기준 실제 CRUD/연계 SQL을 정의합니다. -->
+<mapper namespace="com.jobon.company.dao.CompanyDAO">
+<resultMap id="m" type="com.jobon.company.vo.CompanyVO">
+    <id property="companyId" column="COMPANY_ID"/>
+    <result property="memberId" column="MEMBER_ID"/>
+    <result property="companyName" column="COMPANY_NAME"/>
+    <result property="companyType" column="COMPANY_TYPE"/>
+    <result property="industry" column="INDUSTRY"/>
+    <result property="jobField" column="JOB_FIELD"/>
+    <result property="careerUrl" column="CAREER_URL"/>
+    <result property="logoUrl" column="LOGO_URL"/>
+    <result property="memo" column="MEMO"/>
+    <result property="createdAt" column="CREATED_AT"/>
+    <result property="updatedAt" column="UPDATED_AT"/>
+</resultMap>
+
+    <select id="selectList" resultMap="m">
+        /* id="selectList" */
+        SELECT  *
+        FROM    COMPANY
+        WHERE   MEMBER_ID = #{memberId}
+        <if test="keyword!=null and keyword!=''">
+            AND     LOWER(COMPANY_NAME) LIKE '%' || LOWER(#{keyword}) || '%'
+        </if>
+        <if test="companyType!=null and companyType!=''">
+            AND     COMPANY_TYPE = #{companyType}
+        </if>
+        ORDER BY CREATED_AT DESC
+    </select>
+
+    <select id="selectOne" resultMap="m">
+        /* id="selectOne" */
+        SELECT  *
+        FROM    COMPANY
+        WHERE   MEMBER_ID = #{memberId}
+        AND     COMPANY_ID = #{companyId}
+    </select>
+
+    <insert id="insert" parameterType="com.jobon.company.vo.CompanyVO">
+        /* id="insert" */
+        <selectKey keyProperty="companyId" resultType="long" order="BEFORE">
+            SELECT  COMPANY_SEQ.NEXTVAL
+            FROM    DUAL
+        </selectKey>
+        INSERT INTO COMPANY (
+            COMPANY_ID
+           ,MEMBER_ID
+           ,COMPANY_NAME
+           ,COMPANY_TYPE
+           ,INDUSTRY
+           ,JOB_FIELD
+           ,CAREER_URL
+           ,LOGO_URL
+           ,MEMO
+           ,CREATED_AT
+           ,UPDATED_AT
+        ) VALUES (
+            #{companyId}
+           ,#{memberId}
+           ,#{companyName}
+           ,#{companyType,jdbcType=VARCHAR}
+           ,#{industry,jdbcType=VARCHAR}
+           ,#{jobField,jdbcType=VARCHAR}
+           ,#{careerUrl,jdbcType=VARCHAR}
+           ,#{logoUrl,jdbcType=VARCHAR}
+           ,#{memo,jdbcType=CLOB}
+           ,SYSTIMESTAMP
+           ,SYSTIMESTAMP
+        )
+    </insert>
+
+    <update id="update">
+        /* id="update" */
+        UPDATE  COMPANY
+        SET     COMPANY_NAME = #{companyName}
+               ,COMPANY_TYPE = #{companyType,jdbcType=VARCHAR}
+               ,INDUSTRY     = #{industry,jdbcType=VARCHAR}
+               ,JOB_FIELD    = #{jobField,jdbcType=VARCHAR}
+               ,CAREER_URL   = #{careerUrl,jdbcType=VARCHAR}
+               ,LOGO_URL     = #{logoUrl,jdbcType=VARCHAR}
+               ,MEMO         = #{memo,jdbcType=CLOB}
+               ,UPDATED_AT   = SYSTIMESTAMP
+        WHERE   MEMBER_ID = #{memberId}
+        AND     COMPANY_ID = #{companyId}
+    </update>
+
+    <delete id="delete">
+        /* id="delete" */
+        DELETE
+        FROM    COMPANY
+        WHERE   MEMBER_ID = #{memberId}
+        AND     COMPANY_ID = #{companyId}
+    </delete>
+</mapper>

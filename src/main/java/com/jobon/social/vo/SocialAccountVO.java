@@ -1,6 +1,5 @@
 package com.jobon.social.vo;
 
-
 /**
  * =========================================================
  * 파일 설명
@@ -18,18 +17,60 @@ public class SocialAccountVO {
     private String email;
     private LocalDateTime linkedAt;
     private LocalDateTime lastLoginAt;
-    public Long getSocialAccountId() { return socialAccountId; }
-    public void setSocialAccountId(Long socialAccountId) { this.socialAccountId = socialAccountId; }
-    public Long getMemberId() { return memberId; }
-    public void setMemberId(Long memberId) { this.memberId = memberId; }
-    public String getProvider() { return provider; }
-    public void setProvider(String provider) { this.provider = provider; }
-    public String getProviderUserId() { return providerUserId; }
-    public void setProviderUserId(String providerUserId) { this.providerUserId = providerUserId; }
-    public String getEmail() { return email; }
-    public void setEmail(String email) { this.email = email; }
-    public LocalDateTime getLinkedAt() { return linkedAt; }
-    public void setLinkedAt(LocalDateTime linkedAt) { this.linkedAt = linkedAt; }
-    public LocalDateTime getLastLoginAt() { return lastLoginAt; }
-    public void setLastLoginAt(LocalDateTime lastLoginAt) { this.lastLoginAt = lastLoginAt; }
+
+    public Long getSocialAccountId() {
+        return socialAccountId;
+    }
+
+    public void setSocialAccountId(Long socialAccountId) {
+        this.socialAccountId = socialAccountId;
+    }
+
+    public Long getMemberId() {
+        return memberId;
+    }
+
+    public void setMemberId(Long memberId) {
+        this.memberId = memberId;
+    }
+
+    public String getProvider() {
+        return provider;
+    }
+
+    public void setProvider(String provider) {
+        this.provider = provider;
+    }
+
+    public String getProviderUserId() {
+        return providerUserId;
+    }
+
+    public void setProviderUserId(String providerUserId) {
+        this.providerUserId = providerUserId;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public LocalDateTime getLinkedAt() {
+        return linkedAt;
+    }
+
+    public void setLinkedAt(LocalDateTime linkedAt) {
+        this.linkedAt = linkedAt;
+    }
+
+    public LocalDateTime getLastLoginAt() {
+        return lastLoginAt;
+    }
+
+    public void setLastLoginAt(LocalDateTime lastLoginAt) {
+        this.lastLoginAt = lastLoginAt;
+    }
 }

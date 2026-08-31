@@ -1,20 +1,60 @@
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ taglib prefix="c" uri="jakarta.tags.core" %>
+<%@ taglib prefix="fmt" uri="jakarta.tags.fmt" %>
 <c:set var="ctx" value="${pageContext.request.contextPath}" />
-<!DOCTYPE html>
+<!-- [수정] 스토리보드/ERD 기준 실제 DB 연동 CRUD 및 화면 동작을 적용했습니다. -->
+<!doctype html>
 <html lang="ko">
-<head>
-<meta charset="UTF-8"/>
-<meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>대시보드 | JOBON</title>
-<link rel="stylesheet" href="${ctx}/css/common.css"/>
 
-</head>
-<body>
-<c:set var="activeMenu" value="dashboard" scope="request"/>
-<jsp:include page="/WEB-INF/views/common/header.jsp"/>
-<main class="jobon-page"><div class="jobon-container">
-<section class="page-heading"><div><h1>대시보드</h1><p>지원 현황, 마감 임박 공고, TODO와 최근 활동을 한 곳에서 확인하세요.</p></div></section><div class="form-grid"><div class="card card--padded"><h2 class="card-title">지원 요약</h2><div class="detail-grid"><div><strong style="font-size:30px;color:#111827">23</strong><p class="muted">전체 지원</p></div><div><span class="badge badge--green">진행 중 12</span> <span class="badge badge--blue">서류 5</span> <span class="badge badge--purple">면접 3</span></div></div></div><div class="card card--padded"><h2 class="card-title">오늘의 TODO</h2><div class="preview-list"><div class="preview-row"><span>자기소개서 수정</span><b>D-1</b></div><div class="preview-row"><span>포트폴리오 점검</span><b>오늘</b></div><div class="preview-row"><span>기업 분석</span><b>D-3</b></div></div></div><div class="card card--padded"><h2 class="card-title">마감 임박 채용공고</h2><p>네이버 · 백엔드 개발자 <span class="badge badge--red">D-2</span></p><p>카카오 · 서버 개발자 <span class="badge badge--orange">D-5</span></p></div><div class="card card--padded"><h2 class="card-title">최근 AI 분석</h2><p>백엔드 개발자 공고 분석 완료</p><a class="text-link" href="${ctx}/ai/job-analysis">분석 보기 →</a></div></div>
-</div></main>
-<jsp:include page="/WEB-INF/views/common/footer.jsp"/>
-</body></html>
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title>대시보드 | JOBON</title>
+        <link rel="stylesheet" href="${ctx}/css/common.css">
+        <link rel="stylesheet" href="${ctx}/css/domain.css">
+    </head>
+
+    <body>
+        <c:set var="activeMenu" value="dashboard" scope="request" />
+        <jsp:include page="/WEB-INF/views/common/header.jsp" />
+        <main class="jobon-page">
+            <div class="jobon-container">
+                <section class="page-heading">
+                    <div>
+                        <h1>대시보드</h1>
+                        <p>취업 준비 흐름을 한눈에 확인하세요.</p>
+                    </div>
+                </section>
+                <div class="metric-grid">
+                    <div class="metric card"><strong>${companies.size()}</strong><span>기업</span></div>
+                    <div class="metric card"><strong>${jobs.size()}</strong><span>채용공고</span></div>
+                    <div class="metric card"><strong>${applications.size()}</strong><span>지원현황</span></div>
+                    <div class="metric card"><strong>${todos.size()}</strong><span>TODO</span></div>
+                    <div class="metric card"><strong>${analyses.size()}</strong><span>AI 분석</span></div>
+                </div>
+                <div class="analysis-grid mt20">
+                    <section class="card card--padded">
+                        <div class="nested-head">
+                            <h3>마감 임박 공고</h3><a class="text-link" href="${ctx}/job/list?sort=deadline">전체 보기</a>
+                        </div>
+                        <c:forEach var="j" items="${jobs}" end="4">
+                            <p><a href="${ctx}/job/detail?id=${j.jobId}">${j.companyName} · ${j.title}</a> <span
+                                    class="muted">${j.deadline}</span></p>
+                        </c:forEach>
+                    </section>
+                    <section class="card card--padded">
+                        <div class="nested-head">
+                            <h3>TODO</h3><a class="text-link" href="${ctx}/todo/list">전체 보기</a>
+                        </div>
+                        <c:forEach var="t" items="${todos}" end="4">
+                            <p>${t.title} <span class="muted">${t.dueDate} · ${t.status}</span></p>
+                        </c:forEach>
+                    </section>
+                </div>
+            </div>
+        </main>
+        <jsp:include page="/WEB-INF/views/common/footer.jsp" />
+        <script src="${ctx}/js/jobon-crud.js"></script>
+    </body>
+
+</html>

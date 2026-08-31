@@ -14,150 +14,16 @@ import org.springframework.web.bind.annotation.GetMapping;
  * 공통 레이아웃/화면 틀 확인용 임시 View Controller.
  * 각 도메인의 실제 Controller 구현이 시작되면 해당 경로를 도메인 Controller로 옮기고
  * 이 클래스의 중복 매핑은 삭제하세요.
+ *
+ * [수정] 기업/채용공고/지원/TODO/성장기록/프로젝트/AI/대시보드 기능이 실제 Controller로
+ * 구현되어 기존 임시 매핑을 제거했습니다. 아직 전용 Controller가 없는 공통 화면만 유지합니다.
  */
 @Controller
 public class CommonViewController {
-
-    @GetMapping("/dashboard")
-    public String dashboard() {
-        return "dashboard/dashboard";
-    }
-
-    @GetMapping("/company/list")
-    public String companyList() {
-        return "company/list";
-    }
-
-    @GetMapping("/company/new")
-    public String companyNew() {
-        return "company/new";
-    }
-
-    @GetMapping("/company/detail")
-    public String companyDetail() {
-        return "company/detail";
-    }
-
-    @GetMapping("/company/edit")
-    public String companyEdit() {
-        return "company/edit";
-    }
-
-    @GetMapping("/job/list")
-    public String jobList() {
-        return "job/list";
-    }
-
-    @GetMapping("/job/new")
-    public String jobNew() {
-        return "job/new";
-    }
-
-    @GetMapping("/job/detail")
-    public String jobDetail() {
-        return "job/detail";
-    }
-
-    @GetMapping("/job/edit")
-    public String jobEdit() {
-        return "job/edit";
-    }
-
-    @GetMapping("/apply/list")
-    public String applyList() {
-        return "apply/list";
-    }
-
-    @GetMapping("/apply/detail")
-    public String applyDetail() {
-        return "apply/detail";
-    }
-
-    @GetMapping("/apply/edit")
-    public String applyEdit() {
-        return "apply/edit";
-    }
-
-    @GetMapping("/todo/list")
-    public String todoList() {
-        return "todo/list";
-    }
-
-    @GetMapping("/todo/new")
-    public String todoNew() {
-        return "todo/new";
-    }
-
-    @GetMapping("/todo/edit")
-    public String todoEdit() {
-        return "todo/edit";
-    }
-
-    @GetMapping("/learning/list")
-    public String learningList() {
-        return "learning/list";
-    }
-
-    @GetMapping("/learning/new")
-    public String learningNew() {
-        return "learning/new";
-    }
-
-    @GetMapping("/learning/detail")
-    public String learningDetail() {
-        return "learning/detail";
-    }
-
-    @GetMapping("/learning/edit")
-    public String learningEdit() {
-        return "learning/edit";
-    }
-
-    @GetMapping("/project/list")
-    public String projectList() {
-        return "project/list";
-    }
-
-    @GetMapping("/project/new")
-    public String projectNew() {
-        return "project/new";
-    }
-
-    @GetMapping("/project/detail")
-    public String projectDetail() {
-        return "project/detail";
-    }
-
-    @GetMapping("/project/edit")
-    public String projectEdit() {
-        return "project/edit";
-    }
-
-    @GetMapping("/ai/analysis")
-    public String aiAnalysis() {
-        return "ai/analysis";
-    }
-
-    @GetMapping("/ai/job-analysis")
-    public String aiJobAnalysis() {
-        return "ai/job-analysis";
-    }
-
-    @GetMapping("/ai/experience-recommend")
-    public String aiExperienceRecommend() {
-        return "ai/experience-recommend";
-    }
-
-    // [수정] /mypage, /mypage/profile, /mypage/profile/edit 매핑은
-    // DB 회원 조회/수정 처리를 위해 MypageController로 이동했습니다.
-
     @GetMapping("/mypage/password")
     public String password() {
         return "mypage/password";
     }
-
-    // [수정] /mypage/accounts 매핑은 SNS 연동 상태 DB 조회가 필요하므로
-    // MypageAccountsController로 이동했습니다.
 
     @GetMapping("/mypage/activity")
     public String activity() {

@@ -43,6 +43,13 @@
 			<artifactId>spring-boot-starter-webmvc</artifactId>
 		</dependency>
 
+		<!-- [추가] Spring Boot 4.0.8 기본 JSON 라이브러리인 Jackson 3 -->
+		<!-- OpenAiCompatibleLlmClient의 tools.jackson.databind.* 사용을 지원합니다. -->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-jackson</artifactId>
+		</dependency>
+
 		<!-- MyBatis -->
 		<dependency>
 			<groupId>org.mybatis.spring.boot</groupId>

@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- [추가] ERD 기준 실제 CRUD/연계 SQL을 정의합니다. -->
+<mapper namespace="com.jobon.todo.dao.TodoItemDAO">
+    <resultMap id="m" type="com.jobon.todo.vo.TodoItemVO">
+        <id property="todoId" column="TODO_ID"/>
+        <result property="memberId" column="MEMBER_ID"/>
+        <result property="companyId" column="COMPANY_ID"/>
+        <result property="jobId" column="JOB_ID"/>
+        <result property="companyName" column="COMPANY_NAME"/>
+        <result property="jobTitle" column="JOB_TITLE"/>
+        <result property="title" column="TITLE"/>
+        <result property="priority" column="PRIORITY"/>
+        <result property="dueDate" column="DUE_DATE"/>
+        <result property="status" column="STATUS"/>
+        <result property="memo" column="MEMO"/>
+        <result property="completedAt" column="COMPLETED_AT"/>
+    </resultMap>
+    
+    <sql id="b">SELECT T.*,C.COMPANY_NAME,J.TITLE JOB_TITLE FROM TODO_ITEM T LEFT JOIN COMPANY C ON C.COMPANY_ID=T.COMPANY_ID LEFT JOIN JOB_POSTING J ON J.JOB_ID=T.JOB_ID WHERE T.MEMBER_ID=#{memberId}</sql>    
+    
+    <select id="selectList" resultMap="m">
+        /* id="selectList" */
+        <include refid="b"/>
+        <if test="status!=null and status!=''">
+            AND     T.STATUS = #{status}
+        </if>
+        ORDER BY CASE T.STATUS
+                    WHEN 'DONE' THEN 1
+                    ELSE 0
+                END
+               ,T.DUE_DATE ASC NULLS LAST
+               ,T.CREATED_AT DESC
+    </select>
+
+    <select id="selectOne" resultMap="m">
+        /* id="selectOne" */
+        <include refid="b"/>
+         AND T.TODO_ID = #{todoId}
+    </select>
+
+    <insert id="insert">
+        /* id="insert" */
+        <selectKey keyProperty="todoId" resultType="long" order="BEFORE">
+            SELECT  TODO_ITEM_SEQ.NEXTVAL
+            FROM    DUAL
+        </selectKey>
+        INSERT INTO TODO_ITEM (
+            TODO_ID
+           ,MEMBER_ID
+           ,COMPANY_ID
+           ,JOB_ID
+           ,TITLE
+           ,PRIORITY
+           ,DUE_DATE
+           ,STATUS
+           ,MEMO
+           ,COMPLETED_AT
+           ,CREATED_AT
+           ,UPDATED_AT
+        ) VALUES (
+            #{todoId}
+           ,#{memberId}
+           ,#{companyId,jdbcType=NUMERIC}
+           ,#{jobId,jdbcType=NUMERIC}
+           ,#{title}
+           ,#{priority}
+           ,#{dueDate,jdbcType=DATE}
+           ,#{status}
+           ,#{memo,jdbcType=CLOB}
+           ,CASE
+                    WHEN #{status} = 'DONE' THEN SYSTIMESTAMP
+                END
+           ,SYSTIMESTAMP
+           ,SYSTIMESTAMP
+        )
+    </insert>
+
+    <update id="update">
+        /* id="update" */
+        UPDATE  TODO_ITEM
+        SET     COMPANY_ID   = #{companyId,jdbcType=NUMERIC}
+               ,JOB_ID       = #{jobId,jdbcType=NUMERIC}
+               ,TITLE        = #{title}
+               ,PRIORITY     = #{priority}
+               ,DUE_DATE     = #{dueDate,jdbcType=DATE}
+               ,STATUS       = #{status}
+               ,MEMO         = #{memo,jdbcType=CLOB}
+               ,COMPLETED_AT = CASE
+                    WHEN #{status} = 'DONE' THEN NVL(COMPLETED_AT, SYSTIMESTAMP)
+                    ELSE NULL
+                END
+               ,UPDATED_AT   = SYSTIMESTAMP
+        WHERE   MEMBER_ID = #{memberId}
+        AND     TODO_ID = #{todoId}
+    </update>
+    
+    <delete id="delete">
+        /* id="delete" */
+        DELETE
+        FROM    TODO_ITEM
+        WHERE   MEMBER_ID = #{memberId}
+        AND     TODO_ID = #{todoId}
+    </delete></mapper>
