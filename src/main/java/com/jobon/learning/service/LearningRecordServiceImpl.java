@@ -4,15 +4,19 @@ package com.jobon.learning.service;
 import java.util.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import com.jobon.activity.service.ActivityLogService;
 import com.jobon.learning.dao.LearningRecordDAO;
 import com.jobon.learning.vo.LearningRecordVO;
 
 @Service
 public class LearningRecordServiceImpl implements LearningRecordService {
     private final LearningRecordDAO dao;
+    // [추가] 성장 기록 CRUD 성공 시 실제 활동 내역을 저장합니다.
+    private final ActivityLogService activityLogService;
 
-    public LearningRecordServiceImpl(LearningRecordDAO dao) {
+    public LearningRecordServiceImpl(LearningRecordDAO dao, ActivityLogService activityLogService) {
         this.dao = dao;
+        this.activityLogService = activityLogService;
     }
 
     public List<LearningRecordVO> list(Long memberId) {
@@ -34,6 +38,9 @@ public class LearningRecordServiceImpl implements LearningRecordService {
         validate(v);
         dao.insert(v);
         syncTech(v);
+        // [추가] 성장 기록과 기술 연결 저장이 모두 성공한 뒤 활동 내역 저장
+        activityLogService.record(v.getMemberId(), "LEARNING", "CREATE", v.getLearningId(),
+                v.getSubject() + " 성장 기록 등록");
     }
 
     @Transactional
@@ -42,12 +49,19 @@ public class LearningRecordServiceImpl implements LearningRecordService {
         if (dao.update(v) != 1)
             throw new IllegalArgumentException("성장 기록을 찾을 수 없습니다.");
         syncTech(v);
+        // [추가] 성장 기록과 기술 연결 수정이 모두 성공한 뒤 활동 내역 저장
+        activityLogService.record(v.getMemberId(), "LEARNING", "UPDATE", v.getLearningId(),
+                v.getSubject() + " 성장 기록 수정");
     }
 
     @Transactional
     public void delete(Long memberId, Long id) {
+        // [추가] 삭제 전에 활동 제목으로 사용할 성장 기록 주제를 조회합니다.
+        LearningRecordVO existing = get(memberId, id);
         if (dao.delete(memberId, id) != 1)
             throw new IllegalArgumentException("성장 기록을 찾을 수 없습니다.");
+        activityLogService.record(memberId, "LEARNING", "DELETE", id,
+                existing.getSubject() + " 성장 기록 삭제");
     }
 
     private void validate(LearningRecordVO v) {

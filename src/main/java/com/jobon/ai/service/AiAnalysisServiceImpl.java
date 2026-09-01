@@ -5,6 +5,7 @@ import java.util.*;
 import java.util.stream.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import com.jobon.activity.service.ActivityLogService;
 import com.jobon.ai.dao.AiAnalysisDAO;
 import com.jobon.ai.dto.*;
 import com.jobon.ai.vo.*;
@@ -20,14 +21,17 @@ public class AiAnalysisServiceImpl implements AiAnalysisService {
     private final ProjectExperienceService projects;
     private final LlmClient llm;
     private final LocalJobAnalyzer local;
+    // [추가] AI 분석 성공 내역을 ACTIVITY_LOG에 저장합니다.
+    private final ActivityLogService activityLogService;
 
     public AiAnalysisServiceImpl(AiAnalysisDAO d, JobPostingService j, ProjectExperienceService p, LlmClient l,
-            LocalJobAnalyzer x) {
+            LocalJobAnalyzer x, ActivityLogService activityLogService) {
         dao = d;
         jobs = j;
         projects = p;
         llm = l;
         local = x;
+        this.activityLogService = activityLogService;
     }
 
     public List<AiAnalysisVO> list(Long memberId) {
@@ -63,6 +67,9 @@ public class AiAnalysisServiceImpl implements AiAnalysisService {
             a.setStatus("COMPLETED");
             dao.completeAnalysis(a);
             syncTechAndRecommend(memberId, a, r);
+            // [추가] 분석 결과/요구기술/경험 추천 저장까지 완료된 경우에만 활동 내역 기록
+            activityLogService.record(memberId, "AI", "ANALYZE", a.getAnalysisId(),
+                    job.getTitle() + " AI 분석 완료");
             return get(memberId, a.getAnalysisId());
         } catch (Exception e) {
             a.setStatus("FAILED");

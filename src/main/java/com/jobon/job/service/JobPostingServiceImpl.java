@@ -4,15 +4,19 @@ package com.jobon.job.service;
 import java.util.List;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import com.jobon.activity.service.ActivityLogService;
 import com.jobon.job.dao.JobPostingDAO;
 import com.jobon.job.vo.JobPostingVO;
 
 @Service
 public class JobPostingServiceImpl implements JobPostingService {
     private final JobPostingDAO dao;
+    // [추가] 채용공고 CRUD 성공 시 실제 활동 내역을 저장합니다.
+    private final ActivityLogService activityLogService;
 
-    public JobPostingServiceImpl(JobPostingDAO dao) {
+    public JobPostingServiceImpl(JobPostingDAO dao, ActivityLogService activityLogService) {
         this.dao = dao;
+        this.activityLogService = activityLogService;
     }
 
     public List<JobPostingVO> list(Long memberId, String keyword, String jobRole, String sort) {
@@ -31,6 +35,9 @@ public class JobPostingServiceImpl implements JobPostingService {
         validate(vo);
         if (dao.insert(vo) != 1)
             throw new IllegalStateException("등록에 실패했습니다.");
+        // [추가] 채용공고 등록 성공 후 활동 내역 저장
+        activityLogService.record(vo.getMemberId(), "JOB", "CREATE", vo.getJobId(),
+                vo.getTitle() + " 채용공고 등록");
     }
 
     @Transactional
@@ -38,12 +45,19 @@ public class JobPostingServiceImpl implements JobPostingService {
         validate(vo);
         if (dao.update(vo) != 1)
             throw new IllegalStateException("수정에 실패했습니다.");
+        // [추가] 채용공고 수정 성공 후 활동 내역 저장
+        activityLogService.record(vo.getMemberId(), "JOB", "UPDATE", vo.getJobId(),
+                vo.getTitle() + " 채용공고 수정");
     }
 
     @Transactional
     public void delete(Long memberId, Long jobId) {
+        // [추가] 삭제 전에 활동 제목으로 사용할 채용공고명을 조회합니다.
+        JobPostingVO existing = get(memberId, jobId);
         if (dao.delete(memberId, jobId) != 1)
             throw new IllegalArgumentException("삭제할 데이터를 찾을 수 없습니다.");
+        activityLogService.record(memberId, "JOB", "DELETE", jobId,
+                existing.getTitle() + " 채용공고 삭제");
     }
 
     private void validate(JobPostingVO vo) {

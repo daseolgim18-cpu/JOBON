@@ -17,7 +17,6 @@
 </resultMap>
 
     <select id="selectList" resultMap="m">
-        /* id="selectList" */
         SELECT  *
         FROM    COMPANY
         WHERE   MEMBER_ID = #{memberId}
@@ -31,7 +30,6 @@
     </select>
 
     <select id="selectOne" resultMap="m">
-        /* id="selectOne" */
         SELECT  *
         FROM    COMPANY
         WHERE   MEMBER_ID = #{memberId}
@@ -39,7 +37,6 @@
     </select>
 
     <insert id="insert" parameterType="com.jobon.company.vo.CompanyVO">
-        /* id="insert" */
         <selectKey keyProperty="companyId" resultType="long" order="BEFORE">
             SELECT  COMPANY_SEQ.NEXTVAL
             FROM    DUAL
@@ -72,7 +69,6 @@
     </insert>
 
     <update id="update">
-        /* id="update" */
         UPDATE  COMPANY
         SET     COMPANY_NAME = #{companyName}
                ,COMPANY_TYPE = #{companyType,jdbcType=VARCHAR}
@@ -87,7 +83,6 @@
     </update>
 
     <delete id="delete">
-        /* id="delete" */
         DELETE
         FROM    COMPANY
         WHERE   MEMBER_ID = #{memberId}

@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+  =========================================================
+  파일 설명
+  =========================================================
+  [추가] ACTIVITY_LOG 실제 등록/조회 SQL입니다.
+  Oracle Database 21c XE와 현재 프로젝트의 ACTIVITY_LOG_SEQ를 사용합니다.
+-->
+<mapper namespace="com.jobon.activity.dao.ActivityLogDAO">
+    <resultMap id="activityLogMap" type="com.jobon.activity.vo.ActivityLogVO">
+        <id property="activityId" column="ACTIVITY_ID"/>
+        <result property="memberId" column="MEMBER_ID"/>
+        <result property="activityType" column="ACTIVITY_TYPE"/>
+        <result property="actionType" column="ACTION_TYPE"/>
+        <result property="targetId" column="TARGET_ID"/>
+        <result property="title" column="TITLE"/>
+        <result property="createdAt" column="CREATED_AT"/>
+    </resultMap>
+
+    <insert id="insert" parameterType="com.jobon.activity.vo.ActivityLogVO">
+        /* id="insert" */
+        <selectKey keyProperty="activityId" resultType="long" order="BEFORE">
+            SELECT ACTIVITY_LOG_SEQ.NEXTVAL
+            FROM DUAL
+        </selectKey>
+        INSERT INTO ACTIVITY_LOG (
+            ACTIVITY_ID,
+            MEMBER_ID,
+            ACTIVITY_TYPE,
+            ACTION_TYPE,
+            TARGET_ID,
+            TITLE,
+            CREATED_AT
+        ) VALUES (
+            #{activityId},
+            #{memberId},
+            #{activityType},
+            #{actionType},
+            #{targetId,jdbcType=NUMERIC},
+            #{title},
+            SYSTIMESTAMP
+        )
+    </insert>
+
+    <select id="selectList" resultMap="activityLogMap">
+        /* id="selectList" */
+        SELECT ACTIVITY_ID,
+               MEMBER_ID,
+               ACTIVITY_TYPE,
+               ACTION_TYPE,
+               TARGET_ID,
+               TITLE,
+               CREATED_AT
+        FROM ACTIVITY_LOG
+        WHERE MEMBER_ID = #{memberId}
+        <if test="activityType != null and activityType != ''">
+            AND ACTIVITY_TYPE = #{activityType}
+        </if>
+        ORDER BY CREATED_AT DESC, ACTIVITY_ID DESC
+    </select>
+
+    <select id="selectRecent" resultMap="activityLogMap">
+        /* id="selectRecent" - 추후 대시보드 최근 활동 영역에서도 그대로 사용 가능 */
+        SELECT ACTIVITY_ID,
+               MEMBER_ID,
+               ACTIVITY_TYPE,
+               ACTION_TYPE,
+               TARGET_ID,
+               TITLE,
+               CREATED_AT
+        FROM (
+            SELECT ACTIVITY_ID,
+                   MEMBER_ID,
+                   ACTIVITY_TYPE,
+                   ACTION_TYPE,
+                   TARGET_ID,
+                   TITLE,
+                   CREATED_AT
+            FROM ACTIVITY_LOG
+            WHERE MEMBER_ID = #{memberId}
+            ORDER BY CREATED_AT DESC, ACTIVITY_ID DESC
+        )
+        WHERE ROWNUM &lt;= #{limit}
+    </select>
+</mapper>

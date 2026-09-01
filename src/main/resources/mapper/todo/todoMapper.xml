@@ -20,7 +20,6 @@
     <sql id="b">SELECT T.*,C.COMPANY_NAME,J.TITLE JOB_TITLE FROM TODO_ITEM T LEFT JOIN COMPANY C ON C.COMPANY_ID=T.COMPANY_ID LEFT JOIN JOB_POSTING J ON J.JOB_ID=T.JOB_ID WHERE T.MEMBER_ID=#{memberId}</sql>    
     
     <select id="selectList" resultMap="m">
-        /* id="selectList" */
         <include refid="b"/>
         <if test="status!=null and status!=''">
             AND     T.STATUS = #{status}
@@ -34,13 +33,11 @@
     </select>
 
     <select id="selectOne" resultMap="m">
-        /* id="selectOne" */
         <include refid="b"/>
          AND T.TODO_ID = #{todoId}
     </select>
 
     <insert id="insert">
-        /* id="insert" */
         <selectKey keyProperty="todoId" resultType="long" order="BEFORE">
             SELECT  TODO_ITEM_SEQ.NEXTVAL
             FROM    DUAL
@@ -77,7 +74,6 @@
     </insert>
 
     <update id="update">
-        /* id="update" */
         UPDATE  TODO_ITEM
         SET     COMPANY_ID   = #{companyId,jdbcType=NUMERIC}
                ,JOB_ID       = #{jobId,jdbcType=NUMERIC}
@@ -96,7 +92,6 @@
     </update>
     
     <delete id="delete">
-        /* id="delete" */
         DELETE
         FROM    TODO_ITEM
         WHERE   MEMBER_ID = #{memberId}

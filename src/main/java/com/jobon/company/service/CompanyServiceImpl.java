@@ -4,15 +4,19 @@ package com.jobon.company.service;
 import java.util.List;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import com.jobon.activity.service.ActivityLogService;
 import com.jobon.company.dao.CompanyDAO;
 import com.jobon.company.vo.CompanyVO;
 
 @Service
 public class CompanyServiceImpl implements CompanyService {
     private final CompanyDAO dao;
+    // [추가] 기업 CRUD 성공 시 ACTIVITY_LOG에 실제 활동 내역을 남깁니다.
+    private final ActivityLogService activityLogService;
 
-    public CompanyServiceImpl(CompanyDAO dao) {
+    public CompanyServiceImpl(CompanyDAO dao, ActivityLogService activityLogService) {
         this.dao = dao;
+        this.activityLogService = activityLogService;
     }
 
     public List<CompanyVO> list(Long memberId, String keyword, String companyType) {
@@ -31,6 +35,9 @@ public class CompanyServiceImpl implements CompanyService {
         validate(vo);
         if (dao.insert(vo) != 1)
             throw new IllegalStateException("등록에 실패했습니다.");
+        // [추가] 기업 등록 성공 후 활동 내역 저장
+        activityLogService.record(vo.getMemberId(), "COMPANY", "CREATE", vo.getCompanyId(),
+                vo.getCompanyName() + " 기업 등록");
     }
 
     @Transactional
@@ -38,12 +45,19 @@ public class CompanyServiceImpl implements CompanyService {
         validate(vo);
         if (dao.update(vo) != 1)
             throw new IllegalStateException("수정에 실패했습니다.");
+        // [추가] 기업 수정 성공 후 활동 내역 저장
+        activityLogService.record(vo.getMemberId(), "COMPANY", "UPDATE", vo.getCompanyId(),
+                vo.getCompanyName() + " 기업 정보 수정");
     }
 
     @Transactional
     public void delete(Long memberId, Long companyId) {
+        // [추가] 삭제 전에 제목으로 사용할 기업명을 조회합니다.
+        CompanyVO existing = get(memberId, companyId);
         if (dao.delete(memberId, companyId) != 1)
             throw new IllegalArgumentException("삭제할 데이터를 찾을 수 없습니다.");
+        activityLogService.record(memberId, "COMPANY", "DELETE", companyId,
+                existing.getCompanyName() + " 기업 삭제");
     }
 
     private void validate(CompanyVO vo) {

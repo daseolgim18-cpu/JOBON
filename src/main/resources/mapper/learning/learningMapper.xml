@@ -16,7 +16,6 @@
     </resultMap>
 
     <select id="selectList" resultMap="m">
-        /* id="selectList" */
         SELECT  *
         FROM    LEARNING_RECORD
         WHERE   MEMBER_ID = #{memberId}
@@ -25,7 +24,6 @@
     </select>
 
     <select id="selectOne" resultMap="m">
-        /* id="selectOne" */
         SELECT  *
         FROM    LEARNING_RECORD
         WHERE   MEMBER_ID = #{memberId}
@@ -33,7 +31,6 @@
     </select>
 
     <insert id="insert">
-        /* id="insert" */
         <selectKey keyProperty="learningId" resultType="long" order="BEFORE">
             SELECT  LEARNING_RECORD_SEQ.NEXTVAL
             FROM    DUAL
@@ -64,7 +61,6 @@
     </insert>
 
     <update id="update">
-        /* id="update" */
         UPDATE  LEARNING_RECORD
         SET     RECORD_TYPE   = #{recordType}
                ,SUBJECT       = #{subject}
@@ -78,7 +74,6 @@
     </update>
 
     <delete id="delete">
-        /* id="delete" */
         DELETE
         FROM    LEARNING_RECORD
         WHERE   MEMBER_ID = #{memberId}
@@ -86,7 +81,6 @@
     </delete>
 
     <update id="mergeTech">
-        /* id="mergeTech" */
         MERGE
         INTO    TECH_STACK T
         USING   (   SELECT  #{techName} TECH_NAME
@@ -107,14 +101,12 @@
     </update>
 
     <select id="selectTechId" resultType="long">
-        /* id="selectTechId" */
         SELECT  TECH_ID
         FROM    TECH_STACK
         WHERE   LOWER(TECH_NAME) = LOWER(#{techName})
     </select>
 
     <insert id="insertLearningTech">
-        /* id="insertLearningTech" */
         INSERT INTO LEARNING_TECH (
             LEARNING_ID
            ,TECH_ID
@@ -125,14 +117,12 @@
     </insert>
 
     <delete id="deleteLearningTech">
-        /* id="deleteLearningTech" */
         DELETE
         FROM    LEARNING_TECH
         WHERE   LEARNING_ID = #{learningId}
     </delete>
     
     <select id="selectTechNames" resultType="string">
-        /* id="selectTechNames" */
         SELECT  T.TECH_NAME
         FROM    LEARNING_TECH L
         JOIN    TECH_STACK T

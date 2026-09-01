@@ -48,13 +48,11 @@
     </select>
 
     <select id="selectOne" resultMap="m">
-        /* id="selectOne" */
         <include refid="base"/>
            AND J.JOB_ID = #{jobId}
     </select>
    
     <insert id="insert">
-        /* id="insert" */
         <selectKey keyProperty="jobId" resultType="long" order="BEFORE">
             SELECT  JOB_POSTING_SEQ.NEXTVAL
             FROM    DUAL
@@ -93,7 +91,6 @@
     </insert>
     
     <update id="update">
-        /* id="update" */
         UPDATE  JOB_POSTING
         SET     COMPANY_ID      = #{companyId,jdbcType=NUMERIC}
                ,TITLE           = #{title}
@@ -111,7 +108,6 @@
     </update>
     
     <delete id="delete">
-        /* id="delete" */
         DELETE
         FROM    JOB_POSTING
         WHERE   MEMBER_ID = #{memberId}

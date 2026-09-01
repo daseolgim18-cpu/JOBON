@@ -23,25 +23,18 @@
     <sql id="base">SELECT A.*,J.TITLE JOB_TITLE,C.COMPANY_NAME FROM AI_ANALYSIS A JOIN JOB_POSTING J
         ON J.JOB_ID=A.JOB_ID LEFT JOIN COMPANY C ON C.COMPANY_ID=J.COMPANY_ID WHERE
         A.MEMBER_ID=#{memberId}</sql>
-    <!-- id="selectList" -->
     <select id="selectList" resultMap="a">
         /* id="selectList" */
         <include refid="base" />
         ORDER BY A.REQUESTED_AT DESC
     </select>
-    <!-- id="selectOne"
-    [INPUT]
-        analysisId : 
-    -->
+    
     <select id="selectOne" resultMap="a">
         /* id="selectOne" */
         <include refid="base" />
          AND A.ANALYSIS_ID = #{analysisId}
     </select>
-    <!-- id="selectLatestByJob"
-    [INPUT]
-        jobId : 
-    -->
+
     <select id="selectLatestByJob" resultMap="a">
         /* id="selectLatestByJob" */
         <include refid="base" />
@@ -49,15 +42,7 @@
         ORDER BY A.REQUESTED_AT DESC
         FETCH   FIRST 1 ROW ONLY
     </select>
-    <!-- id="insertAnalysis"
-    [INPUT]
-        analysisId              : 
-        memberId                : 
-        jobId                   : 
-        status                  : 
-    [OUTPUT]
-        AI_ANALYSIS_SEQ.NEXTVAL : 
-    -->
+
     <insert id="insertAnalysis">
         /* id="insertAnalysis" */
         <selectKey keyProperty="analysisId" resultType="long" order="BEFORE">
@@ -78,19 +63,7 @@
            ,SYSTIMESTAMP
         )
     </insert>
-    <!-- id="completeAnalysis"
-    [INPUT]
-        status               : 
-        summary              : 
-        mainTasks            : 
-        qualifications       : 
-        preferences          : 
-        requiredCompetencies : 
-        rawResponse          : 
-        errorMessage         : 
-        modelName            : 
-        analysisId           : 
-    -->
+    
     <update id="completeAnalysis">
         /* id="completeAnalysis" */
         UPDATE  AI_ANALYSIS
@@ -106,11 +79,7 @@
                ,COMPLETED_AT          = SYSTIMESTAMP
         WHERE   ANALYSIS_ID = #{analysisId}
     </update>
-    <!-- id="failAnalysis"
-    [INPUT]
-        errorMessage : 
-        analysisId   : 
-    -->
+    
     <update id="failAnalysis">
         /* id="failAnalysis" */
         UPDATE  AI_ANALYSIS
@@ -119,26 +88,14 @@
                ,COMPLETED_AT  = SYSTIMESTAMP
         WHERE   ANALYSIS_ID = #{analysisId}
     </update>
-    <!-- id="deleteTechs"
-    [INPUT]
-        analysisId : 
-    -->
+
     <delete id="deleteTechs">
         /* id="deleteTechs" */
         DELETE
         FROM    AI_JOB_TECH
         WHERE   ANALYSIS_ID = #{analysisId}
     </delete>
-    <!-- id="insertTech"
-    [INPUT]
-        aiJobTechId             : 
-        analysisId              : 
-        techName                : 
-        requirementType         : 
-        matchStatus             : 
-    [OUTPUT]
-        AI_JOB_TECH_SEQ.NEXTVAL : 
-    -->
+   
     <insert id="insertTech">
         /* id="insertTech" */
         <selectKey keyProperty="aiJobTechId" resultType="long" order="BEFORE">
@@ -159,16 +116,7 @@
            ,#{matchStatus}
         )
     </insert>
-    <!-- id="selectTechs"
-    [INPUT]
-        analysisId      : 
-    [OUTPUT]
-        aiJobTechId     : 
-        analysisId      : 
-        techName        : 
-        requirementType : 
-        matchStatus     : 
-    -->
+    
     <select id="selectTechs" resultType="com.jobon.ai.vo.AiJobTechVO">
         /* id="selectTechs" */
         SELECT  AI_JOB_TECH_ID aiJobTechId
@@ -181,28 +129,14 @@
         ORDER BY REQUIREMENT_TYPE
                ,TECH_NAME
     </select>
-    <!-- id="deleteRecommendations"
-    [INPUT]
-        analysisId : 
-    -->
+
     <delete id="deleteRecommendations">
         /* id="deleteRecommendations" */
         DELETE
         FROM    AI_EXPERIENCE_RECOMMEND
         WHERE   ANALYSIS_ID = #{analysisId}
     </delete>
-    <!-- id="insertRecommendation"
-    [INPUT]
-        recommendId                         : 
-        analysisId                          : 
-        projectId                           : 
-        rankNo                              : 
-        reason                              : 
-        sourceDetail                        : 
-        savedYn                             : 
-    [OUTPUT]
-        AI_EXPERIENCE_RECOMMEND_SEQ.NEXTVAL : 
-    -->
+   
     <insert id="insertRecommendation">
         /* id="insertRecommendation" */
         <selectKey keyProperty="recommendId" resultType="long"
@@ -230,20 +164,7 @@
            ,SYSTIMESTAMP
         )
     </insert>
-    <!-- id="selectRecommendations"
-    [INPUT]
-        analysisId   : 
-    [OUTPUT]
-        recommendId  : 
-        analysisId   : 
-        projectId    : 
-        projectName  : 
-        rankNo       : 
-        reason       : 
-        sourceDetail : 
-        savedYn      : 
-        createdAt    : 
-    -->
+   
     <select id="selectRecommendations" resultType="com.jobon.ai.vo.AiExperienceRecommendVO">
         /* id="selectRecommendations" */
         SELECT  R.RECOMMEND_ID recommendId
@@ -261,23 +182,14 @@
         WHERE   R.ANALYSIS_ID = #{analysisId}
         ORDER BY R.RANK_NO
     </select>
-    <!-- id="updateRecommendationSaved"
-    [INPUT]
-        savedYn     : 
-        recommendId : 
-    -->
+
     <update id="updateRecommendationSaved">
         /* id="updateRecommendationSaved" */
         UPDATE  AI_EXPERIENCE_RECOMMEND
         SET     SAVED_YN = #{savedYn}
         WHERE   RECOMMEND_ID = #{recommendId}
     </update>
-    <!-- id="selectMemberTechs"
-    [INPUT]
-        memberId    : 
-    [OUTPUT]
-        T.TECH_NAME : 
-    -->
+
     <select id="selectMemberTechs" resultType="string">
         /* id="selectMemberTechs" */
         SELECT  DISTINCT T.TECH_NAME
@@ -295,12 +207,7 @@
                                  WHERE   L.MEMBER_ID = #{memberId}
                              )
     </select>
-    <!-- id="selectProjectTechs"
-    [INPUT]
-        projectId   : 
-    [OUTPUT]
-        T.TECH_NAME : 
-    -->
+
     <select id="selectProjectTechs" resultType="string">
         /* id="selectProjectTechs" */
         SELECT  T.TECH_NAME

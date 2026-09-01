@@ -17,7 +17,6 @@
     </resultMap>
 
     <select id="selectList" resultMap="m">
-        /* id="selectList" */
         SELECT  *
         FROM    PROJECT_EXPERIENCE
         WHERE   MEMBER_ID = #{memberId}
@@ -26,7 +25,6 @@
     </select>
 
     <select id="selectOne" resultMap="m">
-        /* id="selectOne" */
         SELECT  *
         FROM    PROJECT_EXPERIENCE
         WHERE   MEMBER_ID = #{memberId}
@@ -34,7 +32,6 @@
     </select>
 
     <insert id="insert">
-        /* id="insert" */
         <selectKey keyProperty="projectId" resultType="long" order="BEFORE">
             SELECT  PROJECT_EXPERIENCE_SEQ.NEXTVAL
             FROM    DUAL
@@ -67,7 +64,6 @@
     </insert>
 
     <update id="update">
-        /* id="update" */
         UPDATE  PROJECT_EXPERIENCE
         SET     PROJECT_NAME = #{projectName}
                ,ORGANIZATION = #{organization,jdbcType=VARCHAR}
@@ -82,7 +78,6 @@
     </update>
 
     <delete id="delete">
-        /* id="delete" */
         DELETE
         FROM    PROJECT_EXPERIENCE
         WHERE   MEMBER_ID = #{memberId}
@@ -90,7 +85,6 @@
     </delete>
 
     <update id="mergeTech">
-        /* id="mergeTech" */
         MERGE
         INTO    TECH_STACK T
         USING   (   SELECT  #{techName} TECH_NAME
@@ -111,14 +105,12 @@
     </update>
 
     <select id="selectTechId" resultType="long">
-        /* id="selectTechId" */
         SELECT  TECH_ID
         FROM    TECH_STACK
         WHERE   LOWER(TECH_NAME) = LOWER(#{techName})
     </select>
 
     <insert id="insertProjectTech">
-        /* id="insertProjectTech" */
         INSERT INTO PROJECT_TECH (
             PROJECT_ID
            ,TECH_ID
@@ -129,14 +121,12 @@
     </insert>
 
     <delete id="deleteProjectTech">
-        /* id="deleteProjectTech" */
         DELETE
         FROM    PROJECT_TECH
         WHERE   PROJECT_ID = #{projectId}
     </delete>
 
     <select id="selectTechNames" resultType="string">
-        /* id="selectTechNames" */
         SELECT  T.TECH_NAME
         FROM    PROJECT_TECH P
         JOIN    TECH_STACK T
@@ -146,7 +136,6 @@
     </select>
 
     <insert id="insertFeature">
-        /* id="insertFeature" */
         <selectKey keyProperty="featureId" resultType="long" order="BEFORE">
             SELECT  PROJECT_FEATURE_SEQ.NEXTVAL
             FROM    DUAL
@@ -167,14 +156,12 @@
     </insert>
 
     <delete id="deleteFeatures">
-        /* id="deleteFeatures" */
         DELETE
         FROM    PROJECT_FEATURE
         WHERE   PROJECT_ID = #{projectId}
     </delete>
 
     <select id="selectFeatures" resultType="com.jobon.project.vo.ProjectFeatureVO">
-        /* id="selectFeatures" */
         SELECT  FEATURE_ID featureId
                ,PROJECT_ID projectId
                ,FEATURE_NAME featureName
@@ -186,7 +173,6 @@
     </select>
 
     <insert id="insertTrouble">
-        /* id="insertTrouble" */
         <selectKey keyProperty="troubleId" resultType="long" order="BEFORE">
             SELECT  PROJECT_TROUBLE_SEQ.NEXTVAL
             FROM    DUAL
@@ -213,14 +199,12 @@
     </insert>
 
     <delete id="deleteTroubles">
-        /* id="deleteTroubles" */
         DELETE
         FROM    PROJECT_TROUBLE
         WHERE   PROJECT_ID = #{projectId}
     </delete>
 
     <select id="selectTroubles" resultType="com.jobon.project.vo.ProjectTroubleVO">
-        /* id="selectTroubles" */
         SELECT  TROUBLE_ID troubleId
                ,PROJECT_ID projectId
                ,TITLE title
