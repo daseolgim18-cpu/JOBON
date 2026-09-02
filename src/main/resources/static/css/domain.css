@@ -136,8 +136,7 @@
   gap: 12px;
 }
 
-.nested-row,
-.trouble-row {
+.nested-row {
   display: grid;
   grid-template-columns: 1fr 2fr auto;
   gap: 10px;
@@ -145,8 +144,58 @@
   align-items: start;
 }
 
+.nested-description {
+  margin: 5px 0 0;
+  color: var(--jobon-muted);
+  font-size: 13px;
+}
+
+.trouble-list {
+  display: grid;
+  gap: 18px;
+  margin-top: 16px;
+}
+
 .trouble-row {
-  grid-template-columns: 1fr 1fr 1fr 1fr 1fr auto;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  padding: 20px;
+  border: 1px solid var(--jobon-line);
+  border-radius: 14px;
+  background: #fff;
+}
+
+.trouble-row-head {
+  grid-column: 1 / -1;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--jobon-line);
+}
+
+.trouble-row-head strong {
+  font-size: 15px;
+}
+
+.trouble-field {
+  display: grid;
+  gap: 7px;
+  min-width: 0;
+}
+
+.trouble-field--title {
+  grid-column: 1 / -1;
+}
+
+.trouble-textarea {
+  min-height: 140px;
+  resize: vertical;
+  line-height: 1.7;
+  overflow-wrap: anywhere;
+  word-break: keep-all;
 }
 
 /* 6. Story & Detail Components */
@@ -171,6 +220,37 @@
 .mini-detail dd {
   margin: 0;
   white-space: pre-line;
+}
+
+.trouble-detail-list {
+  display: grid;
+  gap: 16px;
+}
+
+.trouble-detail-card {
+  overflow: visible;
+}
+
+.trouble-detail-title {
+  margin: 0 0 16px;
+  font-size: 17px;
+  line-height: 1.5;
+  overflow-wrap: anywhere;
+  word-break: keep-all;
+}
+
+.trouble-detail {
+  grid-template-columns: 72px minmax(0, 1fr);
+  gap: 12px 18px;
+}
+
+.trouble-detail dd {
+  min-width: 0;
+  white-space: pre-wrap;
+  overflow: visible;
+  overflow-wrap: anywhere;
+  word-break: keep-all;
+  line-height: 1.75;
 }
 
 /* 7. AI Analysis & Skill Matrix */
@@ -290,19 +370,80 @@
 .status-summary strong, .status-summary span { display: block; }
 .status-summary strong { font-size: 22px; }
 .status-summary span { margin-top: 4px; color: var(--jobon-muted); font-size: 12px; }
-.dashboard-row { display: flex; justify-content: space-between; gap: 14px; padding: 11px 0; border-bottom: 1px solid var(--jobon-line); }
+/* [수정] 대시보드 목록은 제목 영역과 보조정보 영역의 너비를 분리해 한글이 한 글자씩 끊기지 않도록 합니다. */
+.dashboard-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) max-content;
+  align-items: center;
+  column-gap: 18px;
+  min-height: 48px;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--jobon-line);
+}
 .dashboard-row:last-child { border-bottom: 0; }
 .dashboard-row > :first-child { min-width: 0; }
+.dashboard-row__title {
+  min-width: 0;
+  color: var(--jobon-black);
+  line-height: 1.55;
+  word-break: keep-all;
+  overflow-wrap: break-word;
+}
+.dashboard-row a.dashboard-row__title:hover { color: var(--jobon-green-dark); }
+.dashboard-row__meta {
+  justify-self: end;
+  min-width: max-content;
+  color: var(--jobon-muted);
+  font-size: 12px;
+  line-height: 1.4;
+  white-space: nowrap !important;
+  word-break: keep-all !important;
+  overflow-wrap: normal !important;
+  text-align: right;
+}
+/* [추가] 날짜/우선순위 영역을 확보하여 날짜와 시간이 두 줄로 갈라지는 현상을 방지합니다. */
+.dashboard-row--schedule { grid-template-columns: minmax(0, 1fr) 118px; }
+.dashboard-row--todo { grid-template-columns: minmax(0, 1fr) 122px; }
+.dashboard-row--schedule .dashboard-row__meta,
+.dashboard-row--todo .dashboard-row__meta { width: 100%; }
 .dashboard-row .muted { flex: 0 0 auto; font-size: 12px; }
-.deadline-badge { flex: 0 0 auto; color: var(--jobon-red); font-weight: 900; }
+.deadline-badge { flex: 0 0 auto; color: var(--jobon-red); font-weight: 900; white-space: nowrap; }
+.dashboard-activity__content {
+  display: grid;
+  grid-template-columns: max-content minmax(0, 1fr);
+  align-items: start;
+  gap: 9px;
+  min-width: 0;
+}
+.dashboard-activity__badge {
+  margin-top: 1px;
+  white-space: nowrap;
+}
+.dashboard-activity__title {
+  min-width: 0;
+  line-height: 1.55;
+  word-break: keep-all;
+  overflow-wrap: break-word;
+}
+/* [수정] 최근 활동의 상대시간은 최소 폭을 고정해 '어/제'처럼 세로로 깨지지 않게 합니다. */
+.dashboard-row--activity { grid-template-columns: minmax(0, 1fr) 58px; }
+.dashboard-row--activity .dashboard-row__meta {
+  align-self: start;
+  width: 58px;
+  padding-top: 3px;
+}
 .dashboard-record { padding: 11px 0; border-bottom: 1px solid var(--jobon-line); }
 .dashboard-record p { margin: 5px 0 0; }
 .dashboard-ai .readiness { margin: 14px 0; }
 .skill-tag--missing { background: #fff0f0; color: var(--jobon-red); }
 
+/* [추가] 날짜/시간 및 표 액션은 한글/숫자가 불필요하게 쪼개지지 않도록 유지합니다. */
+.date-cell { white-space: nowrap; }
+.table-actions--nowrap { flex-wrap: nowrap; white-space: nowrap; }
+
 /* [추가] 지원현황 칸반 보드 */
 .application-board { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; }
-.board-column { min-width: 0; padding: 14px; border: 1px solid var(--jobon-line); border-radius: 12px; background: #f8faf9; }
+.board-column { min-width: 0; height: 190px; overflow-y: auto; padding: 14px; border: 1px solid var(--jobon-line); border-radius: 12px; background: #f8faf9; }
 .board-column__head { display: flex; justify-content: space-between; margin-bottom: 12px; font-weight: 900; }
 .board-card { display: block; margin-top: 10px; padding: 13px; border: 1px solid var(--jobon-line); border-radius: 10px; background: white; color: inherit; }
 .board-card strong, .board-card span { display: block; }
@@ -318,6 +459,20 @@
   .nested-row,
   .trouble-row {
     grid-template-columns: 1fr;
+  }
+
+  .trouble-field--title,
+  .trouble-row-head {
+    grid-column: 1;
+  }
+
+  .trouble-detail {
+    grid-template-columns: 1fr;
+    gap: 6px;
+  }
+
+  .trouble-detail dd {
+    margin-bottom: 10px;
   }
 
   .skill-row {
@@ -353,7 +508,18 @@
     grid-template-columns: 1fr;
   }
 
-  .dashboard-row { display: block; }
+  .dashboard-row,
+  .dashboard-row--schedule,
+  .dashboard-row--todo,
+  .dashboard-row--activity { grid-template-columns: 1fr; gap: 5px; }
+  .dashboard-row__meta,
+  .dashboard-row--activity .dashboard-row__meta {
+    justify-self: start;
+    width: auto;
+    min-width: 0;
+    text-align: left;
+    white-space: normal !important;
+  }
   .dashboard-row .muted,
   .dashboard-row .deadline-badge { display: block; margin-top: 5px; }
 }

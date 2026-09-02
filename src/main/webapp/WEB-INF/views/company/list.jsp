@@ -11,7 +11,7 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <title>기업 관리 | JOBON</title>
         <link rel="stylesheet" href="${ctx}/css/common.css">
-        <link rel="stylesheet" href="${ctx}/css/domain.css">
+        <link rel="stylesheet" href="${ctx}/css/domain.css?v=20260902-3">
     </head>
 
     <body>
@@ -57,7 +57,7 @@
                                     <td><strong>${x.companyName}</strong></td>
                                     <td>${x.companyType}</td>
                                     <td>${x.industry} · ${x.jobField}</td>
-                                    <td>${x.createdAt}</td>
+                                    <td class="date-cell">${x.createdAtLabel}</td>
                                     <td>
                                         <div class="table-actions"><a class="text-link"
                                                 href="${ctx}/company/detail?id=${x.companyId}">상세</a><a

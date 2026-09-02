@@ -11,7 +11,7 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <title>지원 현황 등록/수정 | JOBON</title>
         <link rel="stylesheet" href="${ctx}/css/common.css">
-        <link rel="stylesheet" href="${ctx}/css/domain.css">
+        <link rel="stylesheet" href="${ctx}/css/domain.css?v=20260902-3">
     </head>
 
     <body>
@@ -54,7 +54,7 @@
                                 class="form-control" type="date" name="appliedDate"
                                 value="${application.appliedDate}"></label><label><span class="form-label">다음
                                 일정</span><input class="form-control" type="datetime-local" name="nextScheduleAt"
-                                value="${application.nextScheduleAt}"></label><label
+                                value="${application.nextScheduleAtInputValue}"></label><label
                             class="form-group--full"><span class="form-label">메모</span><textarea
                                 class="form-control" name="memo">${application.memo}</textarea></label></div>
                     <div class="form-actions"><a class="jobon-btn jobon-btn--ghost"

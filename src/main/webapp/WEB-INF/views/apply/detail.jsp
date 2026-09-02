@@ -11,7 +11,7 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <title>지원 현황 상세 | JOBON</title>
         <link rel="stylesheet" href="${ctx}/css/common.css">
-        <link rel="stylesheet" href="${ctx}/css/domain.css">
+        <link rel="stylesheet" href="${ctx}/css/domain.css?v=20260902-3">
     </head>
 
     <body>
@@ -35,15 +35,15 @@
                 <dl class="detail-list">
                     <div>
                         <dt>상태</dt>
-                        <dd>${application.status}</dd>
+                        <dd>${application.statusLabel}</dd>
                     </div>
                     <div>
                         <dt>지원일</dt>
-                        <dd>${application.appliedDate}</dd>
+                        <dd>${application.appliedDateLabel}</dd>
                     </div>
                     <div>
                         <dt>다음 일정</dt>
-                        <dd>${application.nextScheduleAt}</dd>
+                        <dd>${empty application.nextScheduleAt ? '없음' : application.nextScheduleAtLabel}</dd>
                     </div>
                     <div>
                         <dt>메모</dt>

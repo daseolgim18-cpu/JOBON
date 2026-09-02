@@ -27,6 +27,8 @@ public interface AiAnalysisDAO {
 
     int deleteRecommendations(@Param("analysisId") Long id);
 
+    int deleteAnalysis(@Param("memberId") Long memberId, @Param("analysisId") Long analysisId);
+
     int insertRecommendation(AiExperienceRecommendVO v);
 
     List<AiExperienceRecommendVO> selectRecommendations(@Param("analysisId") Long id);

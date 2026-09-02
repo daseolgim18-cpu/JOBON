@@ -66,34 +66,80 @@
                             </c:if>
                         </div>
                     </section>
-                    <section class="nested-section">
+                    <section class="nested-section trouble-section">
                         <div class="nested-head">
-                            <h3>트러블슈팅</h3><button type="button" class="jobon-btn jobon-btn--ghost"
+                            <div>
+                                <h3>트러블슈팅</h3>
+                                <p class="nested-description">문제 상황부터 해결 결과까지 한 건씩 순서대로 기록합니다.</p>
+                            </div>
+                            <button type="button" class="jobon-btn jobon-btn--ghost"
                                 data-add-row="troubleRows">+ 기록 추가</button>
                         </div>
-                        <div id="troubleRows">
+                        <div id="troubleRows" class="trouble-list">
                             <c:forEach var="t" items="${project.troubles}">
-                                <div class="trouble-row"><input class="form-control" name="troubleTitle"
-                                        value="${t.title}" placeholder="제목"><textarea class="form-control"
-                                        name="troubleProblem"
-                                        placeholder="문제 상황">${t.problem}</textarea><textarea
-                                        class="form-control" name="troubleCause"
-                                        placeholder="원인">${t.cause}</textarea><textarea class="form-control"
-                                        name="troubleSolution"
-                                        placeholder="해결 방법">${t.solution}</textarea><textarea
-                                        class="form-control" name="troubleResult"
-                                        placeholder="개선 결과">${t.result}</textarea><button type="button"
-                                        class="remove-row">삭제</button></div>
+                                <div class="trouble-row">
+                                    <div class="trouble-row-head">
+                                        <strong>트러블슈팅 기록</strong>
+                                        <button type="button" class="remove-row">삭제</button>
+                                    </div>
+                                    <label class="trouble-field trouble-field--title">
+                                        <span class="form-label">제목</span>
+                                        <input class="form-control" name="troubleTitle"
+                                            value="${t.title}" placeholder="트러블슈팅 제목">
+                                    </label>
+                                    <label class="trouble-field">
+                                        <span class="form-label">문제</span>
+                                        <textarea class="form-control trouble-textarea" name="troubleProblem"
+                                            placeholder="어떤 문제가 발생했는지 구체적으로 작성하세요.">${t.problem}</textarea>
+                                    </label>
+                                    <label class="trouble-field">
+                                        <span class="form-label">원인</span>
+                                        <textarea class="form-control trouble-textarea" name="troubleCause"
+                                            placeholder="문제가 발생한 원인을 작성하세요.">${t.cause}</textarea>
+                                    </label>
+                                    <label class="trouble-field">
+                                        <span class="form-label">해결</span>
+                                        <textarea class="form-control trouble-textarea" name="troubleSolution"
+                                            placeholder="문제를 해결하기 위해 적용한 방법을 작성하세요.">${t.solution}</textarea>
+                                    </label>
+                                    <label class="trouble-field">
+                                        <span class="form-label">결과</span>
+                                        <textarea class="form-control trouble-textarea" name="troubleResult"
+                                            placeholder="해결 후 달라진 점이나 개선 결과를 작성하세요.">${t.result}</textarea>
+                                    </label>
+                                </div>
                             </c:forEach>
                             <c:if test="${empty project.troubles}">
-                                <div class="trouble-row"><input class="form-control" name="troubleTitle"
-                                        placeholder="제목"><textarea class="form-control" name="troubleProblem"
-                                        placeholder="문제 상황"></textarea><textarea class="form-control"
-                                        name="troubleCause" placeholder="원인"></textarea><textarea
-                                        class="form-control" name="troubleSolution"
-                                        placeholder="해결 방법"></textarea><textarea class="form-control"
-                                        name="troubleResult" placeholder="개선 결과"></textarea><button
-                                        type="button" class="remove-row">삭제</button></div>
+                                <div class="trouble-row">
+                                    <div class="trouble-row-head">
+                                        <strong>트러블슈팅 기록</strong>
+                                        <button type="button" class="remove-row">삭제</button>
+                                    </div>
+                                    <label class="trouble-field trouble-field--title">
+                                        <span class="form-label">제목</span>
+                                        <input class="form-control" name="troubleTitle" placeholder="트러블슈팅 제목">
+                                    </label>
+                                    <label class="trouble-field">
+                                        <span class="form-label">문제</span>
+                                        <textarea class="form-control trouble-textarea" name="troubleProblem"
+                                            placeholder="어떤 문제가 발생했는지 구체적으로 작성하세요."></textarea>
+                                    </label>
+                                    <label class="trouble-field">
+                                        <span class="form-label">원인</span>
+                                        <textarea class="form-control trouble-textarea" name="troubleCause"
+                                            placeholder="문제가 발생한 원인을 작성하세요."></textarea>
+                                    </label>
+                                    <label class="trouble-field">
+                                        <span class="form-label">해결</span>
+                                        <textarea class="form-control trouble-textarea" name="troubleSolution"
+                                            placeholder="문제를 해결하기 위해 적용한 방법을 작성하세요."></textarea>
+                                    </label>
+                                    <label class="trouble-field">
+                                        <span class="form-label">결과</span>
+                                        <textarea class="form-control trouble-textarea" name="troubleResult"
+                                            placeholder="해결 후 달라진 점이나 개선 결과를 작성하세요."></textarea>
+                                    </label>
+                                </div>
                             </c:if>
                         </div>
                     </section>

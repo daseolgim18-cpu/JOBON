@@ -11,7 +11,7 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <title>지원 현황 | JOBON</title>
         <link rel="stylesheet" href="${ctx}/css/common.css">
-        <link rel="stylesheet" href="${ctx}/css/domain.css">
+        <link rel="stylesheet" href="${ctx}/css/domain.css?v=20260902-3">
     </head>
 
     <body>
@@ -58,9 +58,9 @@
                                 <tr>
                                     <td>${x.companyName}</td>
                                     <td>${x.jobTitle}</td>
-                                    <td>${x.appliedDate}</td>
+                                    <td>${x.appliedDateLabel}</td>
                                     <td><span class="badge badge--green">${x.statusLabel}</span></td>
-                                    <td>${x.nextScheduleAt}</td>
+                                    <td class="date-cell">${empty x.nextScheduleAt ? '-' : x.nextScheduleAtLabel}</td>
                                     <td><a class="text-link"
                                             href="${ctx}/apply/detail?id=${x.applicationId}">상세</a></td>
                                 </tr>
@@ -79,7 +79,7 @@
                                     <c:if test="${x.status eq boardStatus}">
                                         <a class="board-card" href="${ctx}/apply/detail?id=${x.applicationId}">
                                             <strong>${x.companyName}</strong><span>${x.jobTitle}</span>
-                                            <span>지원일 ${x.appliedDate}</span><span>다음 일정 ${x.nextScheduleAt}</span>
+                                            <span>지원일 ${x.appliedDateLabel}</span><span>다음 일정 ${empty x.nextScheduleAt ? '없음' : x.nextScheduleAtLabel}</span>
                                         </a>
                                     </c:if>
                                 </c:forEach>

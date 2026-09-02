@@ -11,7 +11,8 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <title>대시보드 | JOBON</title>
         <link rel="stylesheet" href="${ctx}/css/common.css">
-        <link rel="stylesheet" href="${ctx}/css/domain.css">
+        <!-- [수정] 대시보드 UI 수정 후 브라우저의 이전 CSS 캐시가 남지 않도록 버전 쿼리를 추가했습니다. -->
+        <link rel="stylesheet" href="${ctx}/css/domain.css?v=20260902-2">
     </head>
 
     <body>
@@ -58,23 +59,33 @@
                     <section class="card card--padded">
                         <div class="nested-head"><h3>다가오는 지원 일정</h3><a class="text-link" href="${ctx}/apply/list?sort=schedule">전체 보기</a></div>
                         <c:forEach var="x" items="${upcomingSchedules}">
-                            <div class="dashboard-row"><a href="${ctx}/apply/detail?id=${x.applicationId}">${x.companyName} · ${x.jobTitle}</a>
-                                <span class="muted">${x.nextScheduleAt}</span></div>
+                            <div class="dashboard-row dashboard-row--schedule">
+                                <a class="dashboard-row__title" href="${ctx}/apply/detail?id=${x.applicationId}">${x.companyName} · ${x.jobTitle}</a>
+                                <span class="dashboard-row__meta">${x.nextScheduleAtLabel}</span>
+                            </div>
                         </c:forEach>
                         <c:if test="${empty upcomingSchedules}"><p class="muted">등록된 다음 일정이 없습니다.</p></c:if>
                     </section>
                     <section class="card card--padded">
                         <div class="nested-head"><h3>진행할 TODO</h3><a class="text-link" href="${ctx}/todo/list?status=TODO">전체 보기</a></div>
                         <c:forEach var="t" items="${pendingTodos}">
-                            <div class="dashboard-row"><span>${t.title}</span><span class="muted">${t.dueDate} · ${t.priority}</span></div>
+                            <div class="dashboard-row dashboard-row--todo">
+                                <span class="dashboard-row__title">${t.title}</span>
+                                <span class="dashboard-row__meta">${t.dueDateLabel} · ${t.priorityLabel}</span>
+                            </div>
                         </c:forEach>
                         <c:if test="${empty pendingTodos}"><p class="muted">진행할 TODO가 없습니다.</p></c:if>
                     </section>
                     <section class="card card--padded">
                         <div class="nested-head"><h3>최근 활동</h3><a class="text-link" href="${ctx}/mypage/activity">전체 보기</a></div>
                         <c:forEach var="x" items="${recentActivities}">
-                            <div class="dashboard-row"><span><span class="badge">${x.activityTypeLabel}</span> ${x.title}</span>
-                                <span class="muted">${x.createdAt}</span></div>
+                            <div class="dashboard-row dashboard-row--activity">
+                                <span class="dashboard-activity__content">
+                                    <span class="badge dashboard-activity__badge">${x.activityTypeLabel}</span>
+                                    <span class="dashboard-activity__title">${x.title}</span>
+                                </span>
+                                <span class="dashboard-row__meta" title="${x.formattedCreatedAt}">${x.relativeTime}</span>
+                            </div>
                         </c:forEach>
                         <c:if test="${empty recentActivities}"><p class="muted">아직 기록된 활동이 없습니다.</p></c:if>
                     </section>

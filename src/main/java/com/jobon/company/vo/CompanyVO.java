@@ -3,6 +3,7 @@ package com.jobon.company.vo;
 /** [추가] CompanyVO DB/화면 전달용 VO */
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import lombok.Data;
 
 @Data
@@ -20,4 +21,11 @@ private String memo;
 private LocalDateTime createdAt;
 private LocalDateTime updatedAt;
 
+/** [추가] 목록 화면에서 TIMESTAMP의 초/밀리초를 제거한 등록일을 표시합니다. */
+public String getCreatedAtLabel() {
+    if (createdAt == null) return "";
+    return createdAt.format(DateTimeFormatter.ofPattern("yyyy.MM.dd HH:mm"));
 }
+
+}
+

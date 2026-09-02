@@ -134,6 +134,31 @@ public class AiAnalysisServiceImpl implements AiAnalysisService {
         }
     }
 
+
+    /**
+     * [추가] AI 분석 결과 삭제.
+     * FK 제약조건을 지키기 위해 추천 → 기술 → 분석 본문 순서로 삭제하며,
+     * 분석 본문은 MEMBER_ID까지 조건에 포함해 다른 사용자의 결과를 삭제할 수 없게 합니다.
+     */
+    @Override
+    @Transactional
+    public void delete(Long memberId, Long analysisId) {
+        if (memberId == null || analysisId == null) {
+            throw new IllegalArgumentException("삭제할 AI 분석 결과를 찾을 수 없습니다.");
+        }
+        AiAnalysisVO analysis = dao.selectOne(memberId, analysisId);
+        if (analysis == null) {
+            throw new IllegalArgumentException("삭제할 AI 분석 결과를 찾을 수 없습니다.");
+        }
+        dao.deleteRecommendations(analysisId);
+        dao.deleteTechs(analysisId);
+        if (dao.deleteAnalysis(memberId, analysisId) != 1) {
+            throw new IllegalStateException("AI 분석 결과를 삭제하지 못했습니다.");
+        }
+        activityLogService.record(memberId, "AI", "DELETE", analysisId,
+                analysis.getJobTitle() + " AI 분석 결과 삭제");
+    }
+
     private LlmAnalysisRequest requestOf(JobPostingVO job) {
         return LlmAnalysisRequest.builder().title(job.getTitle()).jobRole(job.getJobRole())
                 .originalText(job.getOriginalText()).build();

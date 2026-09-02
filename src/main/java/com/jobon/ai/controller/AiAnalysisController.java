@@ -4,6 +4,7 @@ package com.jobon.ai.controller;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import com.jobon.ai.service.AiAnalysisService;
 import com.jobon.common.util.SessionMemberUtil;
 import com.jobon.job.service.JobPostingService;
@@ -49,6 +50,15 @@ public class AiAnalysisController {
         var old = service.get(mid, id);
         var a = service.analyze(mid, old.getJobId());
         return "redirect:/ai/analysis/detail?id=" + a.getAnalysisId();
+    }
+
+
+    /** [추가] AI 분석 결과 목록에서 선택한 분석 결과를 삭제합니다. */
+    @PostMapping("/analysis/{id}/delete")
+    String delete(@PathVariable Long id, HttpSession s, RedirectAttributes r) {
+        service.delete(SessionMemberUtil.requireMemberId(s), id);
+        r.addFlashAttribute("successMessage", "AI 분석 결과가 삭제되었습니다.");
+        return "redirect:/ai/analysis";
     }
 
     @GetMapping("/experience-recommend")

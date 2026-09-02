@@ -45,20 +45,23 @@
                         </div>
                     </c:forEach>
                     <h3>트러블슈팅</h3>
-                    <c:forEach var="t" items="${project.troubles}">
-                        <div class="story-card"><strong>${t.title}</strong>
-                            <dl class="mini-detail">
-                                <dt>문제</dt>
-                                <dd>${t.problem}</dd>
-                                <dt>원인</dt>
-                                <dd>${t.cause}</dd>
-                                <dt>해결</dt>
-                                <dd>${t.solution}</dd>
-                                <dt>결과</dt>
-                                <dd>${t.result}</dd>
-                            </dl>
-                        </div>
-                    </c:forEach>
+                    <div class="trouble-detail-list">
+                        <c:forEach var="t" items="${project.troubles}">
+                            <article class="story-card trouble-detail-card">
+                                <h4 class="trouble-detail-title">${t.title}</h4>
+                                <dl class="mini-detail trouble-detail">
+                                    <dt>문제</dt>
+                                    <dd>${t.problem}</dd>
+                                    <dt>원인</dt>
+                                    <dd>${t.cause}</dd>
+                                    <dt>해결</dt>
+                                    <dd>${t.solution}</dd>
+                                    <dt>결과</dt>
+                                    <dd>${t.result}</dd>
+                                </dl>
+                            </article>
+                        </c:forEach>
+                    </div>
                 </div>
             </div>
         </main>

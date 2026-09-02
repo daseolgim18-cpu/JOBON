@@ -136,6 +136,14 @@
         FROM    AI_EXPERIENCE_RECOMMEND
         WHERE   ANALYSIS_ID = #{analysisId}
     </delete>
+
+    <delete id="deleteAnalysis">
+        /* [추가] 회원 소유권을 함께 확인하여 본인의 AI 분석 결과만 삭제합니다. */
+        DELETE
+        FROM    AI_ANALYSIS
+        WHERE   MEMBER_ID = #{memberId}
+        AND     ANALYSIS_ID = #{analysisId}
+    </delete>
    
     <insert id="insertRecommendation">
         /* id="insertRecommendation" */

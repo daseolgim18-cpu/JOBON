@@ -9,7 +9,7 @@
       <meta name="viewport" content="width=device-width, initial-scale=1" />
       <title>JOBON | 취업 준비 통합 관리</title>
       <link rel="stylesheet" href="${ctx}/css/common.css" />
-      <link rel="stylesheet" href="${ctx}/css/main.css" />
+      <link rel="stylesheet" href="${ctx}/css/main.css?v=20260902-4" />
     </head>
 
     <body>
@@ -99,30 +99,80 @@
 
             <div class="card dashboard-preview">
               <h2 class="main-section__title">대시보드 미리보기</h2>
-              <div class="dashboard-grid">
-                <div class="preview-panel">
-                  <h4>오늘의 할 일</h4>
-                  <div class="preview-list">
-                    <div class="preview-row"><span>서류 제출</span><b>2건</b></div>
-                    <div class="preview-row"><span>면접 준비</span><b>1건</b></div>
-                    <div class="preview-row"><span>자기소개서 수정</span><b>3건</b></div>
+
+              <%-- [수정] 로그인 사용자에게만 실제 DB 기반 취업 준비 데이터를 표시합니다. --%>
+              <c:choose>
+                <c:when test="${mainPreviewLoggedIn}">
+                  <div class="dashboard-grid">
+                    <div class="preview-panel">
+                      <h4>오늘의 할 일</h4>
+                      <div class="preview-list">
+                        <div class="preview-row"><span>오늘 마감 TODO</span><b>${todayTodoCount}건</b></div>
+                        <div class="preview-row"><span>진행 중 TODO</span><b>${doingTodoCount}건</b></div>
+                        <div class="preview-row"><span>7일 이내 TODO</span><b>${imminentTodoCount}건</b></div>
+                      </div>
+                    </div>
+
+                    <div class="preview-panel preview-panel--status">
+                      <h4>지원 현황 요약</h4>
+                      <div class="donut" style="${applicationDonutStyle}">
+                        <div class="donut__center">
+                          <strong>${applicationTotal}</strong>
+                          <span>지원</span>
+                        </div>
+                      </div>
+                      <div class="preview-status-summary" aria-label="지원 상태 요약">
+                        <span>관심 ${applicationStatusCounts['INTEREST']}</span>
+                        <span>지원 ${applicationStatusCounts['APPLIED']}</span>
+                        <span>진행 ${applicationStatusCounts['DOCUMENT'] + applicationStatusCounts['INTERVIEW']}</span>
+                      </div>
+                    </div>
+
+                    <div class="preview-panel">
+                      <h4>이번 주 할 일</h4>
+                      <div class="preview-list preview-list--tasks">
+                        <c:choose>
+                          <c:when test="${not empty weekTodos}">
+                            <c:forEach var="todo" items="${weekTodos}">
+                              <div class="preview-row preview-row--task">
+                                <span title="${todo.title}"><c:out value="${todo.title}" /></span>
+                                <b>${todo.dueDateLabel}</b>
+                              </div>
+                            </c:forEach>
+                          </c:when>
+                          <c:otherwise>
+                            <div class="preview-empty">이번 주 예정된 TODO가 없습니다.</div>
+                          </c:otherwise>
+                        </c:choose>
+                      </div>
+                    </div>
                   </div>
-                </div>
-                <div class="preview-panel">
-                  <h4>지원 현황 요약</h4>
-                  <div class="donut"></div>
-                </div>
-                <div class="preview-panel">
-                  <h4>이번 주 할 일</h4>
-                  <div class="preview-list">
-                    <div class="preview-row"><span>이력서 업데이트</span><b>✓</b></div>
-                    <div class="preview-row"><span>포트폴리오 확인</span><b>•</b></div>
-                    <div class="preview-row"><span>면접 준비</span><b>•</b></div>
+
+                  <div class="preview-footer">
+                    <c:choose>
+                      <c:when test="${not empty recentActivity}">
+                        <span class="preview-recent" title="${recentActivity.formattedCreatedAt}">
+                          최근 활동 · <c:out value="${recentActivity.title}" /> · ${recentActivity.relativeTime}
+                        </span>
+                      </c:when>
+                      <c:otherwise>
+                        <span class="preview-recent">최근 활동 내역이 없습니다.</span>
+                      </c:otherwise>
+                    </c:choose>
+                    <a href="${ctx}/dashboard">전체 보기 →</a>
                   </div>
-                </div>
-              </div>
-              <div class="preview-footer"><span>최근 활동 · 한국자동차 서류 결과가 업데이트 되었어요.</span><a href="${ctx}/dashboard">전체 보기
-                  →</a></div>
+                </c:when>
+
+                <c:otherwise>
+                  <%-- [수정] 비로그인 상태에서는 실제 데이터처럼 보이는 임의 숫자를 노출하지 않습니다. --%>
+                  <div class="dashboard-preview-login">
+                    <div class="dashboard-preview-login__icon">✓</div>
+                    <strong>로그인하면 나의 취업 준비 현황을 확인할 수 있습니다.</strong>
+                    <p>TODO, 지원 현황, 최근 활동을 실제 저장된 데이터 기준으로 한눈에 확인해보세요.</p>
+                    <a class="jobon-btn jobon-btn--primary" href="${ctx}/login">로그인하고 확인하기</a>
+                  </div>
+                </c:otherwise>
+              </c:choose>
             </div>
           </div>
         </section>

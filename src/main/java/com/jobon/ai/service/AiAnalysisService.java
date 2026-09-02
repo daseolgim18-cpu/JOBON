@@ -14,4 +14,7 @@ public interface AiAnalysisService {
     AiAnalysisVO getByJob(Long memberId, Long jobId);
 
     void saveRecommendation(Long memberId, Long recommendId, boolean saved);
+
+    /** [추가] 로그인 회원이 소유한 AI 분석 결과와 하위 기술/추천 데이터를 함께 삭제합니다. */
+    void delete(Long memberId, Long analysisId);
 }
