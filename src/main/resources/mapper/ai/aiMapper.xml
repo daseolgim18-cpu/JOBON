@@ -184,10 +184,16 @@
     </select>
 
     <update id="updateRecommendationSaved">
-        /* id="updateRecommendationSaved" */
+        /* [수정] 로그인 회원이 소유한 분석 결과의 추천만 저장 상태를 변경합니다. */
         UPDATE  AI_EXPERIENCE_RECOMMEND
         SET     SAVED_YN = #{savedYn}
         WHERE   RECOMMEND_ID = #{recommendId}
+        AND     EXISTS (
+                    SELECT  1
+                    FROM    AI_ANALYSIS A
+                    WHERE   A.ANALYSIS_ID = AI_EXPERIENCE_RECOMMEND.ANALYSIS_ID
+                    AND     A.MEMBER_ID = #{memberId}
+                )
     </update>
 
     <select id="selectMemberTechs" resultType="string">

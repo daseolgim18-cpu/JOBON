@@ -26,16 +26,22 @@
                     </div><a class="jobon-btn jobon-btn--primary" href="${ctx}/apply/new">지원 등록</a>
                 </section>
                 <form class="toolbar"><input class="form-control toolbar__grow" name="keyword"
-                        value="${keyword}" placeholder="기업명"><select class="form-control select-sm"
+                        value="${keyword}" placeholder="기업명"><input type="hidden" name="view" value="${view}"><select class="form-control select-sm"
                         name="status">
                         <option value="">전체 상태</option>
-                        <option value="APPLIED">지원완료</option>
-                        <option value="DOCUMENT">서류</option>
-                        <option value="INTERVIEW">면접</option>
-                        <option value="OFFER">합격</option>
-                        <option value="REJECTED">불합격</option>
+                        <option value="INTEREST" ${status eq 'INTEREST' ? 'selected' : ''}>관심</option>
+                        <option value="APPLIED" ${status eq 'APPLIED' ? 'selected' : ''}>지원완료</option>
+                        <option value="DOCUMENT" ${status eq 'DOCUMENT' ? 'selected' : ''}>서류</option>
+                        <option value="INTERVIEW" ${status eq 'INTERVIEW' ? 'selected' : ''}>면접</option>
+                        <option value="OFFER" ${status eq 'OFFER' ? 'selected' : ''}>합격</option>
+                        <option value="REJECTED" ${status eq 'REJECTED' ? 'selected' : ''}>불합격</option>
                     </select><button class="jobon-btn jobon-btn--ghost">검색</button></form>
-                <div class="card table-wrap">
+                <!-- [추가] 같은 데이터를 목록형 또는 상태별 보드형으로 전환합니다. -->
+                <div class="chip-row">
+                    <a class="chip ${view eq 'list' ? 'is-active' : ''}" href="${ctx}/apply/list?view=list">목록 보기</a>
+                    <a class="chip ${view eq 'board' ? 'is-active' : ''}" href="${ctx}/apply/list?view=board">보드 보기</a>
+                </div>
+                <c:if test="${view eq 'list'}"><div class="card table-wrap">
                     <table class="data-table">
                         <thead>
                             <tr>
@@ -53,7 +59,7 @@
                                     <td>${x.companyName}</td>
                                     <td>${x.jobTitle}</td>
                                     <td>${x.appliedDate}</td>
-                                    <td><span class="badge badge--green">${x.status}</span></td>
+                                    <td><span class="badge badge--green">${x.statusLabel}</span></td>
                                     <td>${x.nextScheduleAt}</td>
                                     <td><a class="text-link"
                                             href="${ctx}/apply/detail?id=${x.applicationId}">상세</a></td>
@@ -61,7 +67,26 @@
                             </c:forEach>
                         </tbody>
                     </table>
-                </div>
+                </div></c:if>
+                <c:if test="${view eq 'board'}">
+                    <div class="application-board">
+                        <c:forEach var="boardStatus" items="${applicationStatusCodes}">
+                            <section class="board-column">
+                                <div class="board-column__head">
+                                    <span>${applicationStatusLabels[boardStatus]}</span>
+                                </div>
+                                <c:forEach var="x" items="${applications}">
+                                    <c:if test="${x.status eq boardStatus}">
+                                        <a class="board-card" href="${ctx}/apply/detail?id=${x.applicationId}">
+                                            <strong>${x.companyName}</strong><span>${x.jobTitle}</span>
+                                            <span>지원일 ${x.appliedDate}</span><span>다음 일정 ${x.nextScheduleAt}</span>
+                                        </a>
+                                    </c:if>
+                                </c:forEach>
+                            </section>
+                        </c:forEach>
+                    </div>
+                </c:if>
             </div>
         </main>
         <jsp:include page="/WEB-INF/views/common/footer.jsp" />

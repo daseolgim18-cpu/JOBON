@@ -43,11 +43,17 @@ public class JoinRequest {
     @Pattern(regexp = "^$|^01[016789]-?\\d{3,4}-?\\d{4}$", message = "올바른 휴대폰 번호 형식이 아닙니다.")
     private String phone;
 
+    @Size(max = 100, message = "관심 직무는 100자 이하로 입력해주세요.")
     private String interestJob;
+    @Pattern(regexp = "^$|^(NEW|CAREER|INTERN|ETC)$", message = "경력 구분 값이 올바르지 않습니다.")
     private String careerType;
+    @Size(max = 30, message = "최종 학력은 30자 이하로 입력해주세요.")
     private String educationLevel;
+    @Size(max = 100, message = "학교명은 100자 이하로 입력해주세요.")
     private String schoolName;
+    @Size(max = 100, message = "전공명은 100자 이하로 입력해주세요.")
     private String majorName;
+    @Size(max = 100, message = "희망 근무지는 100자 이하로 입력해주세요.")
     private String preferredLocation;
 
     @AssertTrue(message = "이용약관에 동의해주세요.")

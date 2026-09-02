@@ -2,6 +2,7 @@ package com.jobon.todo.service;
 
 /** [추가] TodoItem 서비스 인터페이스 */
 import java.util.List;
+import java.time.LocalDate;
 import com.jobon.todo.vo.TodoItemVO;
 
 public interface TodoItemService {
@@ -14,4 +15,6 @@ public interface TodoItemService {
     void update(TodoItemVO vo);
 
     void delete(Long memberId, Long todoId);
+
+    void syncJobDeadline(Long memberId, Long jobId, LocalDate deadline);
 }

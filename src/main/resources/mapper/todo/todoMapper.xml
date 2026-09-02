@@ -96,4 +96,15 @@
         FROM    TODO_ITEM
         WHERE   MEMBER_ID = #{memberId}
         AND     TODO_ID = #{todoId}
-    </delete></mapper>
+    </delete>
+
+    <!-- [추가] 완료되지 않은 연계 TODO만 공고의 최신 마감일로 동기화합니다. -->
+    <update id="updateDueDateByJobId">
+        UPDATE  TODO_ITEM
+        SET     DUE_DATE   = #{dueDate,jdbcType=DATE}
+               ,UPDATED_AT = SYSTIMESTAMP
+        WHERE   MEMBER_ID = #{memberId}
+        AND     JOB_ID = #{jobId}
+        AND     STATUS != 'DONE'
+    </update>
+</mapper>

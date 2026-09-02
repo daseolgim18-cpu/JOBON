@@ -7,16 +7,21 @@ import org.springframework.transaction.annotation.Transactional;
 import com.jobon.activity.service.ActivityLogService;
 import com.jobon.job.dao.JobPostingDAO;
 import com.jobon.job.vo.JobPostingVO;
+import com.jobon.todo.service.TodoItemService;
 
 @Service
 public class JobPostingServiceImpl implements JobPostingService {
     private final JobPostingDAO dao;
     // [추가] 채용공고 CRUD 성공 시 실제 활동 내역을 저장합니다.
     private final ActivityLogService activityLogService;
+    // [추가] 채용공고 마감일과 미완료 TODO 마감일을 함께 관리합니다.
+    private final TodoItemService todoItemService;
 
-    public JobPostingServiceImpl(JobPostingDAO dao, ActivityLogService activityLogService) {
+    public JobPostingServiceImpl(JobPostingDAO dao, ActivityLogService activityLogService,
+            TodoItemService todoItemService) {
         this.dao = dao;
         this.activityLogService = activityLogService;
+        this.todoItemService = todoItemService;
     }
 
     public List<JobPostingVO> list(Long memberId, String keyword, String jobRole, String sort) {
@@ -45,6 +50,8 @@ public class JobPostingServiceImpl implements JobPostingService {
         validate(vo);
         if (dao.update(vo) != 1)
             throw new IllegalStateException("수정에 실패했습니다.");
+        // [추가] 공고 수정 시 이미 만들어진 미완료 연계 TODO의 마감일도 갱신합니다.
+        todoItemService.syncJobDeadline(vo.getMemberId(), vo.getJobId(), vo.getDeadline());
         // [추가] 채용공고 수정 성공 후 활동 내역 저장
         activityLogService.record(vo.getMemberId(), "JOB", "UPDATE", vo.getJobId(),
                 vo.getTitle() + " 채용공고 수정");

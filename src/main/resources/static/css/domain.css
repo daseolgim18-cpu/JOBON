@@ -276,6 +276,38 @@
   color: var(--jobon-muted);
 }
 
+.chip.is-active {
+  border-color: var(--jobon-green);
+  background: var(--jobon-green-soft);
+  color: var(--jobon-green-dark);
+}
+
+/* [추가] 대시보드 상태 요약·일정·최근 기록 통합 영역 */
+.metric-grid a.metric { color: inherit; text-decoration: none; transition: transform .15s ease, box-shadow .15s ease; }
+.metric-grid a.metric:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(21, 34, 28, .08); }
+.status-summary { display: grid; grid-template-columns: repeat(6, 1fr); gap: 10px; margin-top: 14px; }
+.status-summary a { padding: 14px 10px; border: 1px solid var(--jobon-line); border-radius: 10px; color: inherit; text-align: center; }
+.status-summary strong, .status-summary span { display: block; }
+.status-summary strong { font-size: 22px; }
+.status-summary span { margin-top: 4px; color: var(--jobon-muted); font-size: 12px; }
+.dashboard-row { display: flex; justify-content: space-between; gap: 14px; padding: 11px 0; border-bottom: 1px solid var(--jobon-line); }
+.dashboard-row:last-child { border-bottom: 0; }
+.dashboard-row > :first-child { min-width: 0; }
+.dashboard-row .muted { flex: 0 0 auto; font-size: 12px; }
+.deadline-badge { flex: 0 0 auto; color: var(--jobon-red); font-weight: 900; }
+.dashboard-record { padding: 11px 0; border-bottom: 1px solid var(--jobon-line); }
+.dashboard-record p { margin: 5px 0 0; }
+.dashboard-ai .readiness { margin: 14px 0; }
+.skill-tag--missing { background: #fff0f0; color: var(--jobon-red); }
+
+/* [추가] 지원현황 칸반 보드 */
+.application-board { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; }
+.board-column { min-width: 0; padding: 14px; border: 1px solid var(--jobon-line); border-radius: 12px; background: #f8faf9; }
+.board-column__head { display: flex; justify-content: space-between; margin-bottom: 12px; font-weight: 900; }
+.board-card { display: block; margin-top: 10px; padding: 13px; border: 1px solid var(--jobon-line); border-radius: 10px; background: white; color: inherit; }
+.board-card strong, .board-card span { display: block; }
+.board-card span { margin-top: 5px; color: var(--jobon-muted); font-size: 12px; }
+
 /* 9. Responsive Layouts (Media Queries) */
 @media (max-width: 900px) {
   .analysis-grid,
@@ -299,6 +331,11 @@
   .recommend-card form {
     grid-column: 2;
   }
+
+  .status-summary,
+  .application-board {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
 }
 
 @media (max-width: 560px) {
@@ -310,4 +347,13 @@
   .ai-request {
     grid-template-columns: 1fr;
   }
+
+  .status-summary,
+  .application-board {
+    grid-template-columns: 1fr;
+  }
+
+  .dashboard-row { display: block; }
+  .dashboard-row .muted,
+  .dashboard-row .deadline-badge { display: block; margin-top: 5px; }
 }

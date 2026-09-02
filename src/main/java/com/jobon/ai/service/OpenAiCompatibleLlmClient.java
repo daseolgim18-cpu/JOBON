@@ -61,10 +61,12 @@ public class OpenAiCompatibleLlmClient implements LlmClient {
             throw new IllegalStateException("LLM API URL/Key 미설정");
         }
 
-        String prompt = "다음 채용공고를 분석해 JSON만 반환하세요. "
-                + "키: summary, mainTasks, qualifications, preferences, "
-                + "requiredCompetencies, technologies. "
-                + "technologies는 [{name,type}] 형식이며 type은 REQUIRED 또는 PREFERRED입니다.\n"
+        String prompt = "다음 채용공고 원문만 근거로 분석하고 JSON 객체만 반환하세요. "
+                + "키는 summary, mainTasks, qualifications, preferences, requiredCompetencies, technologies입니다. "
+                + "summary는 5문장 이내, 업무·자격·우대사항은 항목별 줄바꿈 문자열로 정리하세요. "
+                + "technologies는 중복 없이 [{name,type}] 형식으로 작성하고 type은 REQUIRED 또는 PREFERRED만 사용하세요. "
+                + "필수와 우대가 불명확하면 문맥상 자격요건에 있는 기술은 REQUIRED, 우대사항에 있는 기술은 PREFERRED로 분류하세요. "
+                + "원문에 없는 기술이나 경력 조건은 추측하지 마세요.\n"
                 + "공고명: " + nullToEmpty(request.getTitle()) + "\n"
                 + "직무: " + nullToEmpty(request.getJobRole()) + "\n"
                 + "원문: " + nullToEmpty(request.getOriginalText());

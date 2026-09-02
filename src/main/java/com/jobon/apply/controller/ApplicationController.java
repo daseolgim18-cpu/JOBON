@@ -5,6 +5,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import java.util.List;
+import java.util.Map;
 import com.jobon.apply.service.ApplicationService;
 import com.jobon.apply.vo.ApplicationVO;
 import com.jobon.common.util.SessionMemberUtil;
@@ -24,10 +26,18 @@ public class ApplicationController {
 
     @GetMapping("/list")
     String list(@RequestParam(required = false) String keyword, @RequestParam(required = false) String status,
-            @RequestParam(defaultValue = "latest") String sort, HttpSession s, Model m) {
+            @RequestParam(defaultValue = "latest") String sort,
+            @RequestParam(defaultValue = "list") String view, HttpSession s, Model m) {
         m.addAttribute("applications", service.list(SessionMemberUtil.requireMemberId(s), keyword, status, sort));
         m.addAttribute("keyword", keyword);
         m.addAttribute("status", status);
+        m.addAttribute("sort", sort);
+        m.addAttribute("view", "board".equals(view) ? "board" : "list");
+        m.addAttribute("applicationStatusCodes",
+                List.of("INTEREST", "APPLIED", "DOCUMENT", "INTERVIEW", "OFFER", "REJECTED"));
+        m.addAttribute("applicationStatusLabels", Map.of(
+                "INTEREST", "관심", "APPLIED", "지원완료", "DOCUMENT", "서류",
+                "INTERVIEW", "면접", "OFFER", "합격", "REJECTED", "불합격"));
         return "apply/list";
     }
 

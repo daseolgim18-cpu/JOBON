@@ -2,6 +2,7 @@ package com.jobon.todo.service;
 
 /** [추가] 할 일 CRUD + 기업/공고/마감일 연계 Controller */
 import java.util.List;
+import java.time.LocalDate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import com.jobon.activity.service.ActivityLogService;
@@ -57,6 +58,13 @@ public class TodoItemServiceImpl implements TodoItemService {
         if (dao.delete(memberId, todoId) != 1)
             throw new IllegalArgumentException("삭제할 데이터를 찾을 수 없습니다.");
         activityLogService.record(memberId, "TODO", "DELETE", todoId, existing.getTitle() + " TODO 삭제");
+    }
+
+    @Override
+    @Transactional
+    public void syncJobDeadline(Long memberId, Long jobId, LocalDate deadline) {
+        if (memberId == null || jobId == null) return;
+        dao.updateDueDateByJobId(memberId, jobId, deadline);
     }
 
     private void validate(TodoItemVO vo) {

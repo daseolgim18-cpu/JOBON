@@ -31,6 +31,16 @@
                         href="${ctx}/ai/experience-recommend?analysisId=${analysis.analysisId}">경험 TOP3</a>
                 </div>
             </section>
+            <c:if test="${analysis.status eq 'FAILED'}">
+                <div class="alert alert--danger">
+                    <strong>AI 분석을 완료하지 못했습니다.</strong><br>${analysis.errorMessage}
+                    <p>공고 원문과 LLM 설정을 확인한 뒤 위의 다시 분석 버튼을 눌러주세요.</p>
+                </div>
+            </c:if>
+            <c:if test="${analysis.status eq 'COMPLETED'}">
+            <c:if test="${analysis.modelName eq 'local-fallback'}">
+                <div class="alert">외부 LLM 대신 로컬 분석 결과를 사용했습니다. ${analysis.errorMessage}</div>
+            </c:if>
             <div class="readiness"><strong>${analysis.readinessScore}%</strong><span>지원 준비도</span></div>
             <div class="analysis-grid">
                 <article class="card card--padded">
@@ -60,12 +70,11 @@
                                 'OWNED'?'보유':t.matchStatus eq 'PARTIAL'?'부분일치':'부족'}</span></div>
                     </c:forEach>
                 </div>
-                <h4>부족 기술 학습 방향</h4>
+                <h4>부분일치·부족 기술별 학습 방향</h4>
                 <ul>
                     <c:forEach var="t" items="${analysis.techs}">
-                        <c:if test="${t.matchStatus eq 'MISSING'}">
-                            <li><strong>${t.techName}</strong> — 공식 문서/기초 실습 → 작은 프로젝트 적용 → 성장 기록에 학습 근거 저장
-                            </li>
+                        <c:if test="${t.matchStatus ne 'OWNED'}">
+                            <li><strong>${t.techName}</strong> — ${t.learningDirection}</li>
                         </c:if>
                     </c:forEach>
                 </ul>
@@ -78,6 +87,7 @@
                     </c:forEach>
                 </ol>
             </section>
+            </c:if>
         </div>
     </main>
     <jsp:include page="/WEB-INF/views/common/footer.jsp" />

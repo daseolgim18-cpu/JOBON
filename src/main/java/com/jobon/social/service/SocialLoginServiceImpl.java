@@ -48,11 +48,12 @@ public class SocialLoginServiceImpl implements SocialLoginService {
     private String naverClientSecret;
     @Value("${jobon.oauth.naver.redirect-uri:http://localhost:8080/member/naver/callback}")
     private String naverRedirectUri;
-    @Value("${jobon.oauth.kakao.client-id:}")
+    // [수정] 기존 application.properties의 underscore 키와 표준 hyphen 키를 모두 지원합니다.
+    @Value("${jobon.oauth.kakao.client-id:${jobon.oauth.kakao.client_id:}}")
     private String kakaoClientId;
-    @Value("${jobon.oauth.kakao.client-secret:}")
+    @Value("${jobon.oauth.kakao.client-secret:${jobon.oauth.kakao.client_secret:}}")
     private String kakaoClientSecret;
-    @Value("${jobon.oauth.kakao.redirect-uri:http://localhost:8080/member/kakao/callback}")
+    @Value("${jobon.oauth.kakao.redirect-uri:${jobon.oauth.kakao.redirect_uri:http://localhost:8080/jobon/member/kakao/callback}}")
     private String kakaoRedirectUri;
 
     public SocialLoginServiceImpl(MemberService memberService, SocialAccountDAO socialAccountDAO) {

@@ -31,7 +31,8 @@ public interface AiAnalysisDAO {
 
     List<AiExperienceRecommendVO> selectRecommendations(@Param("analysisId") Long id);
 
-    int updateRecommendationSaved(@Param("recommendId") Long id, @Param("savedYn") String yn);
+    int updateRecommendationSaved(@Param("memberId") Long memberId,
+            @Param("recommendId") Long id, @Param("savedYn") String yn);
 
     List<String> selectMemberTechs(@Param("memberId") Long memberId);
 

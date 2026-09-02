@@ -25,6 +25,7 @@
                         <p>채용공고 원문에서 업무·자격요건·우대기술을 추출하고 내 경험과 비교합니다.</p>
                     </div>
                 </section>
+                <c:if test="${not empty errorMessage}"><div class="alert alert--danger">${errorMessage}</div></c:if>
                 <form class="card card--padded ai-request" method="post" action="${ctx}/ai/analysis">
                     <label><span class="form-label">분석할 채용공고</span><select class="form-control" name="jobId"
                             required>
@@ -49,7 +50,7 @@
                                 <tr>
                                     <td>${x.companyName}</td>
                                     <td>${x.jobTitle}</td>
-                                    <td>${x.status}</td>
+                                    <td><span class="badge ${x.status eq 'FAILED' ? 'badge--red' : 'badge--green'}">${x.status}</span></td>
                                     <td>${x.requestedAt}</td>
                                     <td><a class="text-link"
                                             href="${ctx}/ai/analysis/detail?id=${x.analysisId}">상세 보기</a></td>

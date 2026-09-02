@@ -20,4 +20,18 @@ private String memo;
 private LocalDateTime createdAt;
 private LocalDateTime updatedAt;
 
+/** [추가] 화면에서 지원 상태 코드를 한글로 표시합니다. */
+public String getStatusLabel() {
+    if (status == null) return "";
+    return switch (status) {
+        case "INTEREST" -> "관심";
+        case "APPLIED" -> "지원완료";
+        case "DOCUMENT" -> "서류";
+        case "INTERVIEW" -> "면접";
+        case "OFFER" -> "합격";
+        case "REJECTED" -> "불합격";
+        default -> status;
+    };
+}
+
 }

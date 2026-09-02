@@ -17,8 +17,9 @@ public class LocalJobAnalyzer {
         List<LlmAnalysisResponse.Tech> ts = new ArrayList<>();
         for (String t : TECH) {
             if (Pattern.compile(Pattern.quote(t), Pattern.CASE_INSENSITIVE).matcher(text).find()) {
-                String around = text.toLowerCase();
-                String type = (around.contains("우대") || around.contains("preferred")) ? "PREFERRED" : "REQUIRED";
+                // [수정] 공고 전체에 '우대'라는 단어가 있다는 이유로 모든 기술을 우대로 처리하지 않고,
+                // 기술이 등장한 문장/인접 문맥을 기준으로 필수·우대를 구분합니다.
+                String type = classifyType(text, t);
                 ts.add(new LlmAnalysisResponse.Tech(t, type));
             }
         }
@@ -49,5 +50,18 @@ public class LocalJobAnalyzer {
     private String clip(String s, int n) {
         s = s.replaceAll("\\s+", " ").trim();
         return s.length() > n ? s.substring(0, n) + "..." : s;
+    }
+
+    private String classifyType(String text, String tech) {
+        String lower = text.toLowerCase();
+        int index = lower.indexOf(tech.toLowerCase());
+        if (index < 0) return "REQUIRED";
+        int start = Math.max(0, index - 100);
+        int end = Math.min(text.length(), index + tech.length() + 100);
+        String context = lower.substring(start, end);
+        if (context.contains("우대") || context.contains("preferred") || context.contains("plus")) {
+            return "PREFERRED";
+        }
+        return "REQUIRED";
     }
 }

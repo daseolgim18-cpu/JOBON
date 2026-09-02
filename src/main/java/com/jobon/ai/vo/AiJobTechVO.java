@@ -10,4 +10,6 @@ public class AiJobTechVO {
     private String techName;
     private String requirementType;
     private String matchStatus;
+    // [추가] 부족·부분일치 기술별 맞춤 학습 방향을 화면에 전달합니다.
+    private String learningDirection;
 }
