@@ -33,10 +33,17 @@ public interface AiAnalysisDAO {
 
     List<AiExperienceRecommendVO> selectRecommendations(@Param("analysisId") Long id);
 
+    /** [추가] 로그인 회원이 저장한 자소서 경험 추천만 조회합니다. */
+    List<AiExperienceRecommendVO> selectSavedRecommendations(@Param("memberId") Long memberId);
+
     int updateRecommendationSaved(@Param("memberId") Long memberId,
             @Param("recommendId") Long id, @Param("savedYn") String yn);
 
     List<String> selectMemberTechs(@Param("memberId") Long memberId);
 
     List<String> selectProjectTechs(@Param("projectId") Long projectId);
+
+    // [추가] AI 분석 전 데이터 품질 안내용 건수
+    int countMemberProjects(@Param("memberId") Long memberId);
+    int countMemberLearningRecords(@Param("memberId") Long memberId);
 }

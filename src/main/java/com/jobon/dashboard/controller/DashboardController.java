@@ -74,7 +74,7 @@ public class DashboardController {
                 .toList();
 
         Map<String, Long> applicationStatusCounts = new LinkedHashMap<>();
-        for (String status : List.of("INTEREST", "APPLIED", "DOCUMENT", "INTERVIEW", "OFFER", "REJECTED")) {
+        for (String status : List.of("INTEREST", "APPLIED", "DOCUMENT", "CODING_TEST", "INTERVIEW", "OFFER", "REJECTED")) {
             applicationStatusCounts.put(status,
                     applications.stream().filter(x -> status.equals(x.getStatus())).count());
         }
@@ -92,7 +92,11 @@ public class DashboardController {
         m.addAttribute("analyses", analyses);
         m.addAttribute("imminentJobs", imminentJobs);
         m.addAttribute("upcomingSchedules", upcomingSchedules);
-        m.addAttribute("pendingTodos", t.list(id, "TODO").stream().limit(5).toList());
+        // [수정] TODO/진행중 항목을 모두 대시보드에서 바로 완료 처리할 수 있게 노출합니다.
+        m.addAttribute("pendingTodos", todos.stream()
+                .filter(todo -> !"DONE".equals(todo.getStatus()))
+                .limit(5)
+                .toList());
         m.addAttribute("learningRecords", learningRecords.stream().limit(5).toList());
         m.addAttribute("projectRecords", projectRecords.stream().limit(5).toList());
         m.addAttribute("recentActivities", activities.recent(id, 7));

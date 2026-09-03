@@ -24,6 +24,7 @@
                         <h1>성장 기록 등록</h1>
                     </div>
                 </section>
+                <c:if test="${not empty prefillMessage}"><div class="alert alert--success">${prefillMessage}</div></c:if>
                 <form class="card card--padded" method="post" action="${ctx}/learning">
                     <div class="form-grid"><label><span class="form-label">구분</span><select class="form-control"
                                 name="recordType">

@@ -28,6 +28,13 @@ public class JobPostingServiceImpl implements JobPostingService {
         return dao.selectList(memberId, keyword, jobRole, sort);
     }
 
+    // [추가] 기업 상세 화면의 연결 채용공고는 기업명 검색이 아니라 COMPANY_ID FK로 정확히 조회합니다.
+    public List<JobPostingVO> listByCompanyId(Long memberId, Long companyId) {
+        if (memberId == null || companyId == null)
+            throw new IllegalArgumentException("기업 조회 정보가 없습니다.");
+        return dao.selectByCompanyId(memberId, companyId);
+    }
+
     public JobPostingVO get(Long memberId, Long jobId) {
         JobPostingVO v = dao.selectOne(memberId, jobId);
         if (v == null)
@@ -72,7 +79,18 @@ public class JobPostingServiceImpl implements JobPostingService {
             throw new IllegalArgumentException("로그인 정보가 없습니다.");
         if (vo.getTitle() == null || vo.getTitle().isBlank())
             throw new IllegalArgumentException("공고명을 입력해주세요.");
+        if (vo.getTitle().trim().length() > 200) throw new IllegalArgumentException("공고명은 200자 이하로 입력해주세요.");
+        vo.setTitle(vo.getTitle().trim());
         if (vo.getJobRole() == null || vo.getJobRole().isBlank())
             throw new IllegalArgumentException("채용 직무를 입력해주세요.");
+        if (vo.getJobRole().trim().length() > 120) throw new IllegalArgumentException("채용 직무는 120자 이하로 입력해주세요.");
+        vo.setJobRole(vo.getJobRole().trim());
+        if (vo.getCompanyId() != null && dao.countOwnedCompany(vo.getMemberId(), vo.getCompanyId()) != 1)
+            throw new IllegalArgumentException("현재 회원이 등록한 기업만 연결할 수 있습니다.");
+        if (vo.getPostedDate() != null && vo.getDeadline() != null && vo.getPostedDate().isAfter(vo.getDeadline()))
+            throw new IllegalArgumentException("채용공고 등록일은 마감일보다 늦을 수 없습니다.");
+        if (vo.getSourceUrl() != null && !vo.getSourceUrl().isBlank()
+                && !(vo.getSourceUrl().startsWith("http://") || vo.getSourceUrl().startsWith("https://")))
+            throw new IllegalArgumentException("채용공고 출처 URL은 http:// 또는 https://로 시작해야 합니다.");
     }
 }

@@ -8,15 +8,19 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import com.jobon.common.util.SessionMemberUtil;
 import com.jobon.company.service.CompanyService;
 import com.jobon.company.vo.CompanyVO;
+import com.jobon.job.service.JobPostingService;
 import jakarta.servlet.http.HttpSession;
 
 @Controller
 @RequestMapping("/company")
 public class CompanyController {
     private final CompanyService service;
+    // [추가] 기업 상세 화면에서 COMPANY_ID로 실제 연결된 채용공고를 조회합니다.
+    private final JobPostingService jobPostingService;
 
-    public CompanyController(CompanyService service) {
+    public CompanyController(CompanyService service, JobPostingService jobPostingService) {
         this.service = service;
+        this.jobPostingService = jobPostingService;
     }
 
     @GetMapping("/list")
@@ -44,7 +48,12 @@ public class CompanyController {
 
     @GetMapping("/detail")
     public String detail(@RequestParam Long id, HttpSession s, Model m) {
-        m.addAttribute("company", service.get(SessionMemberUtil.requireMemberId(s), id));
+        Long memberId = SessionMemberUtil.requireMemberId(s);
+        CompanyVO company = service.get(memberId, id);
+
+        m.addAttribute("company", company);
+        // [추가] 화면에 표시할 채용공고 수/최근 공고는 DB JOB_POSTING의 COMPANY_ID 연계 데이터만 사용합니다.
+        m.addAttribute("companyJobs", jobPostingService.listByCompanyId(memberId, id));
         return "company/detail";
     }
 

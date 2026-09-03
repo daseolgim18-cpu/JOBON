@@ -24,17 +24,21 @@
                         <h1>AI 분석</h1>
                         <p>채용공고 원문에서 업무·자격요건·우대기술을 추출하고 내 경험과 비교합니다.</p>
                     </div>
+                    <!-- [추가] 저장하기로 보관한 자소서 경험 추천 결과를 다시 확인할 수 있습니다. -->
+                    <a class="jobon-btn jobon-btn--soft" href="${ctx}/ai/saved-recommendations">저장한 경험</a>
                 </section>
                 <c:if test="${not empty successMessage}"><div class="alert alert--success">${successMessage}</div></c:if>
                 <c:if test="${not empty errorMessage}"><div class="alert alert--danger">${errorMessage}</div></c:if>
                 <form class="card card--padded ai-request" method="post" action="${ctx}/ai/analysis">
-                    <label><span class="form-label">분석할 채용공고</span><select class="form-control" name="jobId"
+                    <label><span class="form-label">분석할 채용공고</span><select class="form-control" id="analysisJobId" name="jobId"
                             required>
                             <option value="">공고 선택</option>
                             <c:forEach var="j" items="${jobs}">
                                 <option value="${j.jobId}">${j.companyName} - ${j.title}</option>
                             </c:forEach>
-                        </select></label><button class="jobon-btn jobon-btn--primary">분석 요청</button></form>
+                        </select></label><button class="jobon-btn jobon-btn--primary">분석 요청</button>
+                    <div id="analysisQualityGuide" class="alert" style="display:none"></div>
+                </form>
                 <div class="card table-wrap mt20">
                     <table class="data-table">
                         <thead>
@@ -74,6 +78,30 @@
         </main>
         <jsp:include page="/WEB-INF/views/common/footer.jsp" />
         <script src="${ctx}/js/jobon-crud.js"></script>
+        <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const select = document.getElementById('analysisJobId');
+            const guide = document.getElementById('analysisQualityGuide');
+            if (!select || !guide) return;
+            select.addEventListener('change', async function () {
+                if (!this.value) { guide.style.display = 'none'; guide.innerHTML = ''; return; }
+                try {
+                    const response = await fetch('${ctx}/ai/analysis/quality?jobId=' + encodeURIComponent(this.value));
+                    if (!response.ok) throw new Error('quality request failed');
+                    const warnings = await response.json();
+                    if (!warnings.length) {
+                        guide.innerHTML = '<strong>분석 준비 완료</strong><br>현재 등록 데이터로 분석을 진행할 수 있습니다.';
+                    } else {
+                        guide.innerHTML = '<strong>분석 데이터 보완 안내</strong><ul>' + warnings.map(w => '<li>' + w + '</li>').join('') + '</ul>';
+                    }
+                    guide.style.display = 'block';
+                } catch (e) {
+                    guide.innerHTML = '데이터 품질 안내를 불러오지 못했습니다. 분석은 계속 진행할 수 있습니다.';
+                    guide.style.display = 'block';
+                }
+            });
+        });
+        </script>
     </body>
 
 </html>

@@ -21,7 +21,7 @@
         <section class="page-heading profile-edit-heading">
           <div>
             <h1>프로필 수정</h1>
-            <p>닉네임, 한 줄 소개, 관심 직무와 희망 근무지를 수정하세요.</p>
+            <p>닉네임, 이메일, 한 줄 소개, 관심 직무와 희망 근무지를 수정하세요.</p>
           </div>
         </section>
 
@@ -31,7 +31,7 @@
 
         <%-- [수정] 실제 DB 업데이트가 가능하도록 multipart/form-data POST 폼으로 변경했습니다. --%>
           <form class="card card--padded profile-edit-card" action="${ctx}/mypage/profile/edit" method="post"
-            enctype="multipart/form-data">
+            enctype="multipart/form-data" data-context-path="${ctx}">
 
             <div class="profile-edit-top">
               <section class="profile-image-section">
@@ -84,6 +84,18 @@
                     <%-- [수정] 닉네임 중복 확인 결과를 입력창 아래에 표시합니다. --%>
                       <p class="profile-nickname-message" id="nicknameCheckMessage"></p>
                 </div>
+
+                <%-- [추가] 닉네임과 동일한 형태로 이메일 수정 및 중복 확인 기능을 제공합니다. --%>
+                <div class="form-group">
+                  <label class="form-label" for="email">이메일</label>
+                  <div class="profile-nickname-row">
+                    <input class="form-control profile-form-control" id="email" name="email" type="email"
+                      maxlength="150" value="${fn:escapeXml(member.email)}"
+                      data-original-email="${fn:escapeXml(member.email)}" placeholder="이메일을 입력하세요" required />
+                    <button class="profile-nickname-check-btn" id="emailCheckBtn" type="button">중복 확인</button>
+                  </div>
+                  <p class="profile-nickname-message" id="emailCheckMessage"></p>
+                </div>
               </section>
             </div>
 
@@ -124,7 +136,8 @@
 
     <jsp:include page="/WEB-INF/views/common/footer.jsp" />
 
-    <script src="${ctx}/js/mypage/profile-edit.js"></script>
+    <%-- [수정] 실제 정적 리소스 위치(static/js/profile-edit.js)와 경로를 일치시켜 중복 확인 버튼이 동작하도록 수정했습니다. --%>
+    <script src="${ctx}/js/profile-edit.js"></script>
   </body>
 
 </html>

@@ -37,6 +37,26 @@
          AND T.TODO_ID = #{todoId}
     </select>
 
+
+    <!-- [추가] TODO에 연결할 기업/채용공고 소유권 검증 -->
+    <select id="countOwnedCompany" resultType="int">
+        SELECT COUNT(*) FROM COMPANY WHERE COMPANY_ID = #{companyId} AND MEMBER_ID = #{memberId}
+    </select>
+    <select id="countOwnedJob" resultType="int">
+        SELECT COUNT(*) FROM JOB_POSTING WHERE JOB_ID = #{jobId} AND MEMBER_ID = #{memberId}
+    </select>
+    <select id="selectAutoApplicationTodo" resultMap="m">
+        <include refid="b"/>
+        AND T.MEMO LIKE '%' || #{marker} || '%'
+        FETCH FIRST 1 ROW ONLY
+    </select>
+    <delete id="deleteAutoApplicationTodo">
+        DELETE FROM TODO_ITEM
+        WHERE MEMBER_ID = #{memberId}
+          AND MEMO LIKE '%' || #{marker} || '%'
+          AND STATUS != 'DONE'
+    </delete>
+
     <insert id="insert">
         <selectKey keyProperty="todoId" resultType="long" order="BEFORE">
             SELECT  TODO_ITEM_SEQ.NEXTVAL
@@ -89,6 +109,17 @@
                ,UPDATED_AT   = SYSTIMESTAMP
         WHERE   MEMBER_ID = #{memberId}
         AND     TODO_ID = #{todoId}
+    </update>
+    
+    <!-- [추가] 대시보드의 완료 처리 전용 SQL입니다. 다른 입력값은 수정하지 않습니다. -->
+    <update id="complete">
+        UPDATE  TODO_ITEM
+        SET     STATUS       = 'DONE'
+               ,COMPLETED_AT = NVL(COMPLETED_AT, SYSTIMESTAMP)
+               ,UPDATED_AT   = SYSTIMESTAMP
+        WHERE   MEMBER_ID = #{memberId}
+        AND     TODO_ID = #{todoId}
+        AND     STATUS != 'DONE'
     </update>
     
     <delete id="delete">

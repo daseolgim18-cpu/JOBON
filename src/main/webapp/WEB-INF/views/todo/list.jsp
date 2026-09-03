@@ -37,6 +37,8 @@
                                 <th>할 일</th>
                                 <th>우선순위</th>
                                 <th>마감일</th>
+                                <%-- [수정] 마감일과 D-Day를 별도 열로 분리합니다. --%>
+                                <th class="dday-column">D-Day</th>
                                 <th>연결</th>
                                 <th>관리</th>
                             </tr>
@@ -50,9 +52,10 @@
                                         </form>
                                     </td>
                                     <td class="${x.status eq 'DONE'?'strike':''}">${x.title}</td>
-                                    <td>${x.priority}</td>
-                                    <td>${x.dueDate}</td>
-                                    <td>${x.companyName} ${x.jobTitle}</td>
+                                    <td>${x.priorityLabel}</td>
+                                    <td class="date-cell">${empty x.dueDate ? '-' : x.dueDateLabel}</td>
+                                    <td class="dday-cell"><c:if test="${not empty x.dueDate}"><span class="deadline-badge">${x.dueDdayLabel}</span></c:if><c:if test="${empty x.dueDate}">-</c:if></td>
+                                    <td class="relation-cell"><span>${x.companyName}</span><span>${x.jobTitle}</span></td>
                                     <td>
                                         <div class="table-actions"><a class="text-link"
                                                 href="${ctx}/todo/edit?id=${x.todoId}">수정</a>

@@ -65,6 +65,21 @@ public class AiAnalysisServiceImpl implements AiAnalysisService {
     public List<AiAnalysisVO> list(Long memberId) { return dao.selectList(memberId); }
 
     @Override
+    public List<String> dataQualityWarnings(Long memberId, Long jobId) {
+        JobPostingVO job = jobs.get(memberId, jobId);
+        List<String> warnings = new ArrayList<>();
+        if (blank(job.getOriginalText()) || job.getOriginalText().trim().length() < 50)
+            warnings.add("채용공고 원문이 짧거나 비어 있어 기술·요구사항 분석 결과가 제한될 수 있습니다.");
+        if (dao.countMemberProjects(memberId) == 0)
+            warnings.add("등록된 프로젝트 경험이 없어 자소서 경험 TOP3 추천 정확도가 낮을 수 있습니다.");
+        if (dao.selectMemberTechs(memberId).isEmpty())
+            warnings.add("프로젝트·성장 기록에 연결된 기술이 없어 보유 기술 비교가 제한될 수 있습니다.");
+        if (dao.countMemberLearningRecords(memberId) == 0)
+            warnings.add("성장 기록이 없습니다. 부족 기술을 학습한 뒤 기록하면 준비 과정을 함께 관리할 수 있습니다.");
+        return warnings;
+    }
+
+    @Override
     @Transactional
     public AiAnalysisVO analyze(Long memberId, Long jobId) {
         JobPostingVO job = jobs.get(memberId, jobId);
@@ -132,6 +147,19 @@ public class AiAnalysisServiceImpl implements AiAnalysisService {
                 || dao.updateRecommendationSaved(memberId, id, saved ? "Y" : "N") != 1) {
             throw new IllegalArgumentException("저장할 추천 결과를 찾을 수 없습니다.");
         }
+    }
+
+    /**
+     * [추가] 저장한 자소서 경험 추천 목록 조회.
+     * Mapper에서 AI_ANALYSIS.MEMBER_ID를 함께 조건으로 사용하여 로그인 회원의 저장 결과만 반환합니다.
+     */
+    @Override
+    @Transactional(readOnly = true)
+    public List<AiExperienceRecommendVO> savedRecommendations(Long memberId) {
+        if (memberId == null) {
+            throw new IllegalArgumentException("로그인 회원 정보를 확인할 수 없습니다.");
+        }
+        return dao.selectSavedRecommendations(memberId);
     }
 
 
@@ -260,9 +288,11 @@ public class AiAnalysisServiceImpl implements AiAnalysisService {
                 .filter(x -> !blank(x)).limit(3).collect(Collectors.joining(", "));
         String trouble = project.getTroubles().stream().map(ProjectTroubleVO::getTitle)
                 .filter(x -> !blank(x)).limit(2).collect(Collectors.joining(", "));
-        return "담당 역할: " + role + " / 담당 기능: " + (feature.isBlank() ? "미입력" : feature)
-                + " / 문제 해결: " + (trouble.isBlank() ? "미입력" : trouble)
-                + " / 자소서 활용: 상황-과제-행동-결과(STAR) 순서로 수치와 본인 기여도를 보강하세요.";
+        // [수정] 추천 결과에서 담당 역할·기능·트러블슈팅을 바로 자소서 근거로 확인할 수 있게 구분합니다.
+        return "담당 역할: " + role
+                + "\n활용 가능한 담당 기능: " + (feature.isBlank() ? "미입력" : feature)
+                + "\n활용 가능한 트러블슈팅: " + (trouble.isBlank() ? "미입력" : trouble)
+                + "\n자소서 구성: 상황-과제-행동-결과(STAR) 순서로 본인 기여도와 결과를 구체화하세요.";
     }
 
     private void decorate(AiAnalysisVO analysis) {
@@ -277,7 +307,8 @@ public class AiAnalysisServiceImpl implements AiAnalysisService {
             if ("OWNED".equals(tech.getMatchStatus())) earned += weight;
             else if ("PARTIAL".equals(tech.getMatchStatus())) earned += weight * 0.6;
         }
-        analysis.setReadinessScore(maximum == 0 ? 0 : (int) Math.round(earned * 100.0 / maximum));
+        // [수정] 공고에 명시된 기술 스택이 하나도 없으면 0%로 오해하지 않도록 산정 불가(null)로 처리합니다.
+        analysis.setReadinessScore(maximum == 0 ? null : (int) Math.round(earned * 100.0 / maximum));
         analysis.setInterviewQuestions(buildInterviewQuestions(analysis));
     }
 

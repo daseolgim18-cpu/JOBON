@@ -15,4 +15,7 @@ public interface ActivityLogService {
     List<ActivityLogVO> recent(Long memberId, int limit);
 
     void record(Long memberId, String activityType, String actionType, Long targetId, String title);
+
+    // [추가] 지원 상세 등에서 특정 대상의 활동 타임라인을 조회합니다.
+    List<ActivityLogVO> targetHistory(Long memberId, String activityType, Long targetId);
 }

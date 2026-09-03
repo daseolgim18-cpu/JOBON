@@ -27,4 +27,13 @@ private String memo;
 private LocalDateTime createdAt;
 private LocalDateTime updatedAt;
 
+/** [추가] 채용공고 마감일을 모든 화면에서 동일한 D-Day 형식으로 표시합니다. */
+public String getDeadlineDdayLabel() {
+    if (deadline == null) return "마감일 없음";
+    long days = java.time.temporal.ChronoUnit.DAYS.between(java.time.LocalDate.now(), deadline);
+    if (days < 0) return "마감";
+    if (days == 0) return "D-DAY";
+    return "D-" + days;
+}
+
 }

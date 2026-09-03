@@ -12,6 +12,10 @@ public interface ApplicationDAO {
 
     ApplicationVO selectOne(@Param("memberId") Long memberId, @Param("applicationId") Long applicationId);
 
+    ApplicationVO selectByJob(@Param("memberId") Long memberId, @Param("jobId") Long jobId);
+
+    int countOwnedJob(@Param("memberId") Long memberId, @Param("jobId") Long jobId);
+
     int insert(ApplicationVO vo);
 
     int update(ApplicationVO vo);

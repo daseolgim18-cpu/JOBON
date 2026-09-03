@@ -83,4 +83,13 @@
         )
         WHERE ROWNUM &lt;= #{limit}
     </select>
+
+    <select id="selectByTarget" resultMap="activityLogMap">
+        SELECT ACTIVITY_ID, MEMBER_ID, ACTIVITY_TYPE, ACTION_TYPE, TARGET_ID, TITLE, CREATED_AT
+        FROM ACTIVITY_LOG
+        WHERE MEMBER_ID = #{memberId}
+          AND ACTIVITY_TYPE = #{activityType}
+          AND TARGET_ID = #{targetId}
+        ORDER BY CREATED_AT ASC, ACTIVITY_ID ASC
+    </select>
 </mapper>

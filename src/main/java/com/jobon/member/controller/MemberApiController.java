@@ -46,6 +46,17 @@ public class MemberApiController {
         return Map.of("available", memberService.isEmailAvailable(email));
     }
 
+    // [추가] 프로필 수정 시 현재 로그인 회원을 제외하고 이메일 중복 여부를 확인한다.
+    @GetMapping("/check-profile-email")
+    public Map<String, Object> checkProfileEmail(@RequestParam String email, HttpSession session) {
+        Object memberIdValue = session.getAttribute("loginMemberId");
+        if (!(memberIdValue instanceof Number number)) {
+            return Map.of("available", false, "message", "로그인 정보를 확인할 수 없습니다.");
+        }
+        boolean available = memberService.isEmailAvailable(email, number.longValue());
+        return Map.of("available", available, "message", available ? "사용 가능한 이메일입니다." : "이미 사용 중이거나 형식이 올바르지 않은 이메일입니다.");
+    }
+
     /**
      * [수정] 프로필 수정 시 현재 로그인 회원을 제외하고 닉네임 중복 여부를 확인한다.
      * 현재 사용 중인 자신의 닉네임은 사용 가능한 것으로 처리한다.

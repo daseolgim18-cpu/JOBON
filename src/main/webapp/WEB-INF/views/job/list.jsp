@@ -46,6 +46,8 @@
                                 <th>공고명</th>
                                 <th>직무</th>
                                 <th>마감일</th>
+                                <%-- [수정] 날짜와 D-Day가 붙어 보이지 않도록 별도 열로 분리합니다. --%>
+                                <th class="dday-column">D-Day</th>
                                 <th>관리</th>
                             </tr>
                         </thead>
@@ -55,7 +57,8 @@
                                     <td>${x.companyName}</td>
                                     <td><strong>${x.title}</strong></td>
                                     <td>${x.jobRole}</td>
-                                    <td>${x.deadline}</td>
+                                    <td class="date-cell">${empty x.deadline ? '-' : x.deadline}</td>
+                                    <td class="dday-cell"><c:if test="${not empty x.deadline}"><span class="deadline-badge">${x.deadlineDdayLabel}</span></c:if><c:if test="${empty x.deadline}">-</c:if></td>
                                     <td>
                                         <div class="table-actions"><a class="text-link"
                                                 href="${ctx}/job/detail?id=${x.jobId}">상세</a><a
@@ -69,7 +72,7 @@
                             </c:forEach>
                             <c:if test="${empty jobs}">
                                 <tr>
-                                    <td colspan="5" class="empty-cell">등록된 채용공고가 없습니다.</td>
+                                    <td colspan="6" class="empty-cell">등록된 채용공고가 없습니다.</td>
                                 </tr>
                             </c:if>
                         </tbody>

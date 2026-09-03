@@ -20,4 +20,8 @@ public interface ActivityLogDAO {
 
     List<ActivityLogVO> selectRecent(@Param("memberId") Long memberId,
             @Param("limit") int limit);
+
+    // [추가] 특정 도메인 대상의 변경 이력을 조회합니다.
+    List<ActivityLogVO> selectByTarget(@Param("memberId") Long memberId,
+            @Param("activityType") String activityType, @Param("targetId") Long targetId);
 }

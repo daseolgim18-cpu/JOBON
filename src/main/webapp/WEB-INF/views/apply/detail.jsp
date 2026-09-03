@@ -43,7 +43,7 @@
                     </div>
                     <div>
                         <dt>다음 일정</dt>
-                        <dd>${empty application.nextScheduleAt ? '없음' : application.nextScheduleAtLabel}</dd>
+                        <dd>${empty application.nextScheduleAt ? '없음' : application.nextScheduleAtLabel} <c:if test="${not empty application.nextScheduleAt}"><span class="badge">${application.scheduleDdayLabel}</span></c:if></dd>
                     </div>
                     <div>
                         <dt>메모</dt>
@@ -51,6 +51,16 @@
                     </div>
                 </dl>
             </div>
+            <!-- [추가] ACTIVITY_LOG를 이용한 지원 진행 변경 이력 -->
+            <section class="card card--padded mt20">
+                <h3>지원 진행 이력</h3>
+                <c:forEach var="h" items="${applicationHistory}">
+                    <div class="dashboard-row dashboard-row--activity">
+                        <span>${h.title}</span><span class="muted">${h.formattedCreatedAt}</span>
+                    </div>
+                </c:forEach>
+                <c:if test="${empty applicationHistory}"><p class="muted">아직 기록된 변경 이력이 없습니다.</p></c:if>
+            </section>
             <div class="quick-actions"><a class="jobon-btn jobon-btn--ghost"
                     href="${ctx}/job/detail?id=${application.jobId}">채용공고 보기</a><a
                     class="jobon-btn jobon-btn--ghost"

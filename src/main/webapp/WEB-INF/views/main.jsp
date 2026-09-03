@@ -124,7 +124,7 @@
                       <div class="preview-status-summary" aria-label="지원 상태 요약">
                         <span>관심 ${applicationStatusCounts['INTEREST']}</span>
                         <span>지원 ${applicationStatusCounts['APPLIED']}</span>
-                        <span>진행 ${applicationStatusCounts['DOCUMENT'] + applicationStatusCounts['INTERVIEW']}</span>
+                        <span>진행 ${applicationStatusCounts['DOCUMENT'] + applicationStatusCounts['CODING_TEST'] + applicationStatusCounts['INTERVIEW']}</span>
                       </div>
                     </div>
 

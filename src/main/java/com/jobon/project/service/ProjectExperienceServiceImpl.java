@@ -67,8 +67,16 @@ public class ProjectExperienceServiceImpl implements ProjectExperienceService {
     private void validate(ProjectExperienceVO v) {
         if (v.getProjectName() == null || v.getProjectName().isBlank())
             throw new IllegalArgumentException("프로젝트명을 입력해주세요.");
+        if (v.getProjectName().trim().length() > 200)
+            throw new IllegalArgumentException("프로젝트명은 200자 이하로 입력해주세요.");
+        v.setProjectName(v.getProjectName().trim());
         if (v.getDescription() == null || v.getDescription().isBlank())
             throw new IllegalArgumentException("프로젝트 내용과 수행 경험을 입력해주세요.");
+        if (v.getStartDate() != null && v.getEndDate() != null && v.getStartDate().isAfter(v.getEndDate()))
+            throw new IllegalArgumentException("프로젝트 시작일은 종료일보다 늦을 수 없습니다.");
+        if (v.getProjectUrl() != null && !v.getProjectUrl().isBlank()
+                && !(v.getProjectUrl().startsWith("http://") || v.getProjectUrl().startsWith("https://")))
+            throw new IllegalArgumentException("프로젝트 URL은 http:// 또는 https://로 시작해야 합니다.");
     }
 
     private void fill(ProjectExperienceVO v) {

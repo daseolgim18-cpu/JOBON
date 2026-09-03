@@ -191,6 +191,36 @@
         ORDER BY R.RANK_NO
     </select>
 
+    <select id="selectSavedRecommendations" resultType="com.jobon.ai.vo.AiExperienceRecommendVO">
+        /* [추가] 로그인 회원이 저장한 추천 결과를 채용공고/기업/프로젝트 정보와 함께 조회합니다. */
+        SELECT  R.RECOMMEND_ID recommendId
+               ,R.ANALYSIS_ID analysisId
+               ,R.PROJECT_ID projectId
+               ,P.PROJECT_NAME projectName
+               ,A.JOB_ID jobId
+               ,J.TITLE jobTitle
+               ,C.COMPANY_NAME companyName
+               ,R.RANK_NO rankNo
+               ,R.REASON reason
+               ,R.SOURCE_DETAIL sourceDetail
+               ,R.SAVED_YN savedYn
+               ,R.CREATED_AT createdAt
+        FROM    AI_EXPERIENCE_RECOMMEND R
+        JOIN    AI_ANALYSIS A
+            ON  A.ANALYSIS_ID = R.ANALYSIS_ID
+        JOIN    JOB_POSTING J
+            ON  J.JOB_ID = A.JOB_ID
+        LEFT JOIN COMPANY C
+            ON  C.COMPANY_ID = J.COMPANY_ID
+        LEFT JOIN PROJECT_EXPERIENCE P
+            ON  P.PROJECT_ID = R.PROJECT_ID
+        WHERE   A.MEMBER_ID = #{memberId}
+        AND     R.SAVED_YN = 'Y'
+        ORDER BY R.CREATED_AT DESC
+               ,R.ANALYSIS_ID DESC
+               ,R.RANK_NO ASC
+    </select>
+
     <update id="updateRecommendationSaved">
         /* [수정] 로그인 회원이 소유한 분석 결과의 추천만 저장 상태를 변경합니다. */
         UPDATE  AI_EXPERIENCE_RECOMMEND
@@ -229,5 +259,13 @@
         JOIN    TECH_STACK T
             ON  T.TECH_ID = P.TECH_ID
         WHERE   P.PROJECT_ID = #{projectId}
+    </select>
+
+    <!-- [추가] AI 분석 입력 데이터 품질 안내용 회원 데이터 건수 -->
+    <select id="countMemberProjects" resultType="int">
+        SELECT COUNT(*) FROM PROJECT_EXPERIENCE WHERE MEMBER_ID = #{memberId}
+    </select>
+    <select id="countMemberLearningRecords" resultType="int">
+        SELECT COUNT(*) FROM LEARNING_RECORD WHERE MEMBER_ID = #{memberId}
     </select>
 </mapper>

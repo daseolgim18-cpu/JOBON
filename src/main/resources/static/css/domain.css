@@ -365,7 +365,7 @@
 /* [추가] 대시보드 상태 요약·일정·최근 기록 통합 영역 */
 .metric-grid a.metric { color: inherit; text-decoration: none; transition: transform .15s ease, box-shadow .15s ease; }
 .metric-grid a.metric:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(21, 34, 28, .08); }
-.status-summary { display: grid; grid-template-columns: repeat(6, 1fr); gap: 10px; margin-top: 14px; }
+.status-summary { display: grid; grid-template-columns: repeat(7, 1fr); gap: 10px; margin-top: 14px; }
 .status-summary a { padding: 14px 10px; border: 1px solid var(--jobon-line); border-radius: 10px; color: inherit; text-align: center; }
 .status-summary strong, .status-summary span { display: block; }
 .status-summary strong { font-size: 22px; }
@@ -406,6 +406,27 @@
 .dashboard-row--todo { grid-template-columns: minmax(0, 1fr) 122px; }
 .dashboard-row--schedule .dashboard-row__meta,
 .dashboard-row--todo .dashboard-row__meta { width: 100%; }
+.dashboard-todo-actions { display: flex; align-items: center; justify-content: flex-end; gap: 8px; white-space: nowrap; }
+.dashboard-todo-actions .jobon-btn { min-height: 32px; padding: 6px 10px; font-size: 12px; }
+/* [추가] 대시보드에서는 상태 배지가 아니라 실제 완료 액션임을 알 수 있도록 전용 버튼을 사용합니다. */
+.todo-complete-btn {
+  min-height: 32px;
+  padding: 6px 10px;
+  border: 1px solid var(--jobon-green);
+  border-radius: 8px;
+  background: #ecfdf5;
+  color: var(--jobon-green-dark);
+  font-size: 12px;
+  font-weight: 800;
+  line-height: 1;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: background .15s ease, color .15s ease, border-color .15s ease;
+}
+.todo-complete-btn:hover {
+  background: var(--jobon-green);
+  color: #fff;
+}
 .dashboard-row .muted { flex: 0 0 auto; font-size: 12px; }
 .deadline-badge { flex: 0 0 auto; color: var(--jobon-red); font-weight: 900; white-space: nowrap; }
 .dashboard-activity__content {
@@ -522,4 +543,623 @@
   }
   .dashboard-row .muted,
   .dashboard-row .deadline-badge { display: block; margin-top: 5px; }
+}
+
+
+/* 13. Saved AI Experience Recommendations */
+/* [추가] 저장한 자소서 경험 목록은 기존 카드/버튼 스타일을 재사용하고 목록 전용 배치만 확장합니다. */
+.saved-recommend-list {
+  margin-top: 20px;
+}
+
+.saved-recommend-card {
+  display: grid;
+  gap: 18px;
+}
+
+.saved-recommend-card__head {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 20px;
+}
+
+.saved-recommend-card__head h3 {
+  margin: 8px 0 0;
+}
+
+.saved-recommend-card__job {
+  margin: 10px 0 0;
+  color: var(--jobon-muted);
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.saved-recommend-card__body {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 18px;
+  padding-top: 16px;
+  border-top: 1px solid var(--jobon-line);
+}
+
+.saved-recommend-card__body strong {
+  display: block;
+  margin-bottom: 8px;
+  color: var(--jobon-black);
+}
+
+.saved-recommend-card__body p {
+  margin: 0;
+  line-height: 1.75;
+}
+
+@media (max-width: 760px) {
+  .saved-recommend-card__head {
+    display: grid;
+  }
+
+  .saved-recommend-card__body {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* =========================================================
+   [수정] D-Day 표시 / 대시보드 목록 레이아웃 보완
+   날짜와 D-Day를 같은 셀에 이어 붙이지 않고 독립 영역으로 분리하여
+   좁은 화면에서도 텍스트가 겹치거나 한 글자씩 깨지는 현상을 방지합니다.
+========================================================= */
+.data-table .dday-column,
+.data-table .dday-cell {
+  width: 72px;
+  min-width: 72px;
+  text-align: center;
+  white-space: nowrap;
+}
+
+.data-table .date-cell {
+  min-width: 112px;
+  white-space: nowrap;
+}
+
+.data-table .relation-cell {
+  min-width: 220px;
+  line-height: 1.5;
+  word-break: keep-all;
+  overflow-wrap: break-word;
+}
+
+.data-table .relation-cell span {
+  display: block;
+}
+
+.board-card__dday {
+  color: var(--jobon-red) !important;
+  font-weight: 800;
+}
+
+/* 다가오는 지원 일정: 제목 | 일정 | D-Day */
+.dashboard-row--schedule {
+  grid-template-columns: minmax(0, 1fr) 122px 52px;
+  column-gap: 10px;
+}
+
+/* 진행할 TODO: 제목 | 마감일 | D-Day | 우선순위 | 완료 버튼 */
+.dashboard-row--todo {
+  grid-template-columns: minmax(0, 1fr) 80px 48px 34px 78px;
+  column-gap: 7px;
+}
+
+.dashboard-row--schedule .dashboard-row__meta,
+.dashboard-row--todo .dashboard-row__meta {
+  width: auto;
+}
+
+.dashboard-row__date {
+  justify-self: end;
+  white-space: nowrap;
+}
+
+.dashboard-row__dday {
+  justify-self: center;
+  min-width: 44px;
+  text-align: center;
+}
+
+.dashboard-row__priority {
+  justify-self: center;
+  color: var(--jobon-muted);
+  font-size: 12px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.dashboard-row__action {
+  justify-self: end;
+  margin: 0;
+}
+
+@media (max-width: 900px) {
+  .dashboard-row--schedule,
+  .dashboard-row--todo {
+    grid-template-columns: 1fr;
+    row-gap: 6px;
+  }
+
+  .dashboard-row__date,
+  .dashboard-row__dday,
+  .dashboard-row__priority,
+  .dashboard-row__action {
+    justify-self: start;
+  }
+}
+
+/* =========================================================
+   12. Company Detail
+   [추가] 기업 상세 화면을 로고/기본정보/연결 채용공고 중심의 카드 UI로 구성합니다.
+   표시되는 기업/공고 값은 JSP에서 DB 조회 결과만 사용합니다.
+========================================================= */
+.company-detail-page {
+  padding-top: 28px;
+}
+
+.company-breadcrumb {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 20px;
+  color: var(--jobon-muted);
+  font-size: 13px;
+}
+
+.company-breadcrumb a:hover {
+  color: var(--jobon-green-dark);
+}
+
+.company-breadcrumb strong {
+  color: var(--jobon-text);
+}
+
+.company-detail-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 280px;
+  gap: 22px;
+  align-items: start;
+}
+
+.company-detail-main,
+.company-detail-sidebar {
+  display: grid;
+  gap: 22px;
+  min-width: 0;
+}
+
+.company-profile-card {
+  padding: 30px;
+  display: grid;
+  grid-template-columns: 154px minmax(0, 1fr);
+  gap: 26px;
+  align-items: center;
+}
+
+.company-logo-box {
+  width: 154px;
+  height: 154px;
+  border: 1px solid var(--jobon-line);
+  border-radius: 20px;
+  background: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.company-logo-image {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  padding: 18px;
+}
+
+.company-logo-fallback {
+  width: 100%;
+  height: 100%;
+  align-items: center;
+  justify-content: center;
+  background: var(--jobon-green-soft);
+  color: var(--jobon-green-dark);
+  font-size: 48px;
+  font-weight: 900;
+}
+
+.company-profile-body {
+  min-width: 0;
+}
+
+.company-profile-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 20px;
+}
+
+.company-profile-head h1 {
+  margin: 0;
+  color: var(--jobon-black);
+  font-size: 30px;
+  line-height: 1.3;
+  letter-spacing: -1.1px;
+  word-break: keep-all;
+}
+
+.company-profile-actions {
+  flex: 0 0 auto;
+}
+
+.company-tag-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 14px;
+}
+
+.company-info-tag {
+  padding: 6px 10px;
+  border: 1px solid var(--jobon-line);
+  border-radius: 7px;
+  background: #f8fafc;
+  color: #495466;
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.company-profile-meta {
+  display: grid;
+  gap: 11px;
+  margin-top: 20px;
+}
+
+.company-profile-meta > div {
+  display: grid;
+  grid-template-columns: 82px minmax(0, 1fr);
+  gap: 12px;
+  min-width: 0;
+}
+
+.company-meta-label {
+  color: var(--jobon-muted);
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.company-meta-value {
+  min-width: 0;
+  font-size: 13px;
+  overflow-wrap: anywhere;
+}
+
+.company-meta-memo {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  white-space: pre-line;
+}
+
+.company-information-card {
+  overflow: hidden;
+}
+
+.company-detail-tabs {
+  display: flex;
+  gap: 30px;
+  padding: 0 28px;
+  border-bottom: 1px solid var(--jobon-line);
+}
+
+.company-detail-tabs a {
+  position: relative;
+  padding: 18px 2px 16px;
+  color: #525d6e;
+  font-size: 14px;
+  font-weight: 800;
+}
+
+.company-detail-tabs a:hover,
+.company-detail-tabs a.is-active {
+  color: var(--jobon-green-dark);
+}
+
+.company-detail-tabs a.is-active::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -1px;
+  height: 3px;
+  border-radius: 4px 4px 0 0;
+  background: var(--jobon-green);
+}
+
+.company-info-section,
+.company-jobs-section {
+  padding: 28px;
+}
+
+.company-jobs-section {
+  border-top: 1px solid var(--jobon-line);
+}
+
+.company-info-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 220px;
+  gap: 36px;
+  align-items: start;
+}
+
+.company-info-table {
+  margin: 0;
+}
+
+.company-info-table > div {
+  display: grid;
+  grid-template-columns: 145px minmax(0, 1fr);
+  gap: 20px;
+  min-height: 46px;
+  padding: 12px 10px;
+  border-bottom: 1px solid var(--jobon-line);
+  align-items: center;
+}
+
+.company-info-table dt {
+  color: #5c6677;
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.company-info-table dd {
+  margin: 0;
+  min-width: 0;
+  color: var(--jobon-text);
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.company-link-wrap {
+  display: inline-block;
+  max-width: 100%;
+  overflow-wrap: anywhere;
+}
+
+.company-summary-box {
+  padding: 20px;
+  border: 1px solid #caefdc;
+  border-radius: 12px;
+  background: linear-gradient(180deg, #fbfffd 0%, #f5fcf8 100%);
+}
+
+.company-summary-box h3 {
+  margin: 0 0 14px;
+  color: var(--jobon-green-dark);
+  font-size: 15px;
+}
+
+.company-summary-item {
+  display: grid;
+  gap: 4px;
+  padding: 12px 0;
+  border-bottom: 1px solid #e3f4eb;
+}
+
+.company-summary-item:last-child {
+  border-bottom: 0;
+  padding-bottom: 0;
+}
+
+.company-summary-item span {
+  color: var(--jobon-muted);
+  font-size: 11px;
+}
+
+.company-summary-item strong {
+  color: var(--jobon-text);
+  font-size: 13px;
+  overflow-wrap: anywhere;
+}
+
+.company-memo-section {
+  margin-top: 34px;
+}
+
+.company-memo-box {
+  min-height: 110px;
+  padding: 18px;
+  border: 1px solid var(--jobon-line);
+  border-radius: 10px;
+  background: #fbfcfd;
+  font-size: 13px;
+  line-height: 1.75;
+}
+
+.company-job-list {
+  display: grid;
+  margin-top: 8px;
+}
+
+.company-job-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+  padding: 16px 6px;
+  border-bottom: 1px solid var(--jobon-line);
+}
+
+.company-job-row:hover strong {
+  color: var(--jobon-green-dark);
+}
+
+.company-job-row strong {
+  display: block;
+  color: var(--jobon-black);
+  font-size: 14px;
+}
+
+.company-job-row p {
+  margin: 5px 0 0;
+  color: var(--jobon-muted);
+  font-size: 12px;
+}
+
+.company-job-deadline {
+  flex: 0 0 auto;
+  color: var(--jobon-green-dark);
+  font-size: 12px;
+  font-weight: 900;
+}
+
+.company-empty-state {
+  padding: 34px 16px;
+  text-align: center;
+  color: var(--jobon-muted);
+  font-size: 13px;
+}
+
+.company-side-card {
+  padding: 22px;
+}
+
+.company-side-card h2 {
+  margin: 0 0 14px;
+  color: var(--jobon-black);
+  font-size: 16px;
+}
+
+.company-side-card > a {
+  min-height: 48px;
+  padding: 0 14px;
+  border: 1px solid var(--jobon-line);
+  border-radius: 9px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 9px;
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.company-side-card > a:hover {
+  border-color: #bdebd3;
+  color: var(--jobon-green-dark);
+  background: var(--jobon-green-soft);
+}
+
+.company-side-title-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.company-side-title-row > a {
+  color: var(--jobon-muted);
+  font-size: 11px;
+  font-weight: 800;
+}
+
+.company-recent-job-list {
+  display: grid;
+  border: 1px solid var(--jobon-line);
+  border-radius: 9px;
+  overflow: hidden;
+}
+
+.company-recent-job-list a {
+  display: grid;
+  gap: 5px;
+  padding: 13px;
+  border-bottom: 1px solid var(--jobon-line);
+}
+
+.company-recent-job-list a:last-child {
+  border-bottom: 0;
+}
+
+.company-recent-job-list a:hover {
+  background: #fbfcfd;
+}
+
+.company-recent-job-list strong {
+  color: var(--jobon-text);
+  font-size: 12px;
+  line-height: 1.45;
+}
+
+.company-recent-job-list span,
+.company-side-empty {
+  color: var(--jobon-muted);
+  font-size: 11px;
+}
+
+.company-side-empty {
+  margin: 0;
+  padding: 18px 0 4px;
+}
+
+@media (max-width: 1000px) {
+  .company-detail-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .company-detail-sidebar {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 760px) {
+  .company-profile-card {
+    grid-template-columns: 1fr;
+    padding: 22px;
+  }
+
+  .company-logo-box {
+    width: 110px;
+    height: 110px;
+  }
+
+  .company-profile-head {
+    display: grid;
+  }
+
+  .company-profile-head h1 {
+    font-size: 24px;
+  }
+
+  .company-profile-actions {
+    justify-content: flex-start;
+  }
+
+  .company-info-grid,
+  .company-detail-sidebar {
+    grid-template-columns: 1fr;
+  }
+
+  .company-info-table > div {
+    grid-template-columns: 100px minmax(0, 1fr);
+  }
+
+  .company-profile-meta > div {
+    grid-template-columns: 1fr;
+    gap: 3px;
+  }
+
+  .company-detail-tabs {
+    gap: 20px;
+    padding: 0 20px;
+  }
+
+  .company-info-section,
+  .company-jobs-section {
+    padding: 22px 20px;
+  }
 }

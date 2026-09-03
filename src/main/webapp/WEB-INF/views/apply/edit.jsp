@@ -44,6 +44,8 @@
                                 </option>
                                 <option value="DOCUMENT" ${application.status eq 'DOCUMENT' ?'selected':''}>서류
                                 </option>
+                                <option value="CODING_TEST" ${application.status eq 'CODING_TEST' ?'selected':''}>코딩테스트
+                                </option>
                                 <option value="INTERVIEW" ${application.status eq 'INTERVIEW' ?'selected':''}>면접
                                 </option>
                                 <option value="OFFER" ${application.status eq 'OFFER' ?'selected':''}>합격

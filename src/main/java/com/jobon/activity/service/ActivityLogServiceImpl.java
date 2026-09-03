@@ -41,6 +41,14 @@ public class ActivityLogServiceImpl implements ActivityLogService {
     }
 
     @Override
+    public List<ActivityLogVO> targetHistory(Long memberId, String activityType, Long targetId) {
+        requireMemberId(memberId);
+        if (targetId == null) throw new IllegalArgumentException("대상 정보가 없습니다.");
+        String type = normalizeRequired(activityType, ALLOWED_TYPES, "활동 유형이 올바르지 않습니다.");
+        return dao.selectByTarget(memberId, type, targetId);
+    }
+
+    @Override
     public void record(Long memberId, String activityType, String actionType, Long targetId, String title) {
         requireMemberId(memberId);
 

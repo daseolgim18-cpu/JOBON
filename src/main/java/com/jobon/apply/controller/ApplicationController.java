@@ -8,6 +8,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import java.util.List;
 import java.util.Map;
 import com.jobon.apply.service.ApplicationService;
+import com.jobon.activity.service.ActivityLogService;
 import com.jobon.apply.vo.ApplicationVO;
 import com.jobon.common.util.SessionMemberUtil;
 import com.jobon.job.service.JobPostingService;
@@ -18,10 +19,12 @@ import jakarta.servlet.http.HttpSession;
 public class ApplicationController {
     private final ApplicationService service;
     private final JobPostingService jobs;
+    private final ActivityLogService activityLogService;
 
-    public ApplicationController(ApplicationService s, JobPostingService j) {
+    public ApplicationController(ApplicationService s, JobPostingService j, ActivityLogService activityLogService) {
         service = s;
         jobs = j;
+        this.activityLogService = activityLogService;
     }
 
     @GetMapping("/list")
@@ -34,10 +37,10 @@ public class ApplicationController {
         m.addAttribute("sort", sort);
         m.addAttribute("view", "board".equals(view) ? "board" : "list");
         m.addAttribute("applicationStatusCodes",
-                List.of("INTEREST", "APPLIED", "DOCUMENT", "INTERVIEW", "OFFER", "REJECTED"));
+                List.of("INTEREST", "APPLIED", "DOCUMENT", "CODING_TEST", "INTERVIEW", "OFFER", "REJECTED"));
         m.addAttribute("applicationStatusLabels", Map.of(
                 "INTEREST", "관심", "APPLIED", "지원완료", "DOCUMENT", "서류",
-                "INTERVIEW", "면접", "OFFER", "합격", "REJECTED", "불합격"));
+                "CODING_TEST", "코딩테스트", "INTERVIEW", "면접", "OFFER", "합격", "REJECTED", "불합격"));
         return "apply/list";
     }
 
@@ -62,7 +65,9 @@ public class ApplicationController {
 
     @GetMapping("/detail")
     String detail(@RequestParam Long id, HttpSession s, Model m) {
-        m.addAttribute("application", service.get(SessionMemberUtil.requireMemberId(s), id));
+        Long memberId = SessionMemberUtil.requireMemberId(s);
+        m.addAttribute("application", service.get(memberId, id));
+        m.addAttribute("applicationHistory", activityLogService.targetHistory(memberId, "APPLICATION", id));
         return "apply/detail";
     }
 

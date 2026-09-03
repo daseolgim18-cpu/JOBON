@@ -32,6 +32,7 @@
                         <option value="INTEREST" ${status eq 'INTEREST' ? 'selected' : ''}>관심</option>
                         <option value="APPLIED" ${status eq 'APPLIED' ? 'selected' : ''}>지원완료</option>
                         <option value="DOCUMENT" ${status eq 'DOCUMENT' ? 'selected' : ''}>서류</option>
+                        <option value="CODING_TEST" ${status eq 'CODING_TEST' ? 'selected' : ''}>코딩테스트</option>
                         <option value="INTERVIEW" ${status eq 'INTERVIEW' ? 'selected' : ''}>면접</option>
                         <option value="OFFER" ${status eq 'OFFER' ? 'selected' : ''}>합격</option>
                         <option value="REJECTED" ${status eq 'REJECTED' ? 'selected' : ''}>불합격</option>
@@ -50,6 +51,8 @@
                                 <th>지원일</th>
                                 <th>상태</th>
                                 <th>다음 일정</th>
+                                <%-- [수정] 일정 날짜와 D-Day를 별도 열로 분리해 가독성을 높입니다. --%>
+                                <th class="dday-column">D-Day</th>
                                 <th></th>
                             </tr>
                         </thead>
@@ -61,6 +64,7 @@
                                     <td>${x.appliedDateLabel}</td>
                                     <td><span class="badge badge--green">${x.statusLabel}</span></td>
                                     <td class="date-cell">${empty x.nextScheduleAt ? '-' : x.nextScheduleAtLabel}</td>
+                                    <td class="dday-cell"><c:if test="${not empty x.nextScheduleAt}"><span class="deadline-badge">${x.scheduleDdayLabel}</span></c:if><c:if test="${empty x.nextScheduleAt}">-</c:if></td>
                                     <td><a class="text-link"
                                             href="${ctx}/apply/detail?id=${x.applicationId}">상세</a></td>
                                 </tr>
@@ -79,7 +83,9 @@
                                     <c:if test="${x.status eq boardStatus}">
                                         <a class="board-card" href="${ctx}/apply/detail?id=${x.applicationId}">
                                             <strong>${x.companyName}</strong><span>${x.jobTitle}</span>
-                                            <span>지원일 ${x.appliedDateLabel}</span><span>다음 일정 ${empty x.nextScheduleAt ? '없음' : x.nextScheduleAtLabel}</span>
+                                            <span>지원일 ${x.appliedDateLabel}</span>
+                                            <span>다음 일정 ${empty x.nextScheduleAt ? '없음' : x.nextScheduleAtLabel}</span>
+                                            <c:if test="${not empty x.nextScheduleAt}"><span class="board-card__dday">${x.scheduleDdayLabel}</span></c:if>
                                         </a>
                                     </c:if>
                                 </c:forEach>

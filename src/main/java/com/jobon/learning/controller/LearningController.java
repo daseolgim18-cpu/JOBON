@@ -25,8 +25,15 @@ public class LearningController {
     }
 
     @GetMapping("/new")
-    String form(Model m) {
-        m.addAttribute("record", new LearningRecordVO());
+    String form(@RequestParam(required = false) String tech, Model m) {
+        LearningRecordVO record = new LearningRecordVO();
+        if (tech != null && !tech.isBlank()) {
+            record.setTechNames(tech.trim());
+            record.setRecordType("LEARNING");
+            record.setSubject(tech.trim() + " 학습");
+            m.addAttribute("prefillMessage", "AI 분석에서 부족 기술로 확인된 " + tech.trim() + " 학습 기록을 작성합니다.");
+        }
+        m.addAttribute("record", record);
         return "learning/new";
     }
 

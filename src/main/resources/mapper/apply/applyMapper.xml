@@ -7,6 +7,7 @@
         <id property="applicationId" column="APPLICATION_ID"/>
         <result property="memberId" column="MEMBER_ID"/>
         <result property="jobId" column="JOB_ID"/>
+        <result property="companyId" column="COMPANY_ID"/>
         <result property="companyName" column="COMPANY_NAME"/>
         <result property="jobTitle" column="JOB_TITLE"/>
         <result property="status" column="STATUS"/>
@@ -20,6 +21,7 @@
     <sql id="b">
         SELECT  A.*
                ,J.TITLE AS JOB_TITLE
+               ,J.COMPANY_ID
                ,C.COMPANY_NAME
         FROM    APPLICATION A
         JOIN    JOB_POSTING J ON J.JOB_ID = A.JOB_ID
@@ -48,6 +50,18 @@
     <select id="selectOne" resultMap="m">
         <include refid="b"/>
            AND A.APPLICATION_ID = #{applicationId}
+    </select>
+
+    <!-- [추가] 한 회원이 한 공고에 하나의 지원현황만 가질 수 있는 UK_APP_MEMBER_JOB 기준 조회 -->
+    <select id="selectByJob" resultMap="m">
+        <include refid="b"/>
+           AND A.JOB_ID = #{jobId}
+    </select>
+
+
+    <!-- [추가] 전달된 채용공고가 현재 로그인 회원 소유인지 검증 -->
+    <select id="countOwnedJob" resultType="int">
+        SELECT COUNT(*) FROM JOB_POSTING WHERE JOB_ID = #{jobId} AND MEMBER_ID = #{memberId}
     </select>
 
     <insert id="insert">

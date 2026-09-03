@@ -31,7 +31,7 @@
                         <a href="${ctx}/mypage/password">비밀번호 변경</a>
                         <a href="${ctx}/mypage/accounts">연동 계정</a>
                         <a href="${ctx}/mypage/activity" class="is-active">활동 내역</a>
-                        <a href="${ctx}/mypage/searches">저장된 검색어</a>
+                        <a href="${ctx}/mypage/searches">저장된 검색어</a><a href="${ctx}/mypage/withdraw">회원 탈퇴</a>
                     </aside>
 
                     <section class="card card--padded">

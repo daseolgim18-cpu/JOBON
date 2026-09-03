@@ -70,13 +70,66 @@ public class MypageController {
         return "mypage/profile-edit";
     }
 
+    /** [추가] 비밀번호 변경 화면 */
+    @GetMapping("/mypage/password")
+    public String password(HttpSession session, Model model) {
+        MemberVO member = getLoginMember(session);
+        model.addAttribute("hasLocalPassword", memberService.hasLocalPassword(member.getMemberId()));
+        return "mypage/password";
+    }
+
+    /** [추가] 현재 비밀번호를 검증한 뒤 BCrypt로 새 비밀번호를 저장합니다. */
+    @PostMapping("/mypage/password")
+    public String changePassword(@RequestParam String currentPassword,
+            @RequestParam String newPassword,
+            @RequestParam String newPasswordConfirm,
+            HttpSession session, RedirectAttributes redirectAttributes) {
+        try {
+            memberService.changePassword(getLoginMember(session).getMemberId(), currentPassword, newPassword, newPasswordConfirm);
+            redirectAttributes.addFlashAttribute("successMessage", "비밀번호가 변경되었습니다.");
+            return "redirect:/mypage/password";
+        } catch (IllegalArgumentException | IllegalStateException e) {
+            redirectAttributes.addFlashAttribute("errorMessage", e.getMessage());
+            return "redirect:/mypage/password";
+        }
+    }
+
+    /** [추가] 회원 탈퇴 확인 화면 */
+    @GetMapping("/mypage/withdraw")
+    public String withdraw(HttpSession session, Model model) {
+        MemberVO member = getLoginMember(session);
+        model.addAttribute("hasLocalPassword", memberService.hasLocalPassword(member.getMemberId()));
+        return "mypage/withdraw";
+    }
+
+    /** [추가] 회원을 물리 삭제하지 않고 WITHDRAWN 상태로 전환한 뒤 세션을 종료합니다. */
+    @PostMapping("/mypage/withdraw")
+    public String withdrawProcess(@RequestParam(required = false) String currentPassword,
+            @RequestParam(required = false) String confirmText,
+            HttpSession session, RedirectAttributes redirectAttributes) {
+        try {
+            if (!"탈퇴합니다".equals(confirmText == null ? "" : confirmText.trim())) {
+                throw new IllegalArgumentException("확인 문구에 '탈퇴합니다'를 입력해주세요.");
+            }
+            Long memberId = getLoginMember(session).getMemberId();
+            memberService.withdraw(memberId, currentPassword);
+            session.invalidate();
+            redirectAttributes.addFlashAttribute("successMessage", "회원 탈퇴가 완료되었습니다.");
+            return "redirect:/main";
+        } catch (IllegalArgumentException | IllegalStateException e) {
+            redirectAttributes.addFlashAttribute("errorMessage", e.getMessage());
+            return "redirect:/mypage/withdraw";
+        }
+    }
+
     /**
      * [수정] 프로필 수정 저장 처리입니다.
      * 닉네임/소개/관심직무/희망근무지와 선택한 프로필 이미지를 저장하고,
      * 갱신된 회원 정보를 세션에도 다시 넣어 화면 전체에서 최신 값을 사용하게 합니다.
      */
     @PostMapping("/mypage/profile/edit")
-    public String updateProfile(@RequestParam String nickname,
+    public String updateProfile(@RequestParam String email,
+            @RequestParam String nickname,
             @RequestParam(required = false) String introduction,
             @RequestParam(required = false) String interestJob,
             @RequestParam(required = false) String preferredLocation,
@@ -93,6 +146,7 @@ public class MypageController {
 
         MemberVO profile = new MemberVO();
         profile.setMemberId(loginMember.getMemberId());
+        profile.setEmail(email);
         profile.setNickname(nickname);
         profile.setIntroduction(introduction);
         profile.setInterestJob(interestJob);

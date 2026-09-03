@@ -27,5 +27,11 @@ public String getCreatedAtLabel() {
     return createdAt.format(DateTimeFormatter.ofPattern("yyyy.MM.dd HH:mm"));
 }
 
+/** [추가] 기업 상세 화면에서 DB UPDATED_AT을 동일한 형식으로 표시합니다. */
+public String getUpdatedAtLabel() {
+    if (updatedAt == null) return "";
+    return updatedAt.format(DateTimeFormatter.ofPattern("yyyy.MM.dd HH:mm"));
+}
+
 }
 

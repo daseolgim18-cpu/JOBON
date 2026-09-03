@@ -40,7 +40,7 @@
                     <dl class="detail-list">
                         <div>
                             <dt>마감일</dt>
-                            <dd>${job.deadline}</dd>
+                            <dd>${job.deadline} <c:if test="${not empty job.deadline}"><span class="deadline-badge">${job.deadlineDdayLabel}</span></c:if></dd>
                         </div>
                         <div>
                             <dt>고용형태/지역</dt>
@@ -61,10 +61,16 @@
                         </div>
                     </dl>
                 </div>
-                <div class="quick-actions"><a class="jobon-btn jobon-btn--primary"
-                        href="${ctx}/apply/new?jobId=${job.jobId}">지원현황 등록</a><a
-                        class="jobon-btn jobon-btn--ghost" href="${ctx}/todo/new?jobId=${job.jobId}">마감일 TODO
-                        생성</a>
+                <c:if test="${not empty currentApplication}">
+                    <div class="card card--padded mt20">
+                        <div class="nested-head"><h3>현재 지원 상태</h3><span class="badge badge--green">${currentApplication.statusLabel}</span></div>
+                        <p class="muted">지원일 ${empty currentApplication.appliedDateLabel ? '-' : currentApplication.appliedDateLabel} · 다음 일정 ${empty currentApplication.nextScheduleAtLabel ? '없음' : currentApplication.nextScheduleAtLabel}</p>
+                        <a class="text-link" href="${ctx}/apply/detail?id=${currentApplication.applicationId}">지원현황 상세 보기</a>
+                    </div>
+                </c:if>
+                <div class="quick-actions">
+                    <c:choose><c:when test="${empty currentApplication}"><a class="jobon-btn jobon-btn--primary" href="${ctx}/apply/new?jobId=${job.jobId}">지원현황 등록</a></c:when><c:otherwise><a class="jobon-btn jobon-btn--primary" href="${ctx}/apply/detail?id=${currentApplication.applicationId}">지원현황 보기</a></c:otherwise></c:choose>
+                    <a class="jobon-btn jobon-btn--ghost" href="${ctx}/todo/new?jobId=${job.jobId}">마감일 TODO 생성</a>
                     <form method="post" action="${ctx}/ai/analysis"><input type="hidden" name="jobId"
                             value="${job.jobId}"><button class="jobon-btn jobon-btn--soft">AI 분석 시작</button>
                     </form>

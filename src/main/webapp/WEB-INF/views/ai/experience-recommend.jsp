@@ -24,6 +24,8 @@
                         <h1>자소서 활용 프로젝트 경험 TOP3</h1>
                         <p>${analysis.companyName} · ${analysis.jobTitle}</p>
                     </div>
+                    <!-- [추가] 이미 저장한 추천 결과 목록으로 바로 이동합니다. -->
+                    <a class="jobon-btn jobon-btn--soft" href="${ctx}/ai/saved-recommendations">저장한 경험 보기</a>
                 </section>
                 <div class="recommend-list">
                     <c:forEach var="r" items="${analysis.recommendations}">
@@ -32,7 +34,7 @@
                             <div>
                                 <h3>${r.projectName}</h3>
                                 <p>${r.reason}</p>
-                                <p class="muted">${r.sourceDetail}</p>
+                                <p class="muted preline">${r.sourceDetail}</p>
                             </div>
                             <form method="post" action="${ctx}/ai/recommend/${r.recommendId}/save"><input
                                     type="hidden" name="analysisId" value="${analysis.analysisId}"><input

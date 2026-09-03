@@ -85,7 +85,7 @@ public class MainController {
                 .toList();
 
         Map<String, Long> statusCounts = new LinkedHashMap<>();
-        for (String status : List.of("INTEREST", "APPLIED", "DOCUMENT", "INTERVIEW", "OFFER", "REJECTED")) {
+        for (String status : List.of("INTEREST", "APPLIED", "DOCUMENT", "CODING_TEST", "INTERVIEW", "OFFER", "REJECTED")) {
             statusCounts.put(status,
                     applications.stream().filter(application -> status.equals(application.getStatus())).count());
         }
@@ -128,8 +128,8 @@ public class MainController {
             return "background: conic-gradient(#edf1f5 0 100%);";
         }
 
-        String[] statuses = { "INTEREST", "APPLIED", "DOCUMENT", "INTERVIEW", "OFFER", "REJECTED" };
-        String[] colors = { "#94a3b8", "#10c96f", "#3b82f6", "#8b5cf6", "#f59e0b", "#ef4444" };
+        String[] statuses = { "INTEREST", "APPLIED", "DOCUMENT", "CODING_TEST", "INTERVIEW", "OFFER", "REJECTED" };
+        String[] colors = { "#94a3b8", "#10c96f", "#3b82f6", "#06b6d4", "#8b5cf6", "#f59e0b", "#ef4444" };
 
         StringBuilder gradient = new StringBuilder("background: conic-gradient(");
         double start = 0.0;

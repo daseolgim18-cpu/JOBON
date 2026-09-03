@@ -32,7 +32,13 @@
     <select id="selectList" resultMap="m">
         <include refid="base"/>
         <if test="keyword != null and keyword != ''">
-            AND (LOWER(J.TITLE) LIKE '%' || LOWER(#{keyword}) || '%' OR LOWER(C.COMPANY_NAME) LIKE '%' || LOWER(#{keyword}) || '%')
+            AND (LOWER(J.TITLE) LIKE '%' || LOWER(#{keyword}) || '%'
+                 OR LOWER(C.COMPANY_NAME) LIKE '%' || LOWER(#{keyword}) || '%'
+                 OR LOWER(J.JOB_ROLE) LIKE '%' || LOWER(#{keyword}) || '%'
+                 OR LOWER(J.REGION) LIKE '%' || LOWER(#{keyword}) || '%'
+                 OR LOWER(J.EMPLOYMENT_TYPE) LIKE '%' || LOWER(#{keyword}) || '%'
+                 OR DBMS_LOB.INSTR(LOWER(J.ORIGINAL_TEXT), LOWER(#{keyword})) > 0
+                 OR DBMS_LOB.INSTR(LOWER(J.MEMO), LOWER(#{keyword})) > 0)
         </if>
         <if test="jobRole != null and jobRole != ''">
             AND LOWER(J.JOB_ROLE) LIKE '%' || LOWER(#{jobRole}) || '%'
@@ -47,11 +53,24 @@
         </choose>
     </select>
 
+    <!-- [추가] 기업 상세 화면에서 기업명 문자열 검색이 아닌 COMPANY_ID FK 기준으로 연결 공고를 조회 -->
+    <select id="selectByCompanyId" resultMap="m">
+        <include refid="base"/>
+           AND J.COMPANY_ID = #{companyId}
+        ORDER BY J.CREATED_AT DESC
+    </select>
+
     <select id="selectOne" resultMap="m">
         <include refid="base"/>
            AND J.JOB_ID = #{jobId}
     </select>
    
+
+    <!-- [추가] 채용공고에 연결할 기업이 현재 회원 소유인지 검증 -->
+    <select id="countOwnedCompany" resultType="int">
+        SELECT COUNT(*) FROM COMPANY WHERE COMPANY_ID = #{companyId} AND MEMBER_ID = #{memberId}
+    </select>
+
     <insert id="insert">
         <selectKey keyProperty="jobId" resultType="long" order="BEFORE">
             SELECT  JOB_POSTING_SEQ.NEXTVAL

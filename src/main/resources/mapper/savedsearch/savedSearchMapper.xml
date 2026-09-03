@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jobon.savedsearch.dao.SavedSearchDAO">
+    <resultMap id="savedSearchMap" type="com.jobon.savedsearch.vo.SavedSearchVO">
+        <id property="searchId" column="SEARCH_ID"/>
+        <result property="memberId" column="MEMBER_ID"/>
+        <result property="searchName" column="SEARCH_NAME"/>
+        <result property="targetType" column="TARGET_TYPE"/>
+        <result property="keyword" column="KEYWORD"/>
+        <result property="jobRole" column="JOB_ROLE"/>
+        <result property="careerType" column="CAREER_TYPE"/>
+        <result property="region" column="REGION"/>
+        <result property="postedFrom" column="POSTED_FROM"/>
+        <result property="postedTo" column="POSTED_TO"/>
+        <result property="deadlineFrom" column="DEADLINE_FROM"/>
+        <result property="deadlineTo" column="DEADLINE_TO"/>
+        <result property="extraConditions" column="EXTRA_CONDITIONS"/>
+        <result property="createdAt" column="CREATED_AT"/>
+    </resultMap>
+
+    <select id="selectList" resultMap="savedSearchMap">
+        SELECT * FROM SAVED_SEARCH
+        WHERE MEMBER_ID = #{memberId}
+        ORDER BY CREATED_AT DESC, SEARCH_ID DESC
+    </select>
+
+    <select id="selectOne" resultMap="savedSearchMap">
+        SELECT * FROM SAVED_SEARCH
+        WHERE MEMBER_ID = #{memberId}
+          AND SEARCH_ID = #{searchId}
+    </select>
+
+    <insert id="insert" parameterType="com.jobon.savedsearch.vo.SavedSearchVO">
+        <selectKey keyProperty="searchId" resultType="long" order="BEFORE">
+            SELECT SAVED_SEARCH_SEQ.NEXTVAL FROM DUAL
+        </selectKey>
+        INSERT INTO SAVED_SEARCH (
+            SEARCH_ID, MEMBER_ID, SEARCH_NAME, TARGET_TYPE, KEYWORD, JOB_ROLE, CAREER_TYPE, REGION,
+            POSTED_FROM, POSTED_TO, DEADLINE_FROM, DEADLINE_TO, EXTRA_CONDITIONS, CREATED_AT
+        ) VALUES (
+            #{searchId}, #{memberId}, #{searchName}, #{targetType}, #{keyword,jdbcType=VARCHAR},
+            #{jobRole,jdbcType=VARCHAR}, #{careerType,jdbcType=VARCHAR}, #{region,jdbcType=VARCHAR},
+            #{postedFrom,jdbcType=DATE}, #{postedTo,jdbcType=DATE}, #{deadlineFrom,jdbcType=DATE},
+            #{deadlineTo,jdbcType=DATE}, #{extraConditions,jdbcType=VARCHAR}, SYSTIMESTAMP
+        )
+    </insert>
+
+    <delete id="delete">
+        DELETE FROM SAVED_SEARCH
+        WHERE MEMBER_ID = #{memberId}
+          AND SEARCH_ID = #{searchId}
+    </delete>
+</mapper>

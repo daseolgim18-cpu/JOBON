@@ -29,6 +29,13 @@ public class AiAnalysisController {
         return "ai/analysis";
     }
 
+    // [추가] 분석 요청 전 선택한 공고의 입력 데이터 품질 안내를 반환합니다.
+    @GetMapping("/analysis/quality")
+    @ResponseBody
+    java.util.List<String> quality(@RequestParam Long jobId, HttpSession s) {
+        return service.dataQualityWarnings(SessionMemberUtil.requireMemberId(s), jobId);
+    }
+
     @PostMapping("/analysis")
     String analyze(@RequestParam Long jobId, HttpSession s) {
         var a = service.analyze(SessionMemberUtil.requireMemberId(s), jobId);
@@ -41,6 +48,7 @@ public class AiAnalysisController {
         Long mid = SessionMemberUtil.requireMemberId(s);
         var a = id != null ? service.get(mid, id) : service.getByJob(mid, jobId);
         m.addAttribute("analysis", a);
+        m.addAttribute("dataQualityWarnings", service.dataQualityWarnings(mid, a.getJobId()));
         return "ai/job-analysis";
     }
 
@@ -72,5 +80,21 @@ public class AiAnalysisController {
             @RequestParam(defaultValue = "true") boolean saved, HttpSession s) {
         service.saveRecommendation(SessionMemberUtil.requireMemberId(s), id, saved);
         return "redirect:/ai/experience-recommend?analysisId=" + analysisId;
+    }
+
+    /** [추가] 저장한 자소서 경험 추천 목록을 조회합니다. */
+    @GetMapping("/saved-recommendations")
+    String savedRecommendations(HttpSession s, Model m) {
+        Long memberId = SessionMemberUtil.requireMemberId(s);
+        m.addAttribute("savedRecommendations", service.savedRecommendations(memberId));
+        return "ai/saved-recommendations";
+    }
+
+    /** [추가] 저장 목록에서 저장을 해제하고 목록 화면으로 돌아갑니다. */
+    @PostMapping("/recommend/{id}/unsave")
+    String unsave(@PathVariable Long id, HttpSession s, RedirectAttributes r) {
+        service.saveRecommendation(SessionMemberUtil.requireMemberId(s), id, false);
+        r.addFlashAttribute("successMessage", "저장한 경험에서 해제되었습니다.");
+        return "redirect:/ai/saved-recommendations";
     }
 }

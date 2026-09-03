@@ -21,7 +21,10 @@
         FROM    COMPANY
         WHERE   MEMBER_ID = #{memberId}
         <if test="keyword!=null and keyword!=''">
-            AND     LOWER(COMPANY_NAME) LIKE '%' || LOWER(#{keyword}) || '%'
+            AND (LOWER(COMPANY_NAME) LIKE '%' || LOWER(#{keyword}) || '%'
+                 OR LOWER(INDUSTRY) LIKE '%' || LOWER(#{keyword}) || '%'
+                 OR LOWER(JOB_FIELD) LIKE '%' || LOWER(#{keyword}) || '%'
+                 OR DBMS_LOB.INSTR(LOWER(MEMO), LOWER(#{keyword})) > 0)
         </if>
         <if test="companyType!=null and companyType!=''">
             AND     COMPANY_TYPE = #{companyType}

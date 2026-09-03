@@ -9,6 +9,9 @@ public interface ApplicationService {
 
     ApplicationVO get(Long memberId, Long applicationId);
 
+    // [추가] 채용공고 상세에서 현재 지원 상태를 확인합니다.
+    ApplicationVO getByJob(Long memberId, Long jobId);
+
     void create(ApplicationVO vo);
 
     void update(ApplicationVO vo);

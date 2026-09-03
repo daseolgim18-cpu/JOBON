@@ -41,6 +41,7 @@
                         <a href="${ctx}/apply/list?status=INTEREST"><strong>${applicationStatusCounts.INTEREST}</strong><span>관심</span></a>
                         <a href="${ctx}/apply/list?status=APPLIED"><strong>${applicationStatusCounts.APPLIED}</strong><span>지원완료</span></a>
                         <a href="${ctx}/apply/list?status=DOCUMENT"><strong>${applicationStatusCounts.DOCUMENT}</strong><span>서류</span></a>
+                        <a href="${ctx}/apply/list?status=CODING_TEST"><strong>${applicationStatusCounts.CODING_TEST}</strong><span>코딩테스트</span></a>
                         <a href="${ctx}/apply/list?status=INTERVIEW"><strong>${applicationStatusCounts.INTERVIEW}</strong><span>면접</span></a>
                         <a href="${ctx}/apply/list?status=OFFER"><strong>${applicationStatusCounts.OFFER}</strong><span>합격</span></a>
                         <a href="${ctx}/apply/list?status=REJECTED"><strong>${applicationStatusCounts.REJECTED}</strong><span>불합격</span></a>
@@ -52,7 +53,7 @@
                         <div class="nested-head"><h3>7일 이내 마감 공고</h3><a class="text-link" href="${ctx}/job/list?sort=deadline">전체 보기</a></div>
                         <c:forEach var="j" items="${imminentJobs}">
                             <div class="dashboard-row"><a href="${ctx}/job/detail?id=${j.jobId}">${j.companyName} · ${j.title}</a>
-                                <span class="deadline-badge">D-${j.daysUntilDeadline}</span></div>
+                                <span class="deadline-badge">${j.deadlineDdayLabel}</span></div>
                         </c:forEach>
                         <c:if test="${empty imminentJobs}"><p class="muted">7일 이내 마감되는 공고가 없습니다.</p></c:if>
                     </section>
@@ -61,7 +62,9 @@
                         <c:forEach var="x" items="${upcomingSchedules}">
                             <div class="dashboard-row dashboard-row--schedule">
                                 <a class="dashboard-row__title" href="${ctx}/apply/detail?id=${x.applicationId}">${x.companyName} · ${x.jobTitle}</a>
-                                <span class="dashboard-row__meta">${x.nextScheduleAtLabel}</span>
+                                <%-- [수정] 일정 시각과 D-Day를 각각 독립 영역으로 분리해 겹침을 방지합니다. --%>
+                                <span class="dashboard-row__meta dashboard-row__date">${x.nextScheduleAtLabel}</span>
+                                <span class="deadline-badge dashboard-row__dday">${x.scheduleDdayLabel}</span>
                             </div>
                         </c:forEach>
                         <c:if test="${empty upcomingSchedules}"><p class="muted">등록된 다음 일정이 없습니다.</p></c:if>
@@ -70,8 +73,14 @@
                         <div class="nested-head"><h3>진행할 TODO</h3><a class="text-link" href="${ctx}/todo/list?status=TODO">전체 보기</a></div>
                         <c:forEach var="t" items="${pendingTodos}">
                             <div class="dashboard-row dashboard-row--todo">
-                                <span class="dashboard-row__title">${t.title}</span>
-                                <span class="dashboard-row__meta">${t.dueDateLabel} · ${t.priorityLabel}</span>
+                                <a class="dashboard-row__title" href="${ctx}/todo/edit?id=${t.todoId}">${t.title}</a>
+                                <%-- [수정] 날짜/D-Day/우선순위/액션을 각각 분리해 좁은 카드에서도 글자가 겹치지 않게 합니다. --%>
+                                <span class="dashboard-row__meta dashboard-row__date">${t.dueDateLabel}</span>
+                                <span class="deadline-badge dashboard-row__dday"><c:if test="${not empty t.dueDate}">${t.dueDdayLabel}</c:if></span>
+                                <span class="dashboard-row__priority">${t.priorityLabel}</span>
+                                <form class="dashboard-row__action" method="post" action="${ctx}/todo/${t.todoId}/complete">
+                                    <button class="todo-complete-btn" type="submit">✓ 완료 처리</button>
+                                </form>
                             </div>
                         </c:forEach>
                         <c:if test="${empty pendingTodos}"><p class="muted">진행할 TODO가 없습니다.</p></c:if>

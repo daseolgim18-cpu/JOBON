@@ -6,6 +6,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import com.jobon.common.util.SessionMemberUtil;
+import com.jobon.apply.service.ApplicationService;
 import com.jobon.company.service.CompanyService;
 import com.jobon.job.service.JobPostingService;
 import com.jobon.job.vo.JobPostingVO;
@@ -16,10 +17,12 @@ import jakarta.servlet.http.HttpSession;
 public class JobPostingController {
     private final JobPostingService service;
     private final CompanyService companyService;
+    private final ApplicationService applicationService;
 
-    public JobPostingController(JobPostingService s, CompanyService c) {
+    public JobPostingController(JobPostingService s, CompanyService c, ApplicationService applicationService) {
         service = s;
         companyService = c;
+        this.applicationService = applicationService;
     }
 
     @GetMapping("/list")
@@ -51,7 +54,10 @@ public class JobPostingController {
 
     @GetMapping("/detail")
     String detail(@RequestParam Long id, HttpSession s, Model m) {
-        m.addAttribute("job", service.get(SessionMemberUtil.requireMemberId(s), id));
+        Long memberId = SessionMemberUtil.requireMemberId(s);
+        m.addAttribute("job", service.get(memberId, id));
+        // [추가] 이미 지원현황이 등록된 공고라면 현재 상태와 상세 이동 버튼을 표시합니다.
+        m.addAttribute("currentApplication", applicationService.getByJob(memberId, id));
         return "job/detail";
     }
 
