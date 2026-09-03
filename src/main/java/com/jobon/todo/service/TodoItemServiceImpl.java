@@ -54,6 +54,30 @@ public class TodoItemServiceImpl implements TodoItemService {
         activityLogService.record(vo.getMemberId(), "TODO", "UPDATE", vo.getTodoId(), vo.getTitle() + suffix);
     }
 
+    // [추가] 목록에서는 제목/마감일/연결 정보 등을 덮어쓰지 않고 상태 관련 컬럼만 변경합니다.
+    @Override
+    @Transactional
+    public void changeStatus(Long memberId, Long todoId, String status) {
+        if (memberId == null || todoId == null)
+            throw new IllegalArgumentException("TODO 상태 변경 정보가 없습니다.");
+        if (status == null || status.isBlank())
+            throw new IllegalArgumentException("변경할 TODO 상태를 선택해주세요.");
+
+        String normalizedStatus = status.trim().toUpperCase();
+        if (!ALLOWED_STATUSES.contains(normalizedStatus))
+            throw new IllegalArgumentException("TODO 상태 값이 올바르지 않습니다.");
+
+        TodoItemVO existing = get(memberId, todoId);
+        if (normalizedStatus.equals(existing.getStatus())) return;
+
+        if (dao.updateStatus(memberId, todoId, normalizedStatus) != 1)
+            throw new IllegalStateException("TODO 상태 변경에 실패했습니다.");
+
+        activityLogService.record(memberId, "TODO", "UPDATE", todoId,
+                existing.getTitle() + " TODO 상태 변경 ("
+                        + statusLabel(existing.getStatus()) + " → " + statusLabel(normalizedStatus) + ")");
+    }
+
     // [추가] 대시보드 완료 처리는 toggle이 아니라 TODO/DOING -> DONE 단방향으로 처리합니다.
     // 이미 완료된 항목에 요청이 다시 들어와도 중복 활동 로그를 남기지 않습니다.
     @Override
@@ -139,5 +163,15 @@ public class TodoItemServiceImpl implements TodoItemService {
             throw new IllegalArgumentException("현재 회원이 등록한 기업만 연결할 수 있습니다.");
         if (vo.getJobId() != null && dao.countOwnedJob(vo.getMemberId(), vo.getJobId()) != 1)
             throw new IllegalArgumentException("현재 회원이 등록한 채용공고만 연결할 수 있습니다.");
+    }
+
+    private String statusLabel(String status) {
+        if (status == null) return "";
+        return switch (status) {
+            case "TODO" -> "할 일";
+            case "DOING" -> "진행 중";
+            case "DONE" -> "완료";
+            default -> status;
+        };
     }
 }

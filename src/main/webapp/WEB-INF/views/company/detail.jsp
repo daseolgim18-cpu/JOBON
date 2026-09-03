@@ -84,6 +84,19 @@
                                 </div>
 
                                 <div class="company-profile-meta">
+                                    <c:if test="${not empty company.businessType}">
+                                        <div>
+                                            <span class="company-meta-label">기업 업종</span>
+                                            <span class="company-meta-value"><c:out value="${company.businessType}" /></span>
+                                        </div>
+                                    </c:if>
+                                    <c:if test="${not empty company.homepageUrl}">
+                                        <div>
+                                            <span class="company-meta-label">홈페이지</span>
+                                            <a class="text-link company-meta-value" target="_blank" rel="noopener noreferrer"
+                                               href="${company.homepageUrl}"><c:out value="${company.homepageUrl}" /></a>
+                                        </div>
+                                    </c:if>
                                     <c:if test="${not empty company.careerUrl}">
                                         <div>
                                             <span class="company-meta-label">채용 페이지</span>
@@ -91,24 +104,32 @@
                                                href="${company.careerUrl}"><c:out value="${company.careerUrl}" /></a>
                                         </div>
                                     </c:if>
-                                    <c:if test="${not empty company.memo}">
+                                    <c:if test="${not empty company.address}">
                                         <div>
-                                            <span class="company-meta-label">메모</span>
-                                            <span class="company-meta-value company-meta-memo"><c:out value="${company.memo}" /></span>
+                                            <span class="company-meta-label">주소</span>
+                                            <span class="company-meta-value"><c:out value="${company.address}" /></span>
                                         </div>
                                     </c:if>
                                 </div>
                             </div>
                         </section>
 
-                        <!-- [추가] 탭처럼 보이는 정보 구분 영역이며 모든 수치는 실제 DB 조회 결과를 사용합니다. -->
+                        <!-- [수정] 탭 선택에 따라 해당 패널 하나만 표시하며 모든 값은 실제 DB 조회 결과를 사용합니다. -->
                         <section class="card company-information-card">
-                            <div class="company-detail-tabs">
-                                <a class="is-active" href="#company-info">기업 정보</a>
-                                <a href="#company-jobs">채용공고 (<c:out value="${fn:length(companyJobs)}" />)</a>
+                            <div class="company-detail-tabs" role="tablist" aria-label="기업 상세 메뉴">
+                                <button class="is-active" type="button" role="tab" aria-selected="true"
+                                        aria-controls="company-info" id="company-info-tab"
+                                        data-company-tab="company-info">기업 정보</button>
+                                <button type="button" role="tab" aria-selected="false"
+                                        aria-controls="company-jobs" id="company-jobs-tab"
+                                        data-company-tab="company-jobs">채용공고 (<c:out value="${fn:length(companyJobs)}" />)</button>
+                                <button type="button" role="tab" aria-selected="false"
+                                        aria-controls="company-memo" id="company-memo-tab"
+                                        data-company-tab="company-memo">메모 (<c:out value="${empty company.memo ? 0 : 1}" />)</button>
                             </div>
 
-                            <div id="company-info" class="company-info-section">
+                            <div id="company-info" class="company-info-section company-tab-panel"
+                                 role="tabpanel" aria-labelledby="company-info-tab">
                                 <h2 class="section-title">기본 정보</h2>
                                 <div class="company-info-grid">
                                     <dl class="company-info-table">
@@ -123,6 +144,30 @@
                                         <div>
                                             <dt>직무 분야</dt>
                                             <dd><c:out value="${empty company.jobField ? '-' : company.jobField}" /></dd>
+                                        </div>
+                                        <div>
+                                            <dt>기업 업종</dt>
+                                            <dd><c:out value="${empty company.businessType ? '-' : company.businessType}" /></dd>
+                                        </div>
+                                        <div>
+                                            <dt>홈페이지</dt>
+                                            <dd>
+                                                <c:choose>
+                                                    <c:when test="${not empty company.homepageUrl}">
+                                                        <a class="text-link company-link-wrap" target="_blank" rel="noopener noreferrer"
+                                                           href="${company.homepageUrl}"><c:out value="${company.homepageUrl}" /></a>
+                                                    </c:when>
+                                                    <c:otherwise>-</c:otherwise>
+                                                </c:choose>
+                                            </dd>
+                                        </div>
+                                        <div>
+                                            <dt>사업내용</dt>
+                                            <dd class="preline"><c:out value="${empty company.businessDescription ? '-' : company.businessDescription}" /></dd>
+                                        </div>
+                                        <div>
+                                            <dt>주소</dt>
+                                            <dd><c:out value="${empty company.address ? '-' : company.address}" /></dd>
                                         </div>
                                         <div>
                                             <dt>채용 페이지</dt>
@@ -178,17 +223,11 @@
                                         </div>
                                     </aside>
                                 </div>
-
-                                <div class="company-memo-section">
-                                    <h2 class="section-title">기업 메모</h2>
-                                    <div class="company-memo-box preline">
-                                        <c:out value="${empty company.memo ? '등록된 메모가 없습니다.' : company.memo}" />
-                                    </div>
-                                </div>
                             </div>
 
                             <!-- [추가] JOB_POSTING.COMPANY_ID가 현재 기업 ID와 일치하는 실제 DB 공고만 출력합니다. -->
-                            <div id="company-jobs" class="company-jobs-section">
+                            <div id="company-jobs" class="company-jobs-section company-tab-panel" role="tabpanel"
+                                 aria-labelledby="company-jobs-tab" hidden>
                                 <div class="nested-head">
                                     <h2 class="section-title">연결 채용공고</h2>
                                     <a class="jobon-btn jobon-btn--ghost" href="${ctx}/job/list">전체 채용공고</a>
@@ -216,6 +255,19 @@
                                     </c:otherwise>
                                 </c:choose>
                             </div>
+
+                            <!-- [수정] 메모 패널을 company-information-card 내부에 배치해
+                                 다른 탭 패널과 같은 영역에서 교체되도록 합니다. -->
+                            <div id="company-memo" class="company-info-section company-memo-panel company-tab-panel" role="tabpanel"
+                                 aria-labelledby="company-memo-tab" hidden>
+                                <h2 class="section-title">기업 메모</h2>
+
+                                <div class="company-memo-box preline">
+                                    <c:out value="${empty company.memo
+                                            ? '등록된 메모가 없습니다.'
+                                            : company.memo}" />
+                                </div>
+                            </div>
                         </section>
                     </div>
 
@@ -231,7 +283,7 @@
                         <section class="card company-side-card">
                             <div class="company-side-title-row">
                                 <h2>최근 연결 채용공고</h2>
-                                <a href="#company-jobs">더보기</a>
+                                <button type="button" data-company-tab="company-jobs">더보기</button>
                             </div>
                             <c:choose>
                                 <c:when test="${empty companyJobs}">
@@ -257,6 +309,26 @@
         </main>
         <jsp:include page="/WEB-INF/views/common/footer.jsp" />
         <script src="${ctx}/js/jobon-crud.js"></script>
+        <script>
+            // [추가] 선택한 기업 상세 탭의 패널만 표시합니다.
+            document.querySelectorAll("[data-company-tab]").forEach((tabControl) => {
+                tabControl.addEventListener("click", () => {
+                    const targetId = tabControl.dataset.companyTab;
+
+                    document.querySelectorAll(".company-detail-tabs [role='tab']").forEach((tab) => {
+                        const selected = tab.dataset.companyTab === targetId;
+                        tab.classList.toggle("is-active", selected);
+                        tab.setAttribute("aria-selected", String(selected));
+                    });
+
+                    document.querySelectorAll(".company-tab-panel").forEach((panel) => {
+                        panel.hidden = panel.id !== targetId;
+                    });
+
+                    document.getElementById(targetId)?.focus({ preventScroll: true });
+                });
+            });
+        </script>
     </body>
 
 </html>

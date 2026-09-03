@@ -14,6 +14,9 @@ public interface TodoItemService {
 
     void update(TodoItemVO vo);
 
+    // [추가] 목록에서 다른 TODO 정보는 유지하고 상태만 변경합니다.
+    void changeStatus(Long memberId, Long todoId, String status);
+
     // [추가] 대시보드에서 TODO/진행중 항목을 완료 상태로만 변경합니다.
     void complete(Long memberId, Long todoId);
 

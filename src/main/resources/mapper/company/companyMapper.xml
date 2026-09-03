@@ -9,6 +9,11 @@
     <result property="companyType" column="COMPANY_TYPE"/>
     <result property="industry" column="INDUSTRY"/>
     <result property="jobField" column="JOB_FIELD"/>
+    <!-- [추가] 기업 등록/수정 폼의 구조화된 기업 정보를 실제 COMPANY 컬럼과 매핑합니다. -->
+    <result property="businessType" column="BUSINESS_TYPE"/>
+    <result property="homepageUrl" column="HOMEPAGE_URL"/>
+    <result property="businessDescription" column="BUSINESS_DESCRIPTION"/>
+    <result property="address" column="ADDRESS"/>
     <result property="careerUrl" column="CAREER_URL"/>
     <result property="logoUrl" column="LOGO_URL"/>
     <result property="memo" column="MEMO"/>
@@ -24,6 +29,9 @@
             AND (LOWER(COMPANY_NAME) LIKE '%' || LOWER(#{keyword}) || '%'
                  OR LOWER(INDUSTRY) LIKE '%' || LOWER(#{keyword}) || '%'
                  OR LOWER(JOB_FIELD) LIKE '%' || LOWER(#{keyword}) || '%'
+                 OR LOWER(BUSINESS_TYPE) LIKE '%' || LOWER(#{keyword}) || '%'
+                 OR LOWER(ADDRESS) LIKE '%' || LOWER(#{keyword}) || '%'
+                 OR DBMS_LOB.INSTR(LOWER(BUSINESS_DESCRIPTION), LOWER(#{keyword})) > 0
                  OR DBMS_LOB.INSTR(LOWER(MEMO), LOWER(#{keyword})) > 0)
         </if>
         <if test="companyType!=null and companyType!=''">
@@ -51,6 +59,10 @@
            ,COMPANY_TYPE
            ,INDUSTRY
            ,JOB_FIELD
+           ,BUSINESS_TYPE
+           ,HOMEPAGE_URL
+           ,BUSINESS_DESCRIPTION
+           ,ADDRESS
            ,CAREER_URL
            ,LOGO_URL
            ,MEMO
@@ -63,6 +75,10 @@
            ,#{companyType,jdbcType=VARCHAR}
            ,#{industry,jdbcType=VARCHAR}
            ,#{jobField,jdbcType=VARCHAR}
+           ,#{businessType,jdbcType=VARCHAR}
+           ,#{homepageUrl,jdbcType=VARCHAR}
+           ,#{businessDescription,jdbcType=CLOB}
+           ,#{address,jdbcType=VARCHAR}
            ,#{careerUrl,jdbcType=VARCHAR}
            ,#{logoUrl,jdbcType=VARCHAR}
            ,#{memo,jdbcType=CLOB}
@@ -77,6 +93,10 @@
                ,COMPANY_TYPE = #{companyType,jdbcType=VARCHAR}
                ,INDUSTRY     = #{industry,jdbcType=VARCHAR}
                ,JOB_FIELD    = #{jobField,jdbcType=VARCHAR}
+               ,BUSINESS_TYPE = #{businessType,jdbcType=VARCHAR}
+               ,HOMEPAGE_URL = #{homepageUrl,jdbcType=VARCHAR}
+               ,BUSINESS_DESCRIPTION = #{businessDescription,jdbcType=CLOB}
+               ,ADDRESS      = #{address,jdbcType=VARCHAR}
                ,CAREER_URL   = #{careerUrl,jdbcType=VARCHAR}
                ,LOGO_URL     = #{logoUrl,jdbcType=VARCHAR}
                ,MEMO         = #{memo,jdbcType=CLOB}

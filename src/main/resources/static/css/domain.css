@@ -98,6 +98,51 @@
   color: white;
 }
 
+/* [추가] TODO 목록에서 할 일/진행 중/완료 상태를 바로 선택합니다. */
+.todo-status-cell {
+  width: 112px;
+}
+
+.todo-status-form {
+  margin: 0;
+}
+
+.todo-status-select {
+  min-width: 92px;
+  height: 32px;
+  padding: 0 28px 0 11px;
+  border: 1px solid var(--jobon-line);
+  border-radius: 999px;
+  background-color: #fff;
+  color: var(--jobon-text);
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.todo-status-select--todo {
+  background-color: #f8fafc;
+  color: #5c6677;
+}
+
+.todo-status-select--doing {
+  border-color: #bdebd3;
+  background-color: var(--jobon-green-soft);
+  color: var(--jobon-green-dark);
+}
+
+.todo-status-select--done {
+  border-color: var(--jobon-green);
+  background-color: var(--jobon-green);
+  color: #fff;
+}
+
+.todo-status-select option {
+  background: #fff;
+  color: var(--jobon-text);
+}
+
 .tag-cloud {
   display: flex;
   gap: 8px;
@@ -857,20 +902,24 @@
   border-bottom: 1px solid var(--jobon-line);
 }
 
-.company-detail-tabs a {
+.company-detail-tabs button {
   position: relative;
   padding: 18px 2px 16px;
+  border: 0;
+  background: transparent;
   color: #525d6e;
   font-size: 14px;
   font-weight: 800;
+  font-family: inherit;
+  cursor: pointer;
 }
 
-.company-detail-tabs a:hover,
-.company-detail-tabs a.is-active {
+.company-detail-tabs button:hover,
+.company-detail-tabs button.is-active {
   color: var(--jobon-green-dark);
 }
 
-.company-detail-tabs a.is-active::after {
+.company-detail-tabs button.is-active::after {
   content: "";
   position: absolute;
   left: 0;
@@ -886,8 +935,9 @@
   padding: 28px;
 }
 
-.company-jobs-section {
-  border-top: 1px solid var(--jobon-line);
+/* [추가] 선택되지 않은 탭 패널은 화면에서 완전히 제외합니다. */
+.company-tab-panel[hidden] {
+  display: none;
 }
 
 .company-info-grid {
@@ -1061,10 +1111,20 @@
   gap: 12px;
 }
 
-.company-side-title-row > a {
+.company-side-title-row > a,
+.company-side-title-row > button {
+  padding: 0;
+  border: 0;
+  background: transparent;
   color: var(--jobon-muted);
   font-size: 11px;
   font-weight: 800;
+  font-family: inherit;
+  cursor: pointer;
+}
+
+.company-side-title-row > button:hover {
+  color: var(--jobon-green-dark);
 }
 
 .company-recent-job-list {

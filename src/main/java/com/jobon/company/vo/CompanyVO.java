@@ -15,6 +15,11 @@ private String companyName;
 private String companyType;
 private String industry;
 private String jobField;
+// [추가] 메모에 섞여 있던 기업 업종/홈페이지/사업내용/주소를 COMPANY 컬럼과 1:1로 관리합니다.
+private String businessType;
+private String homepageUrl;
+private String businessDescription;
+private String address;
 private String careerUrl;
 private String logoUrl;
 private String memo;

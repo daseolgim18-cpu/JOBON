@@ -33,7 +33,7 @@
                     <table class="data-table">
                         <thead>
                             <tr>
-                                <th>완료</th>
+                                <th>상태</th>
                                 <th>할 일</th>
                                 <th>우선순위</th>
                                 <th>마감일</th>
@@ -46,9 +46,20 @@
                         <tbody>
                             <c:forEach var="x" items="${todos}">
                                 <tr>
-                                    <td>
-                                        <form method="post" action="${ctx}/todo/${x.todoId}/toggle"><button
-                                                class="check-btn ${x.status eq 'DONE'?'done':''}">✓</button>
+                                    <td class="todo-status-cell">
+                                        <!-- [수정] 수정 화면으로 이동하지 않고 TODO 상태를 목록에서 바로 변경합니다. -->
+                                        <form class="todo-status-form" method="post"
+                                              action="${ctx}/todo/${x.todoId}/status">
+                                            <c:if test="${status eq 'TODO' or status eq 'DOING' or status eq 'DONE'}">
+                                                <input type="hidden" name="filter" value="${status}">
+                                            </c:if>
+                                            <select class="todo-status-select ${x.status eq 'DONE' ? 'todo-status-select--done' : (x.status eq 'DOING' ? 'todo-status-select--doing' : 'todo-status-select--todo')}"
+                                                    name="status" aria-label="TODO 상태 변경"
+                                                    onchange="this.form.submit()">
+                                                <option value="TODO" ${x.status eq 'TODO' ? 'selected' : ''}>할 일</option>
+                                                <option value="DOING" ${x.status eq 'DOING' ? 'selected' : ''}>진행 중</option>
+                                                <option value="DONE" ${x.status eq 'DONE' ? 'selected' : ''}>완료</option>
+                                            </select>
                                         </form>
                                     </td>
                                     <td class="${x.status eq 'DONE'?'strike':''}">${x.title}</td>

@@ -110,6 +110,19 @@
         WHERE   MEMBER_ID = #{memberId}
         AND     TODO_ID = #{todoId}
     </update>
+
+    <!-- [추가] TODO 목록의 상태 선택 전용 SQL입니다. 다른 TODO 내용은 수정하지 않습니다. -->
+    <update id="updateStatus">
+        UPDATE  TODO_ITEM
+        SET     STATUS       = #{status,jdbcType=VARCHAR}
+               ,COMPLETED_AT = CASE
+                    WHEN #{status,jdbcType=VARCHAR} = 'DONE' THEN NVL(COMPLETED_AT, SYSTIMESTAMP)
+                    ELSE NULL
+                END
+               ,UPDATED_AT   = SYSTIMESTAMP
+        WHERE   MEMBER_ID = #{memberId}
+        AND     TODO_ID = #{todoId}
+    </update>
     
     <!-- [추가] 대시보드의 완료 처리 전용 SQL입니다. 다른 입력값은 수정하지 않습니다. -->
     <update id="complete">

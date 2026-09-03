@@ -81,6 +81,19 @@ public class TodoController {
         return "redirect:" + ("/dashboard".equals(redirect) ? "/dashboard" : "/todo/list");
     }
 
+    // [추가] TODO 목록에서 할 일/진행 중/완료 상태를 직접 선택해 변경합니다.
+    @PostMapping("/{id}/status")
+    String changeStatus(@PathVariable Long id, @RequestParam String status,
+            @RequestParam(required = false) String filter, HttpSession s) {
+        service.changeStatus(SessionMemberUtil.requireMemberId(s), id, status);
+
+        // [추가] 상태별 목록에서 변경한 경우 기존 필터 화면으로 돌아갑니다.
+        if ("TODO".equals(filter) || "DOING".equals(filter) || "DONE".equals(filter)) {
+            return "redirect:/todo/list?status=" + filter;
+        }
+        return "redirect:/todo/list";
+    }
+
     // [추가] 대시보드의 '완료 처리' 전용 요청입니다.
     // toggle과 달리 DONE 상태로만 변경하며, 완료 처리 후 다시 대시보드로 이동합니다.
     @PostMapping("/{id}/complete")

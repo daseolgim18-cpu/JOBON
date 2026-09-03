@@ -26,22 +26,41 @@
                     </div>
                 </section>
                 <form class="card card--padded" method="post" action="${ctx}/company">
-                    <div class="form-grid"><label><span class="form-label">기업명 *</span><input
-                                class="form-control" name="companyName" value="${company.companyName}"
-                                required></label><label><span class="form-label">기업 구분</span><input
-                                class="form-control" name="companyType" value="${company.companyType}"
-                                placeholder="대기업/스타트업 등"></label><label><span class="form-label">산업</span><input
-                                class="form-control" name="industry"
-                                value="${company.industry}"></label><label><span class="form-label">직무
-                                분야</span><input class="form-control" name="jobField"
-                                value="${company.jobField}"></label><label class="form-group--full"><span
-                                class="form-label">채용 페이지 URL</span><input class="form-control" type="url"
-                                name="careerUrl" value="${company.careerUrl}"></label><label
-                            class="form-group--full"><span class="form-label">로고 URL</span><input
-                                class="form-control" type="url" name="logoUrl"
-                                value="${company.logoUrl}"></label><label class="form-group--full"><span
-                                class="form-label">메모</span><textarea class="form-control"
-                                name="memo">${company.memo}</textarea></label></div>
+                    <!-- [수정] 상세 화면에 표시할 기업 정보는 입력 폼부터 COMPANY 컬럼과 1:1로 저장합니다. -->
+                    <div class="form-grid">
+                        <label><span class="form-label">기업명 *</span><input class="form-control"
+                                name="companyName" maxlength="150" value="${company.companyName}" required></label>
+                        <label><span class="form-label">기업 구분</span><input class="form-control"
+                                name="companyType" maxlength="50" value="${company.companyType}"
+                                placeholder="예: 중소기업"></label>
+                        <label><span class="form-label">산업</span><input class="form-control"
+                                name="industry" maxlength="100" value="${company.industry}"
+                                placeholder="예: IT"></label>
+                        <label><span class="form-label">직무 분야</span><input class="form-control"
+                                name="jobField" maxlength="100" value="${company.jobField}"
+                                placeholder="예: 웹개발"></label>
+                        <label class="form-group--full"><span class="form-label">기업 업종</span><input
+                                class="form-control" name="businessType" maxlength="150"
+                                value="${company.businessType}" placeholder="예: 솔루션·SI·ERP·CRM"></label>
+                        <label class="form-group--full"><span class="form-label">홈페이지</span><input
+                                class="form-control" type="url" name="homepageUrl" maxlength="500"
+                                value="${company.homepageUrl}" placeholder="https://example.com"></label>
+                        <label class="form-group--full"><span class="form-label">사업내용</span><textarea
+                                class="form-control" name="businessDescription"
+                                placeholder="기업의 주요 사업내용을 입력하세요.">${company.businessDescription}</textarea></label>
+                        <label class="form-group--full"><span class="form-label">주소</span><input
+                                class="form-control" name="address" maxlength="500" value="${company.address}"
+                                placeholder="기업 주소를 입력하세요."></label>
+                        <label class="form-group--full"><span class="form-label">채용 페이지</span><input
+                                class="form-control" type="url" name="careerUrl" maxlength="500"
+                                value="${company.careerUrl}" placeholder="https://example.com/recruit"></label>
+                        <label class="form-group--full"><span class="form-label">로고 URL</span><input
+                                class="form-control" type="url" name="logoUrl" maxlength="500"
+                                value="${company.logoUrl}" placeholder="https://example.com/logo.png"></label>
+                        <label class="form-group--full"><span class="form-label">메모</span><textarea
+                                class="form-control" name="memo"
+                                placeholder="관심 포인트나 참고사항을 자유롭게 입력하세요.">${company.memo}</textarea></label>
+                    </div>
                     <div class="form-actions"><a class="jobon-btn jobon-btn--ghost"
                             href="${ctx}/company/list">취소</a><button
                             class="jobon-btn jobon-btn--primary">등록</button></div>

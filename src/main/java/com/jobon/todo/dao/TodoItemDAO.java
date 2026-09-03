@@ -25,6 +25,10 @@ public interface TodoItemDAO {
 
     int update(TodoItemVO vo);
 
+    // [추가] 목록의 상태 선택 시 STATUS/COMPLETED_AT만 변경합니다.
+    int updateStatus(@Param("memberId") Long memberId, @Param("todoId") Long todoId,
+            @Param("status") String status);
+
     // [추가] 다른 TODO 정보는 건드리지 않고 상태만 DONE으로 완료 처리합니다.
     int complete(@Param("memberId") Long memberId, @Param("todoId") Long todoId);
 
